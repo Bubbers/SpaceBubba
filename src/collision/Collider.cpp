@@ -3,14 +3,9 @@
 
 bool rayTriangle(float3 r_o, float3 r_d, float3 v1, float3 v2, float3 v3, float *ins);
 
-Collider::Collider(Octree* tree) : tree(tree)
-{
-}
+Collider::Collider(Octree* tree) : staticTree(tree), dynamicTree(tree) { }
 
-
-Collider::~Collider()
-{
-}
+Collider::~Collider() { }
 
 float Collider::rayIntersection(float3 rayOrigin, float3 rayVec) {
 	std::vector<Triangle*> geometry;
@@ -20,7 +15,7 @@ float Collider::rayIntersection(float3 rayOrigin, float3 rayVec) {
 	if(rayVec.z < 0.001f) rayVecInv.z = 0.0f;
 
 
-	tree->getGeometry(rayOrigin, rayVecInv, &geometry);
+	dynamicTree->getGeometry(rayOrigin, rayVecInv, &geometry);
 
 	float minIns = NULL;
 	for (int i = 0; i < geometry.size(); i++) {
@@ -43,13 +38,18 @@ float Collider::rayIntersection(float3 rayOrigin, float3 rayVec) {
 
 
 void Collider::insertAll() {
-	tree->insertAll(ts);
+	dynamicTree->insertAll(ts);
 }
 
 
 void Collider::addMesh(GameObject*gameObject) {
 	std::vector<Triangle*> gobTs = gameObject->getTriangles();
 	ts.insert(ts.end(), gobTs.begin(), gobTs.end());
+}
+
+void Collider::insertMesh(GameObject *gameObject) {
+	std::vector<Triangle*> gobTs = gameObject->getTriangles();
+	dynamicTree->insertAll(gobTs);
 }
 
 
@@ -91,4 +91,19 @@ bool rayTriangle(float3 r_o, float3 r_d, float3 v1, float3 v2, float3 v3, float 
 	*ins = t;
 
 	return true;
+}
+
+void Collider::resetOctree() {
+	if (dynamicTree != NULL) {
+		delete dynamicTree;
+	}
+	dynamicTree = new Octree(staticTree);
+}
+
+void Collider::saveOctree() {
+	if (staticTree != NULL) {
+		delete staticTree;
+	}
+	staticTree = dynamicTree;
+	dynamicTree = new Octree(staticTree);
 }

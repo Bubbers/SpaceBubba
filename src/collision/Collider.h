@@ -16,10 +16,14 @@ public:
 	~Collider();
 	void addMesh(GameObject*gameObject);
 	void insertAll();
+	void insertMesh(GameObject *gameObject);
 	float rayIntersection(float3 rayOrigin, float3 rayVec);
+	void resetOctree();
+	void saveOctree();
 
 private:
-	Octree* tree;
+	Octree *staticTree;
+	Octree *dynamicTree;
 	std::vector<Triangle*> ts;
 	AABB aabb_coll;
 };

@@ -382,7 +382,13 @@ void idle( int v )
 {
 	float elapsedTime = glutGet(GLUT_ELAPSED_TIME) - timeSinceDraw;
 	float time = (1000 / TICK_PER_SECOND) - elapsedTime;
+	printf("%f", elapsedTime);
 	if (time < 0) {
+
+		// Reseting dynamic stuff in collider
+		collider->resetOctree();
+		collider->insertMesh(&spider);
+
 		glutTimerFunc(1000 / TICK_PER_SECOND, idle, 0);
 		timeSinceDraw = float(glutGet(GLUT_ELAPSED_TIME));
 		static float startTime = float(glutGet(GLUT_ELAPSED_TIME)) / 1000.0f;
@@ -659,6 +665,7 @@ void createMeshes() {
     collider->addMesh(&spider);
   
 	collider->insertAll(); //TODO enlargen octrees afterhand instead
+	collider->saveOctree();
 	Logger::logInfo("Finished loading octree");
 	renderer->setOctree(*octTree);
 	

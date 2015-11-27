@@ -18,6 +18,7 @@ class Octree {
 public:
   Octree();
 	Octree(float3 origin, float3 halfVector, int depth);
+	Octree(Octree *oct);
 	~Octree(void);
 
 	bool hasChildren(void);
@@ -26,7 +27,7 @@ public:
 
 	float3 origin;
 	float3 halfVector;
-	
+
 
 	void getChildren(std::vector<Octree>* octs);
 	bool isFull();

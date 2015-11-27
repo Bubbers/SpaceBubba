@@ -12,10 +12,30 @@ Octree::Octree(float3 origin, float3 halfVector, int depth)
     }
 }
 
-Octree::~Octree() {
+Octree::Octree(Octree *oct) {
+    this->origin = oct->origin;
+    this->halfVector = oct->halfVector;
+    this->depth = oct->depth;
 
+    for (int i = 0; i < 8; ++i) {
+        if (oct->children[i] != NULL) {
+            this->children[i] = new Octree(oct->children[i]);
+        } else {
+            this->children[i] = NULL;
+        }
+    }
+
+    this->ts = oct->ts;
 }
 
+Octree::~Octree() {
+    ts.clear();
+    for (int i = 0; i < 8; ++i) {
+        if (children[i] != NULL) {
+            delete children[i];
+        }
+    }
+}
 
 void Octree::insertAll(std::vector<Triangle *> &triangles) {
     if (hasChildren() || (triangles.size() + ts.size() > MAX_CHILDREN && depth < MAX_DEPTH)) {
