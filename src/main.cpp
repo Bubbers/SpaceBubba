@@ -259,8 +259,9 @@ void createMeshes() {
 	scene.shadowCasters.push_back(&rWing);
 	broadPhaseCollider.addGameObject(&rWing);
 
-	Mesh* asteroidM = ResourceManager::loadAndFetchMesh("..scenes/asteroid.obj");
+	Mesh* asteroidM = ResourceManager::loadAndFetchMesh("../scenes/asteroid.obj");
 	asteroid = GameObject(asteroidM);
+	asteroid.move(make_translation(make_vector(10.0f, 10.0f, 10.0f)));
 	StandardRenderer *asteroidRenderer = new StandardRenderer(asteroidM, asteroid.getModelMatrix(), standardShader);
 	asteroid.addRenderComponent(asteroidRenderer);
 	asteroid.setDynamic(true);
@@ -268,7 +269,6 @@ void createMeshes() {
 	broadPhaseCollider.addGameObject(&asteroid);
 
 	Logger::logInfo("Finished loading meshes.");
-
 }
 
 void createCameras() {
