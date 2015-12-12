@@ -4,6 +4,7 @@
 #include "IComponent.h"
 #include "float3.h"
 #include "GameObject.h"
+#include "HudRenderer.h"
 
 using namespace chag;
 
@@ -13,7 +14,7 @@ using namespace chag;
 class MoveComponent : public IComponent {
 public:
     MoveComponent();
-    MoveComponent(float* cameraThetaLocation, GameObject* carObject);
+    MoveComponent(struct HudRenderer::HudConfig* hudConf, float* cameraThetaLocation, GameObject* carObject);
     void update(float dt);
     void afterCollision();
     void duringCollision();
@@ -37,6 +38,8 @@ private:
     float anglex = 0;
     float lengthx = 2;
     float lengthz = 3;
+    const int maxSpeed = 100;
+    struct HudRenderer::HudConfig* hudConf;
 
     void checkKeyPresses(float dt);
     void updateCarObject();

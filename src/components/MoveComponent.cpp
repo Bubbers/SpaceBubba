@@ -8,6 +8,7 @@
 #include <timer.h>
 #include <sstream>
 #include <InputManager.h>
+#include <HudRenderer.h>
 #include "MoveComponent.h"
 #include "float3x3.h"
 #include "Utils.h"
@@ -16,9 +17,10 @@ MoveComponent::MoveComponent(){
 
 }
 
-MoveComponent::MoveComponent(float* cameraThetaLocation, GameObject* carObject) {
+MoveComponent::MoveComponent(struct HudRenderer::HudConfig* hudConf, float* cameraThetaLocation, GameObject* carObject) {
     this->cameraThetaLocation = cameraThetaLocation;
     this->carObject = carObject;
+    this->hudConf = hudConf;
 }
 
 void MoveComponent::update(float dt) {
@@ -50,6 +52,7 @@ void MoveComponent::checkKeyPresses(float dt) {
     if (im->isKeyDown('w',false)) {
         float3 term = frontDir * moveSpeed;
         velocity += term * dt;
+
         hasChanged = true;
 
     }
@@ -57,6 +60,16 @@ void MoveComponent::checkKeyPresses(float dt) {
         float3 term = frontDir * moveSpeed;
         velocity -= term * dt;
         hasChanged = true;
+
+    }
+    if(im->isKeyDown('w',false) || im->isKeyDown('s',false)){
+
+        float speed = sqrt(velocity.x*velocity.x+velocity.y*velocity.y + velocity.z*velocity.z);
+        if(abs(speed) > maxSpeed){
+            float ratio = maxSpeed/abs(speed);
+            velocity = make_vector(velocity.x*ratio,velocity.y*ratio,velocity.z*ratio);
+        }
+        hudConf->speed = (int)floor(speed);
 
     }
     if (im->isKeyDown('a',false)) {

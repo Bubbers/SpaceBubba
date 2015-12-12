@@ -8,6 +8,7 @@
 HudRenderer::HudRenderer(){
     ResourceManager::loadShader("../shaders/hud.vert", "../shaders/hud.frag", "hudShader");
     shaderProgram = ResourceManager::getShader("hudShader");
+    conf = new HudConfig;
 
     GLfloat quad[] = { //POSITION3 TEXCOORD2
             0.0f, 0.0f, 0.0f, 0.0f, 0.0f,
@@ -39,7 +40,11 @@ HudRenderer::HudRenderer(){
 }
 
 HudRenderer::~HudRenderer(){
+    delete conf;
+}
 
+struct HudRenderer::HudConfig* HudRenderer::getConfig() {
+    return conf;
 }
 
 float timeLOL = 0.0f;
@@ -51,7 +56,9 @@ void HudRenderer::render() {
     Texture* texture = ResourceManager::loadAndFetchTexture("../scenes/HUD/meter2.0.png");
     render2DHud(texture, &modelMat);
 
-    modelMat = make_translation(make_vector(0.70f, -0.60f, 0.0f)) * make_rotation_z<float4x4>((float) (M_PI / 180 * (timeLOL / 10.0))) * make_translation(make_vector(-0.012f, -0.04f, 1.0f)) * make_scale<float4x4>(make_vector(0.02f, 0.2f, 1.0f));
+
+    int degrees = conf->speed*((int)round((220.0f/110.0f))) - 110;
+    modelMat = make_translation(make_vector(0.70f, -0.60f, 0.0f)) * make_rotation_z<float4x4>((float) (M_PI / 180 * degrees)) * make_translation(make_vector(-0.012f, -0.04f, 1.0f)) * make_scale<float4x4>(make_vector(0.02f, 0.2f, 1.0f));
     Texture* texture1 = ResourceManager::loadAndFetchTexture("../scenes/HUD/arrow.png");
     render2DHud(texture1, &modelMat);
 }
