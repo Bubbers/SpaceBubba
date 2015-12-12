@@ -145,14 +145,13 @@ void motion(int x, int y, int delta_x, int delta_y)
 	}
 }
 
+float camspeed = 1.0f;
+bool chase = false;
 void idle( int v )
 {
 	float elapsedTime = glutGet(GLUT_ELAPSED_TIME) - timeSinceDraw;
-	float4 ps = rWing.getModelMatrix()->c4;
-	float3 location = make_vector(ps.x, ps.y, ps.z);
 
 	float time = (1000 / TICK_PER_SECOND) - elapsedTime;
-	playerCamera->setLookAt(location + make_vector(0.0f, camera_target_altitude, 0.0f));
 	checkKeys();
 	if (time < 0) {
 		glutTimerFunc(1000 / TICK_PER_SECOND, idle, 0);
@@ -162,12 +161,53 @@ void idle( int v )
 		currentTime = float(glutGet(GLUT_ELAPSED_TIME)) / 1000.0f - startTime;
 
 
-		//Calculate camera matrix
-		playerCamera->setLookAt(location + make_vector(0.0f, camera_target_altitude, 0.0f));
-		playerCamera->setPosition(location + sphericalToCartesian(camera_theta, camera_phi, camera_r));
 
         scene.update(elapsedTime);
 
+		float4 ps = rWing.getModelMatrix()->c4;
+		float3 location = make_vector(ps.x, ps.y, ps.z);
+		//Calculate camera matrix
+
+
+		playerCamera->setLookAt(location + make_vector(0.0f, camera_target_altitude, 0.0f));
+		float3 pc = playerCamera->getPosition();
+		pc.y = location.y;
+
+		Logger::logDebug("### location ###");
+		Logger::logDebug(to_string(location.x));
+		Logger::logDebug(to_string(location.y));
+		Logger::logDebug(to_string(location.z));
+		float3 diff = (location - pc);
+		float dist = 100.f;
+		if (length(diff) > dist) {
+			chase = true;
+		}
+
+		if (chase) {
+			if (camspeed < .50f) {
+				camspeed += .01f;
+			} else {
+				chase = false;
+			}
+		} else {
+			camspeed = 0.0f;
+		}
+
+		Logger::logDebug("### DIFF ###");
+		Logger::logDebug(to_string(diff.x));
+		Logger::logDebug(to_string(diff.y));
+		Logger::logDebug(to_string(diff.z));
+
+		Logger::logDebug("### PC ###");
+		Logger::logDebug(to_string(pc.x));
+		Logger::logDebug(to_string(pc.y));
+		Logger::logDebug(to_string(pc.z));
+		playerCamera->setPosition((diff * (camspeed)) + sphericalToCartesian(camera_theta, camera_phi, camera_r));
+
+		Logger::logDebug("### CAM ###");
+		Logger::logDebug(to_string(playerCamera->getPosition().x));
+		Logger::logDebug(to_string(playerCamera->getPosition().y));
+		Logger::logDebug(to_string(playerCamera->getPosition().z));
         broadPhaseCollider.updateCollision();
 
 		glutPostRedisplay();
@@ -179,7 +219,7 @@ void idle( int v )
 
 int main(int argc, char *argv[])
 {
-	Logger::debug = false;
+	Logger::debug = true;
 	int w = SCREEN_WIDTH;
 	int h = SCREEN_HEIGHT;
 
