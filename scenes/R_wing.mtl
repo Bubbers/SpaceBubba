@@ -1,7 +1,7 @@
 # Blender MTL File: 'R_wing.blend'
 # Material Count: 1
 
-newmtl Rwing_mat
+newmtl Material
 Ns 96.078431
 Ka 0.000000 0.000000 0.000000
 Kd 0.640000 0.640000 0.640000
