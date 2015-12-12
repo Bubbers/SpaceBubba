@@ -54,8 +54,8 @@ void HudRenderer::render() {
     Texture* texture = ResourceManager::loadAndFetchTexture("../scenes/HUD/meter2.0.png");
     render2DHud(texture, &modelMat);
 
-    int degrees = conf->speed*((int)round((220.0f/110.0f))) - 110;
-    modelMat = make_translation(make_vector(0.70f, -0.60f, 0.0f)) * make_rotation_z<float4x4>((float) (M_PI / 180 * degrees)) * make_translation(make_vector(-0.04f, -0.04f, 1.0f)) * make_scale<float4x4>(make_vector(0.02f, 0.2f, 1.0f));
+    int degrees = conf->speed*((int)round((220.0f/110.0f)))+80;
+    modelMat = make_translation(make_vector(0.70f, -0.71f, 0.0f)) * make_rotation_z<float4x4>((float) (M_PI / 180 * degrees)) * make_translation(make_vector(-0.01f, -0.18f, 1.0f)) * make_scale<float4x4>(make_vector(0.02f, 0.2f, 1.0f));
 
     Texture* texture1 = ResourceManager::loadAndFetchTexture("../scenes/HUD/arrow.png");
     render2DHud(texture1, &modelMat);
