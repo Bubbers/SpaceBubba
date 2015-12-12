@@ -51,7 +51,7 @@ BFBroadPhase broadPhaseCollider;
 //*****************************************************************************
 //	Sound
 //*****************************************************************************
-SoundManager sm;
+SoundManager *soundManager;
 
 //*****************************************************************************
 //	Cube Maps
@@ -192,6 +192,7 @@ int main(int argc, char *argv[])
 	im->addSpecialKeyListener(specialKey);
 
 
+	soundManager = new SoundManager();
 	renderer->initGL();
 
 	createCubeMaps();
@@ -247,7 +248,7 @@ void createMeshes() {
 	Shader* standardShader = ResourceManager::getShader(SIMPLE_SHADER_NAME);
 	standardShader->setUniformBufferObjectBinding(UNIFORM_BUFFER_OBJECT_MATRICES_NAME, UNIFORM_BUFFER_OBJECT_MATRICES_INDEX);
 
-	Mesh* rWingM = ResourceManager::loadAndFetchMesh("../scenes/R_wing.obj"); //untitled.dae");
+	Mesh* rWingM = ResourceManager::loadAndFetchMesh("../scenes/R_wing.obj");
 	rWing = GameObject(rWingM);
 	rWing.move(make_translation(make_vector(0.0f, 0.0f, 0.0f)));
 	StandardRenderer *carRenderer = new StandardRenderer(rWingM, rWing.getModelMatrix(), standardShader);
