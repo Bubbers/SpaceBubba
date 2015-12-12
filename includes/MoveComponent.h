@@ -23,8 +23,8 @@ private:
 
     float3 frontDir = make_vector(0.0f, 0.0f, 1.0f);
     float3 upDir = make_vector(0.0f, 1.0f, 0.0f);
-    float3 velocity = make_vector(0.0f, 0.0f, 0.0f);
-    float3 acceleration = make_vector(0.0f, 0.0f, 0.0f);
+    float velocity = 0.0f;
+    float acceleration = 0.0f;
     float3 location = make_vector(0.0f, 0.0f, 0.f);
 
     float moveSpeed = (float) (2 * M_PI / 180);
@@ -38,11 +38,11 @@ private:
     float anglex = 0;
     float lengthx = 2;
     float lengthz = 3;
-    const int maxSpeed = 100;
+    const int maxSpeed = 10;
     struct HudRenderer::HudConfig* hudConf;
 
     void checkKeyPresses(float dt);
-    void updateCarObject();
+    void updateCarObject(float dt);
     void alignCarTowardsSurface();
 };
 

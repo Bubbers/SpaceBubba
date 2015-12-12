@@ -14,7 +14,7 @@ public:
     HudRenderer();
     ~HudRenderer();
     struct HudConfig{
-        int speed = 0;
+        float speed = 0.0f;
     };
 
     virtual void render();

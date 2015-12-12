@@ -25,7 +25,7 @@ MoveComponent::MoveComponent(struct HudRenderer::HudConfig* hudConf, float* came
 
 void MoveComponent::update(float dt) {
     checkKeyPresses(dt);
-    updateCarObject();
+    updateCarObject(dt);
     hasChanged = false;
     anglex = 0;
     angley = 0;
@@ -50,43 +50,41 @@ void MoveComponent::checkKeyPresses(float dt) {
 
     InputManager* im = InputManager::getInstance();
     if (im->isKeyDown('w',false)) {
-        float3 term = frontDir * moveSpeed;
-        velocity += term * dt;
-
+        acceleration = min(acceleration + 0.0001f,0.005f);
         hasChanged = true;
-
-    }
-    if (im->isKeyDown('s',false)) {
-        float3 term = frontDir * moveSpeed;
-        velocity -= term * dt;
+    }else if (im->isKeyDown('s',false)) {
+        acceleration = max(acceleration - 0.0001f,-0.005f);
         hasChanged = true;
-
+    }else {
+        acceleration = 0;
+        hasChanged = true;
     }
-    if(im->isKeyDown('w',false) || im->isKeyDown('s',false)){
 
-        float speed = sqrt(velocity.x*velocity.x+velocity.y*velocity.y + velocity.z*velocity.z);
-        if(abs(speed) > maxSpeed){
-            float ratio = maxSpeed/abs(speed);
-            velocity = make_vector(velocity.x*ratio,velocity.y*ratio,velocity.z*ratio);
-        }
-        hudConf->speed = (int)floor(speed);
-
-    }
     if (im->isKeyDown('a',false)) {
-        angley += rotationSpeed;
-        *cameraThetaLocation += rotationSpeed;
+        int inverted = velocity >= 0 ? 1 : -1;
+        angley += rotationSpeed*inverted;
+        *cameraThetaLocation += rotationSpeed*inverted;
         hasChanged = true;
 
     }
     if (im->isKeyDown('d',false)) {
-        angley -= rotationSpeed;
-        *cameraThetaLocation -= rotationSpeed;
+        int inverted = velocity >= 0 ? 1 : -1;
+        angley -= rotationSpeed*inverted;
+        *cameraThetaLocation -= rotationSpeed*inverted;
         hasChanged = true;
     }
 }
 
-void MoveComponent::updateCarObject(){
+void MoveComponent::updateCarObject(float dt){
     float3 vUp = make_vector(0.0f, 1.0f, 0.0f);
+
+    velocity += acceleration*dt;
+    if(abs(velocity) > maxSpeed){
+        float ratio = maxSpeed/abs(velocity);
+        velocity = ratio*velocity;
+    }
+    hudConf->speed = abs(velocity);
+    printf("acc: %f, velocity: %f\n",acceleration,velocity);
 
     float3 n_frontDir = normalize(frontDir);
     float3 rightDir = normalize(cross(frontDir, vUp));
@@ -98,7 +96,7 @@ void MoveComponent::updateCarObject(){
     Quaternion qatY = make_quaternion_axis_angle(vUp, angley);
     Quaternion qatZ = make_quaternion_axis_angle(make_rotation_y<float3x3>(-angley) * n_frontDir, anglez);
 
-    carObject->update(make_translation(location + velocity));
+    carObject->update(make_translation(location + velocity*frontDir));
     carObject->update(makematrix(qatX));
     carObject->update(makematrix(qatY));
     carObject->update(makematrix(qatZ));
