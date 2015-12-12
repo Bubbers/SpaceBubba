@@ -10,10 +10,10 @@ using namespace chag;
 
 
 
-class CarMoveComponent : public IComponent {
+class MoveComponent : public IComponent {
 public:
-    CarMoveComponent();
-    CarMoveComponent(float* cameraThetaLocation, GameObject* carObject);
+    MoveComponent();
+    MoveComponent(float* cameraThetaLocation, GameObject* carObject);
     void update(float dt);
     void afterCollision();
     void duringCollision();

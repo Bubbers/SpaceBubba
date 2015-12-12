@@ -87,5 +87,5 @@ void HudRenderer::render2DHud(Texture* texture, float4x4 *modelMatrix) {
 void HudRenderer::renderShadow(Shader *shaderProgram) {}
 
 void HudRenderer::update(float dt){
-    timeLOL += dt;
+
 }
