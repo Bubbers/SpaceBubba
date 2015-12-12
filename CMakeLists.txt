@@ -32,7 +32,11 @@ file(GLOB files_SOURCE
         "${PROJECT_SOURCE_DIR}/src/collision/*.cpp"
         "${PROJECT_SOURCE_DIR}/src/particle/*.cpp"
         "${PROJECT_SOURCE_DIR}/src/components/*.cpp"
-        "${PROJECT_SOURCE_DIR}/shaders/*")
+        "${PROJECT_SOURCE_DIR}/shaders/*"
+        "${PROJECT_SOURCE_DIR}/src/spaceGame/*.cpp"
+        "${PROJECT_SOURCE_DIR}/src/spaceGame/weapons*.cpp"
+        "${PROJECT_SOURCE_DIR}/src/spaceGame/projectiles*.cpp")
+
 
 #########################################################
 # Testing
