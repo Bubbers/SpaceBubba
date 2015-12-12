@@ -84,7 +84,6 @@ void MoveComponent::updateCarObject(float dt){
         velocity = ratio*velocity;
     }
     hudConf->speed = abs(velocity);
-    printf("acc: %f, velocity: %f\n",acceleration,velocity);
 
     float3 n_frontDir = normalize(frontDir);
     float3 rightDir = normalize(cross(frontDir, vUp));
