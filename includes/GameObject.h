@@ -38,6 +38,9 @@ public:
     void setDynamic(bool);
     Octree* getOctree();
 
+    void makeDirty();
+    bool isDirty();
+
     static int uniqueId;
     int getId();
 private:
@@ -53,6 +56,7 @@ private:
     bool dynamicObject = false;
     Octree *octree;
 
+    bool dirty = false;
 };
 
 
