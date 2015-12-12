@@ -57,6 +57,14 @@ GameObject::~GameObject() {
 
 }
 
+void GameObject::makeDirty() {
+    dirty = true;
+}
+
+bool GameObject::isDirty() {
+    return dirty;
+}
+
 void GameObject::move(float4x4 model_matrix) {
     m_modelMatrix = model_matrix;
 }
