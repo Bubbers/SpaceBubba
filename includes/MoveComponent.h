@@ -14,36 +14,31 @@ using namespace chag;
 class MoveComponent : public IComponent {
 public:
     MoveComponent();
-    MoveComponent(struct HudRenderer::HudConfig* hudConf, float* cameraThetaLocation, GameObject* carObject);
+    MoveComponent(GameObject* meshObject);
+    MoveComponent(GameObject* meshObject, float3 location, float3 velocity, float3 acceleration);
     void update(float dt);
     void afterCollision();
     void duringCollision();
     void beforeCollision();
-private:
+protected:
 
     float3 frontDir = make_vector(0.0f, 0.0f, 1.0f);
     float3 upDir = make_vector(0.0f, 1.0f, 0.0f);
-    float velocity = 0.0f;
-    float acceleration = 0.0f;
+    float3 velocity = make_vector(0.0f, 0.0f, 0.0f);
+    float3 acceleration = make_vector(0.0f, 0.0f, 0.0f);
     float3 location = make_vector(0.0f, 0.0f, 0.f);
+    float maxSpeed;
 
-    float moveSpeed = (float) (2 * M_PI / 180);
     float rotationSpeed = (float) (2 * M_PI / 180);
 
-    float* cameraThetaLocation;
-    GameObject* carObject;
-    bool hasChanged = true;
+    GameObject* meshObject;
     float angley = 0;
     float anglez = 0;
     float anglex = 0;
     float lengthx = 2;
     float lengthz = 3;
-    const int maxSpeed = 10;
-    struct HudRenderer::HudConfig* hudConf;
 
-    void checkKeyPresses(float dt);
-    void updateCarObject(float dt);
-    void alignCarTowardsSurface();
+    void updateMeshObject(float dt);
 };
 
 

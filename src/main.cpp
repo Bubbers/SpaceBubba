@@ -12,6 +12,7 @@
 #include <StandardRenderer.h>
 #include "MoveComponent.h"
 #include <InputManager.h>
+#include <SpaceShipComponent.h>
 
 #include "Renderer.h"
 #include "ResourceManager.h"
@@ -254,8 +255,8 @@ void createMeshes() {
 	StandardRenderer *carRenderer = new StandardRenderer(rWingM, rWing.getModelMatrix(), standardShader);
 	rWing.addRenderComponent(carRenderer);
 
-	MoveComponent *carMoveComponent = new MoveComponent(hudRenderer->getConfig(),&camera_theta, &rWing);
-	rWing.addComponent(carMoveComponent);
+	MoveComponent *shipComponent = new SpaceShipComponent(hudRenderer->getConfig(),&camera_theta, &rWing);
+	rWing.addComponent(shipComponent);
 	rWing.setDynamic(true);
 	scene.shadowCasters.push_back(&rWing);
 	broadPhaseCollider.addGameObject(&rWing);
