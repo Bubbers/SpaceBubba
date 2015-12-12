@@ -51,7 +51,7 @@ BFBroadPhase broadPhaseCollider;
 //*****************************************************************************
 //	Sound
 //*****************************************************************************
-SoundManager sm;
+SoundManager *soundManager;
 
 //*****************************************************************************
 //	Cube Maps
@@ -192,6 +192,7 @@ int main(int argc, char *argv[])
 	im->addSpecialKeyListener(specialKey);
 
 
+	soundManager = new SoundManager();
 	renderer->initGL();
 
 	createCubeMaps();
