@@ -42,10 +42,16 @@ float timeSinceDraw = 0.0f;
 GameObject rWing;
 GameObject skyBox;
 GameObject *hud;
+GameObject asteroid;
 
 Scene scene;
 
 BFBroadPhase broadPhaseCollider;
+
+//*****************************************************************************
+//	Sound
+//*****************************************************************************
+SoundManager sm;
 
 //*****************************************************************************
 //	Cube Maps
@@ -185,7 +191,6 @@ int main(int argc, char *argv[])
 	im->addMouseMoveListener(motion);
 	im->addSpecialKeyListener(specialKey);
 
-    SoundManager sm;
 
 	renderer->initGL();
 
@@ -245,7 +250,6 @@ void createMeshes() {
 	Mesh* rWingM = ResourceManager::loadAndFetchMesh("../scenes/R_wing.obj"); //untitled.dae");
 	rWing = GameObject(rWingM);
 	rWing.move(make_translation(make_vector(0.0f, 0.0f, 0.0f)));
-
 	StandardRenderer *carRenderer = new StandardRenderer(rWingM, rWing.getModelMatrix(), standardShader);
 	rWing.addRenderComponent(carRenderer);
 
@@ -254,6 +258,14 @@ void createMeshes() {
 	rWing.setDynamic(true);
 	scene.shadowCasters.push_back(&rWing);
 	broadPhaseCollider.addGameObject(&rWing);
+
+	Mesh* asteroidM = ResourceManager::loadAndFetchMesh("..scenes/asteroid.obj");
+	asteroid = GameObject(asteroidM);
+	StandardRenderer *asteroidRenderer = new StandardRenderer(asteroidM, asteroid.getModelMatrix(), standardShader);
+	asteroid.addRenderComponent(asteroidRenderer);
+	asteroid.setDynamic(true);
+	scene.shadowCasters.push_back(&asteroid);
+	broadPhaseCollider.addGameObject(&asteroid);
 
 	Logger::logInfo("Finished loading meshes.");
 
