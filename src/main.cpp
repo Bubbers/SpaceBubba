@@ -222,7 +222,7 @@ void createLights() {
 }
 
 void createCubeMaps() {
-	reflectionCubeMap = new CubeMapTexture("../scenes/posx.jpg", "../scenes/negx.jpg", "../scenes/posy.jpg", "../scenes/posy.jpg", "../scenes/negz.jpg", "../scenes/posz.jpg");
+	reflectionCubeMap = new CubeMapTexture("../scenes/pic4.png", "../scenes/pic4.png", "../scenes/pic4.png", "../scenes/pic4.png", "../scenes/pic4.png", "../scenes/pic4.png");
 	scene.cubeMap = reflectionCubeMap;
 }
 
@@ -240,7 +240,7 @@ void createMeshes() {
 	Mesh *skyBoxM = ResourceManager::loadAndFetchMesh("../scenes/sphere.obj");
 	skyBox = GameObject(skyBoxM);
     SkyBoxRenderer *skyboxRenderer = new SkyBoxRenderer(playerCamera, skyBoxM, skyBox.getModelMatrix());
-    skyboxRenderer->init("../scenes/posx.jpg", "../scenes/negx.jpg", "../scenes/sky_box.jpg", "../scenes/posy.jpg", "../scenes/negz.jpg", "../scenes/posz.jpg");
+    skyboxRenderer->init("../scenes/pic1.png", "../scenes/pic2.png", "../scenes/pic3.png", "../scenes/pic4.png", "../scenes/pic4.png", "../scenes/pic4.png");
     skyBox.addRenderComponent(skyboxRenderer);
     scene.shadowCasters.push_back(&skyBox);
 
