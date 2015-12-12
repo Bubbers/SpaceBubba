@@ -252,7 +252,8 @@ void createMeshes() {
 	rWing.move(make_translation(make_vector(0.0f, 0.0f, 0.0f)));
 	StandardRenderer *carRenderer = new StandardRenderer(rWingM, rWing.getModelMatrix(), standardShader);
 	rWing.addRenderComponent(carRenderer);
-	MoveComponent *carMoveComponent = new MoveComponent(&camera_theta, &rWing);
+
+	MoveComponent *carMoveComponent = new MoveComponent(hudRenderer->getConfig(),&camera_theta, &rWing);
 	rWing.addComponent(carMoveComponent);
 	rWing.setDynamic(true);
 	scene.shadowCasters.push_back(&rWing);

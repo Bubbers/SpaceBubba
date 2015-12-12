@@ -13,14 +13,19 @@ class HudRenderer : public IRenderComponent
 public:
     HudRenderer();
     ~HudRenderer();
+    struct HudConfig{
+        int speed = 0;
+    };
 
     virtual void render();
     virtual void renderShadow(Shader *shaderProgram);
     virtual void update(float dt);
     void render2DHud(Texture* texture, float4x4 *modelMatrix);
+    struct HudConfig* getConfig();
 
 private:
     GLuint m_vaob;
+    struct HudConfig* conf;
 
 };
 
