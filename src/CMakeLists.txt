@@ -5,7 +5,7 @@ set(EXECUTABLE_NAME Bubba3D)
 # ADD SOURCE FILES TO EXECUTABLE
 #########################################################
 
-add_executable(${EXECUTABLE_NAME} main.cpp ${files_SOURCE})
+add_executable(${EXECUTABLE_NAME} main.cpp ${files_SOURCE} spaceGame/SpaceShip.cpp ../includes/SpaceShip.h spaceGame/weapons/Weapon.cpp ../includes/Weapon.h spaceGame/projectiles/Projectile.cpp ../includes/Projectile.h spaceGame/projectiles/LaserProjectile.cpp ../includes/LaserProjectile.h spaceGame/weapons/LaserCannon.cpp ../includes/LaserCannon.h spaceGame/main.cpp)
 
 
 #########################################################
