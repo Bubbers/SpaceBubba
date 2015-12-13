@@ -23,6 +23,7 @@
 #include "BFBroadPhase.h"
 #include "HudRenderer.h"
 #include "SoundManager.h"
+#include "ShootComponent.h"
 
 using namespace std;
 using namespace chag;
@@ -44,6 +45,8 @@ float timeSinceDraw = 0.0f;
 //*****************************************************************************
 //	OBJ Model declarations
 //*****************************************************************************
+
+
 GameObject rWing;
 GameObject skyBox;
 GameObject *hud;
@@ -105,42 +108,13 @@ void display(void)
 }
 
 
-void spawnBullet() {
-
-	float4 ps = rWing.getModelMatrix()->c4;
-	float3 location = make_vector(ps.x, ps.y, ps.z);
-
-	Shader* standardShader = ResourceManager::getShader(SIMPLE_SHADER_NAME);
-	standardShader->setUniformBufferObjectBinding(UNIFORM_BUFFER_OBJECT_MATRICES_NAME, UNIFORM_BUFFER_OBJECT_MATRICES_INDEX);
-
-	Mesh* shotM = ResourceManager::loadAndFetchMesh("../scenes/shot.obj");
-	GameObject *shot = new GameObject(shotM);
-	shot->move(make_translation(location));
-	shot->update(make_rotation_y<float4x4>(degreeToRad(90)));
-
-	StandardRenderer *shotRenderer = new StandardRenderer(shotM, shot->getModelMatrix(), standardShader);
-	shot->addRenderComponent(shotRenderer);
-	shot->setDynamic(false);
-
-	MoveComponent *shotMover = new MoveComponent(shot,
-												 make_vector(0.0f, 0.0f, 0.0f),
-												 normalize(spaceMover->getFrontDir()) / 50,
-												 make_vector(0.0f, 0.0f, 0.0f));
-	TimedLife *tl = new TimedLife(shot, 1000);
-	shot->addComponent(tl);
-	shot->addComponent(shotMover);
-	scene.shadowCasters.push_back(shot);
-	broadPhaseCollider.addGameObject(shot);
-}
 
 void checkKeys()
 {
 	InputManager* im = InputManager::getInstance();
 	if(im->isKeyDown(27,true))
 		exit(0);
-	if(im->isKeyDown((int)'r', false)) {
-		spawnBullet();
-	}
+
 }
 
 void specialKey(int key, int x, int y)
@@ -281,6 +255,8 @@ int main(int argc, char *argv[])
 void createEffects(){
 	Fog f;
 	f.fEquation = FOG_EQ::LINEAR;
+	f.fStart = 5000.0f;
+	f.fEnd   = 1000000.0f;
 	renderer->effects.fog = f;
 }
 
@@ -338,7 +314,10 @@ void createMeshes() {
 	TimedLife *tl = new TimedLife(&asteroid, 1000);
 	asteroid.addComponent(tl);
 
+
 	spaceMover = new SpaceShipComponent(hudRenderer->getConfig(),&camera_theta, &rWing);
+	ShootComponent *shooter = new ShootComponent(&rWing, spaceMover, &scene, &broadPhaseCollider, 1000);
+	rWing.addComponent(shooter);
 	rWing.addComponent(spaceMover);
 	rWing.setDynamic(true);
 	scene.shadowCasters.push_back(&rWing);
@@ -363,7 +342,7 @@ void createMeshes() {
 
 	Mesh* dstarM = ResourceManager::loadAndFetchMesh("../scenes/dstar.obj");
 	dstar = GameObject(dstarM);
-	dstar.move(make_translation(make_vector(-10.0f, 0.0f, 40.0f)) * make_scale<float4x4>(make_vector(5.0f, 5.0f, 5.0f)));
+	dstar.move(make_translation(make_vector(-10.0f, 0.0f, 16000.0f)) * make_scale<float4x4>(make_vector(2000.0f, 2000.0f, 2000.0f)));
 	StandardRenderer *dstarRenderer = new StandardRenderer(dstarM, dstar.getModelMatrix(), standardShader);
 	dstar.addRenderComponent(dstarRenderer);
 	MoveComponent *dstarMover = new MoveComponent(&dstar,
@@ -375,34 +354,6 @@ void createMeshes() {
 	broadPhaseCollider.addGameObject(&dstar);
 
 	Logger::logInfo("Finished loading meshes.");
-
-
-
-	float4 ps = rWing.getModelMatrix()->c4;
-	float3 location = make_vector(ps.x, ps.y, ps.z);
-
-	//Shader* standardShader = ResourceManager::getShader(SIMPLE_SHADER_NAME);
-	//standardShader->setUniformBufferObjectBinding(UNIFORM_BUFFER_OBJECT_MATRICES_NAME, UNIFORM_BUFFER_OBJECT_MATRICES_INDEX);
-
-	Mesh* shotM = ResourceManager::loadAndFetchMesh("../scenes/shot.obj");
-	shot = GameObject(shotM);
-	shot.move(make_translation(location));
-	shot.update(make_rotation_y<float4x4>(degreeToRad(90)));
-
-	StandardRenderer *shotRenderer = new StandardRenderer(shotM, shot.getModelMatrix(), standardShader);
-	shot.addRenderComponent(shotRenderer);
-	shot.setDynamic(false);
-
-	MoveComponent *shotMover = new MoveComponent(&shot,
-												 make_vector(0.0f, 0.0f, 0.0f),
-												 normalize(spaceMover->getFrontDir()) / 50,
-												 make_vector(0.0f, 0.0f, 0.0f));
-	TimedLife *tl1 = new TimedLife(&shot, 1000);
-	shot.addComponent(tl1);
-	shot.addComponent(shotMover);
-	scene.shadowCasters.push_back(&shot);
-	broadPhaseCollider.addGameObject(&shot);
-
 }
 
 void createCameras() {
@@ -416,10 +367,8 @@ void createCameras() {
 		sphericalToCartesian(camera_theta, camera_phi, camera_r),
 		make_vector(0.0f, camera_target_altitude, 0.0f),
 		make_vector(0.0f, 1.0f, 0.0f),
-		45, float(w) / float(h), 0.1f, 1000.0f
+		45, float(w) / float(h), 0.1f, 50000.0f
 		);
-
-
 }
 
 // Helper function to turn spherical coordinates into cartesian (x,y,z)
