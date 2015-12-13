@@ -145,7 +145,7 @@ void motion(int x, int y, int delta_x, int delta_y)
 	}
 }
 
-float camspeed = 1.0f;
+float camspeed = 0.0f;
 bool chase = false;
 void idle( int v )
 {
@@ -160,18 +160,14 @@ void idle( int v )
 
 		currentTime = float(glutGet(GLUT_ELAPSED_TIME)) / 1000.0f - startTime;
 
-
-
         scene.update(elapsedTime);
 
 		float4 ps = rWing.getModelMatrix()->c4;
 		float3 location = make_vector(ps.x, ps.y, ps.z);
-		//Calculate camera matrix
-
 
 		playerCamera->setLookAt(location + make_vector(0.0f, camera_target_altitude, 0.0f));
 		float3 pc = playerCamera->getPosition();
-		pc.y = location.y;
+
 
 		Logger::logDebug("### location ###");
 		Logger::logDebug(to_string(location.x));
@@ -184,13 +180,17 @@ void idle( int v )
 		}
 
 		if (chase) {
-			if (camspeed < .50f) {
+			if (camspeed < 1.0f) {
 				camspeed += .01f;
 			} else {
 				chase = false;
 			}
 		} else {
-			camspeed = 0.0f;
+			if(camspeed > 0.7) {
+				camspeed -= 0.01f;
+			} else {
+				camspeed = 0.7f;
+			}
 		}
 
 		Logger::logDebug("### DIFF ###");
@@ -202,7 +202,13 @@ void idle( int v )
 		Logger::logDebug(to_string(pc.x));
 		Logger::logDebug(to_string(pc.y));
 		Logger::logDebug(to_string(pc.z));
-		playerCamera->setPosition((diff * (camspeed)) + sphericalToCartesian(camera_theta, camera_phi, camera_r));
+
+		float3 newPos = location + sphericalToCartesian(camera_theta, camera_phi, camera_r);
+
+		float3 cameraDiff = (camspeed) * (newPos - pc);
+
+		playerCamera->setPosition(pc + cameraDiff);
+
 
 		Logger::logDebug("### CAM ###");
 		Logger::logDebug(to_string(playerCamera->getPosition().x));
