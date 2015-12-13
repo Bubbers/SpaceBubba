@@ -15,16 +15,18 @@ public:
 
     void update(float dt) ;
     float3 getFrontDir();
+    float getTotalRotation();
 
 private:
     struct HudRenderer::HudConfig* hudConf;
 
     float* cameraThetaLocation;
-    void checkKeyPresses();
+    void checkKeyPresses(float dt);
 
-    float rotationSpeed = (float) (2 * M_PI / 180);
+    float turnSpeed = (float) (2 * M_PI / (180*20));
+    float accelerationSpeed = 0.0f;
     float3 frontDir = make_vector(0.0f, 0.0f, 1.0f);
-
+    float totRotation = 0;
 
 };
 

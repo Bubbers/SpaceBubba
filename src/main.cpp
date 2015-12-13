@@ -115,17 +115,17 @@ void spawnBullet() {
 
 	Mesh* shotM = ResourceManager::loadAndFetchMesh("../scenes/shot.obj");
 	GameObject *shot = new GameObject(shotM);
-	shot->move(make_translation(location));
-	shot->update(make_rotation_y<float4x4>(degreeToRad(90)));
+	//shot->move(make_translation(location));
+	//shot->update(make_rotation_y<float4x4>(spaceMover->getTotalRotation()));
 
 	StandardRenderer *shotRenderer = new StandardRenderer(shotM, shot->getModelMatrix(), standardShader);
 	shot->addRenderComponent(shotRenderer);
 	shot->setDynamic(false);
 
-	MoveComponent *shotMover = new MoveComponent(shot,
-												 make_vector(0.0f, 0.0f, 0.0f),
-												 normalize(spaceMover->getFrontDir()) / 50,
-												 make_vector(0.0f, 0.0f, 0.0f));
+	MoveComponent *shotMover = new MoveComponent(shot);
+	shotMover->setRotation(spaceMover->getRotation());
+	shotMover->setVelocity(normalize(spaceMover->getFrontDir()) / 5);
+	shotMover->setLocation(location);
 	TimedLife *tl = new TimedLife(shot, 1000);
 	shot->addComponent(tl);
 	shot->addComponent(shotMover);
@@ -251,7 +251,7 @@ void idle( int v )
 
 int main(int argc, char *argv[])
 {
-	Logger::debug = true;
+	Logger::debug = false;
 	int w = SCREEN_WIDTH;
 	int h = SCREEN_HEIGHT;
 
@@ -346,15 +346,16 @@ void createMeshes() {
 
 	Mesh* asteroidM = ResourceManager::loadAndFetchMesh("../scenes/asteroid.obj");
 	asteroid = GameObject(asteroidM);
-	asteroid.move(make_translation(make_vector(10.0f, 10.0f, 10.0f)));
+	//asteroid.move(make_translation(make_vector(10.0f, 10.0f, 10.0f)));
 	StandardRenderer *asteroidRenderer = new StandardRenderer(asteroidM, asteroid.getModelMatrix(), standardShader);
 	asteroid.addRenderComponent(asteroidRenderer);
 	asteroid.setDynamic(true);
 
-	MoveComponent *asteroidMover = new MoveComponent(&asteroid,
-										make_vector(0.05f, 0.0f, 0.0f),
-										make_vector(0.0f, 0.0f, 0.0f),
-										make_vector(-0.0000005f, 0.0f, 0.0f));
+	MoveComponent *asteroidMover = new MoveComponent(&asteroid);
+	asteroidMover->setRotationSpeed(make_vector(0.005f, 0.0f, 0.0f));
+	asteroidMover->setLocation(make_vector(10.0f, 10.0f, 10.0f));
+	asteroidMover->setAcceleration(make_vector(-0.0000005f, 0.0f, 0.0f));
+	asteroidMover->setScaleSpeed(make_vector(0.0005f,0.0005f,0.0005f));
 	asteroid.addComponent(asteroidMover);
 	scene.shadowCasters.push_back(&asteroid);
 	broadPhaseCollider.addGameObject(&asteroid);
@@ -366,10 +367,9 @@ void createMeshes() {
 	dstar.move(make_translation(make_vector(-10.0f, 0.0f, 40.0f)) * make_scale<float4x4>(make_vector(5.0f, 5.0f, 5.0f)));
 	StandardRenderer *dstarRenderer = new StandardRenderer(dstarM, dstar.getModelMatrix(), standardShader);
 	dstar.addRenderComponent(dstarRenderer);
-	MoveComponent *dstarMover = new MoveComponent(&dstar,
-													 make_vector(0.0f, 0.001f, 0.0f),
-													 make_vector(0.0f, 0.0f, 0.0f),
-													 make_vector(0.0f, 0.0f, 0.0f));
+	MoveComponent *dstarMover = new MoveComponent(&dstar);
+	dstarMover->setRotationSpeed(make_vector(0.0f, 0.001f, 0.0f));
+	dstarMover->setLocation(make_vector(-10.0f, 0.0f, 40.0f));
 	asteroid.addComponent(dstarMover);
 	scene.shadowCasters.push_back(&dstar);
 	broadPhaseCollider.addGameObject(&dstar);
@@ -384,24 +384,7 @@ void createMeshes() {
 	//Shader* standardShader = ResourceManager::getShader(SIMPLE_SHADER_NAME);
 	//standardShader->setUniformBufferObjectBinding(UNIFORM_BUFFER_OBJECT_MATRICES_NAME, UNIFORM_BUFFER_OBJECT_MATRICES_INDEX);
 
-	Mesh* shotM = ResourceManager::loadAndFetchMesh("../scenes/shot.obj");
-	shot = GameObject(shotM);
-	shot.move(make_translation(location));
-	shot.update(make_rotation_y<float4x4>(degreeToRad(90)));
 
-	StandardRenderer *shotRenderer = new StandardRenderer(shotM, shot.getModelMatrix(), standardShader);
-	shot.addRenderComponent(shotRenderer);
-	shot.setDynamic(false);
-
-	MoveComponent *shotMover = new MoveComponent(&shot,
-												 make_vector(0.0f, 0.0f, 0.0f),
-												 normalize(spaceMover->getFrontDir()) / 50,
-												 make_vector(0.0f, 0.0f, 0.0f));
-	TimedLife *tl1 = new TimedLife(&shot, 1000);
-	shot.addComponent(tl1);
-	shot.addComponent(shotMover);
-	scene.shadowCasters.push_back(&shot);
-	broadPhaseCollider.addGameObject(&shot);
 
 }
 
