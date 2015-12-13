@@ -21,6 +21,7 @@ private:
     float timeToLive = 0;
 
     void spawnBullet();
+    ALuint buffer;
 };
 
 
