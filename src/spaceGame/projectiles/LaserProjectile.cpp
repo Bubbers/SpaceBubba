@@ -2,7 +2,7 @@
 // Created by basse on 2015-12-12.
 //
 
-#include "../../../includes/LaserProjectile.h"
+#include "LaserProjectile.h"
 
 LaserProjectile::~LaserProjectile() {
 

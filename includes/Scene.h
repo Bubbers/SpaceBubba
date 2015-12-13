@@ -27,6 +27,9 @@ public:
 	std::vector<GameObject*> transparentObjects;
 
 	void update(float dt);
+
+private:
+	void removeDirty(std::vector<GameObject*> *v);
 };
 
 #endif // __SCENE_H__

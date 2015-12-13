@@ -74,7 +74,8 @@ CollisionPairList BFBroadPhase::computeCollisionPairs() {
             GameObject* gameObject1 = *i;
             GameObject* gameObject2 = *j;
 
-            if(!gameObject1->isDynamicObject() && !gameObject2->isDynamicObject()) {
+            if(!gameObject1->isDynamicObject() && !gameObject2->isDynamicObject()
+                    || gameObject1->isDirty() || gameObject2->isDirty()) {
                 continue;
             }
 

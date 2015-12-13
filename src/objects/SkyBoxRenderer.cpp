@@ -18,7 +18,7 @@ bool SkyBoxRenderer::init(const string &posXFilename, const string &negXFilename
 
 void SkyBoxRenderer::update(float dt) {
     *modelMatrix = make_translation(make_vector(0.0f, 2.0f, 0.0f)) * make_translation(m_camera->getPosition()) *
-                        make_scale<float4x4>(make_vector(20.0f, 20.0f, 20.0f));
+                        make_scale<float4x4>(make_vector(10000.0f, 10000.0f, 10000.0f));
 }
 
 void SkyBoxRenderer::render() {

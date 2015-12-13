@@ -12,6 +12,7 @@
 #include <StandardRenderer.h>
 #include "MoveComponent.h"
 #include <InputManager.h>
+#include <TimedLife.h>
 #include <SpaceShipComponent.h>
 
 #include "Renderer.h"
@@ -37,6 +38,7 @@ using namespace chag;
 float currentTime = 0.0f;			// Tells us the current time
 float timeSinceDraw = 0.0f;
 
+
 //*****************************************************************************
 //	OBJ Model declarations
 //*****************************************************************************
@@ -44,6 +46,7 @@ GameObject rWing;
 GameObject skyBox;
 GameObject *hud;
 GameObject asteroid;
+GameObject dstar;
 
 Scene scene;
 
@@ -67,6 +70,8 @@ float camera_phi = (float) (M_PI / 4.0f);
 float camera_r = 30.0f; 
 float camera_target_altitude = 5.2f;
 
+float camspeed = 0.0f;
+bool chase = false;
 //*****************************************************************************
 //	Camera
 //*****************************************************************************
@@ -96,11 +101,37 @@ void display(void)
 }
 
 
+void spawnBullet() {
+	float4 ps = rWing.getModelMatrix()->c4;
+	float3 location = make_vector(ps.x, ps.y, ps.z);
+
+	Shader* standardShader = ResourceManager::getShader(SIMPLE_SHADER_NAME);
+	standardShader->setUniformBufferObjectBinding(UNIFORM_BUFFER_OBJECT_MATRICES_NAME, UNIFORM_BUFFER_OBJECT_MATRICES_INDEX);
+
+	Mesh* asteroidM = ResourceManager::loadAndFetchMesh("../scenes/shot.obj");
+	GameObject *asteroid = new GameObject(asteroidM);
+
+	StandardRenderer *asteroidRenderer = new StandardRenderer(asteroidM, asteroid->getModelMatrix(), standardShader);
+	asteroid->addRenderComponent(asteroidRenderer);
+	asteroid->setDynamic(false);
+
+	MoveComponent *asteroidMover = new MoveComponent(asteroid,
+													 location ,
+													 make_vector(0.0f, 0.0f, 0.0f),
+													 make_vector(-0.0005f, 0.0f, 0.0008f));
+	asteroid->addComponent(asteroidMover);
+	scene.shadowCasters.push_back(asteroid);
+	broadPhaseCollider.addGameObject(asteroid);
+}
+
 void checkKeys()
 {
 	InputManager* im = InputManager::getInstance();
 	if(im->isKeyDown(27,true))
 		exit(0);
+	if(im->isKeyDown((int)'r', false)) {
+		spawnBullet();
+	}
 }
 
 void specialKey(int key, int x, int y)
@@ -146,14 +177,46 @@ void motion(int x, int y, int delta_x, int delta_y)
 	}
 }
 
-void idle( int v )
-{
-	float elapsedTime = glutGet(GLUT_ELAPSED_TIME) - timeSinceDraw;
+
+float3 calculateNewCameraPosition() {
 	float4 ps = rWing.getModelMatrix()->c4;
 	float3 location = make_vector(ps.x, ps.y, ps.z);
 
-	float time = (1000 / TICK_PER_SECOND) - elapsedTime;
 	playerCamera->setLookAt(location + make_vector(0.0f, camera_target_altitude, 0.0f));
+	float3 pc = playerCamera->getPosition();
+
+	float3 diff = (location - pc);
+	float dist = 20.f;
+	if (length(diff) > dist) {
+		chase = true;
+	}
+
+	if (chase) {
+		if (camspeed < 1.5f) {
+			camspeed += .001f;
+		} else {
+			chase = false;
+		}
+	} else {
+		if(camspeed > 0.0) {
+			camspeed -= 0.0f;
+		} else {
+			camspeed = 0.0f;
+		}
+	}
+
+	float3 newPos = location + sphericalToCartesian(camera_theta, camera_phi, camera_r);
+	float3 cameraDiff = (camspeed) * (newPos - pc);
+
+	return pc + cameraDiff;
+}
+
+
+void idle( int v )
+{
+	float elapsedTime = glutGet(GLUT_ELAPSED_TIME) - timeSinceDraw;
+
+	float time = (1000 / TICK_PER_SECOND) - elapsedTime;
 	checkKeys();
 	if (time < 0) {
 		glutTimerFunc(1000 / TICK_PER_SECOND, idle, 0);
@@ -162,12 +225,10 @@ void idle( int v )
 
 		currentTime = float(glutGet(GLUT_ELAPSED_TIME)) / 1000.0f - startTime;
 
-
-		//Calculate camera matrix
-		playerCamera->setLookAt(location + make_vector(0.0f, camera_target_altitude, 0.0f));
-		playerCamera->setPosition(location + sphericalToCartesian(camera_theta, camera_phi, camera_r));
-
         scene.update(elapsedTime);
+
+
+		playerCamera->setPosition(calculateNewCameraPosition());
 
         broadPhaseCollider.updateCollision();
 
@@ -178,9 +239,10 @@ void idle( int v )
 	}
 }
 
+
 int main(int argc, char *argv[])
 {
-	Logger::debug = false;
+	Logger::debug = true;
 	int w = SCREEN_WIDTH;
 	int h = SCREEN_HEIGHT;
 
@@ -254,6 +316,8 @@ void createMeshes() {
 	rWing.move(make_translation(make_vector(0.0f, 0.0f, 0.0f)));
 	StandardRenderer *carRenderer = new StandardRenderer(rWingM, rWing.getModelMatrix(), standardShader);
 	rWing.addRenderComponent(carRenderer);
+//	TimedLife *tl = new TimedLife(&rWing, 5000);
+//	rWing.addComponent(tl);
 
 	MoveComponent *shipComponent = new SpaceShipComponent(hudRenderer->getConfig(),&camera_theta, &rWing);
 	rWing.addComponent(shipComponent);
@@ -267,14 +331,22 @@ void createMeshes() {
 	StandardRenderer *asteroidRenderer = new StandardRenderer(asteroidM, asteroid.getModelMatrix(), standardShader);
 	asteroid.addRenderComponent(asteroidRenderer);
 	asteroid.setDynamic(true);
+
+	MoveComponent *asteroidMover = new MoveComponent(&asteroid,
+										make_vector(10.0f, 10.0f, 10.0f),
+										make_vector(0.0f, 0.0f, 0.0f),
+										make_vector(-0.0005f, 0.0f, 0.0008f));
+	asteroid.addComponent(asteroidMover);
 	scene.shadowCasters.push_back(&asteroid);
 	broadPhaseCollider.addGameObject(&asteroid);
 
-	MoveComponent* asteroidMovement = new MoveComponent(&asteroid,
-													   make_vector(0.1f, 0.0f, 0.0f),
-													   make_vector(0.001f, 0.0f, 0.0f),
-													   make_vector(0.0f, 0.0f, 0.0f));
-	asteroid.addComponent(asteroidMovement);
+	Mesh* dstarM = ResourceManager::loadAndFetchMesh("../scenes/dstar.obj");
+	dstar = GameObject(dstarM);
+	dstar.move(make_translation(make_vector(-10.0f, 0.0f, 40.0f)) * make_scale<float4x4>(make_vector(5.0f, 5.0f, 5.0f)));
+	StandardRenderer *dstarRenderer = new StandardRenderer(dstarM, dstar.getModelMatrix(), standardShader);
+	dstar.addRenderComponent(dstarRenderer);
+	scene.shadowCasters.push_back(&dstar);
+	broadPhaseCollider.addGameObject(&dstar);
 
 	Logger::logInfo("Finished loading meshes.");
 }

@@ -1,0 +1,12 @@
+# Blender MTL File: 'dstar.blend'
+# Material Count: 1
+
+newmtl Material.001
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.179823 0.179823 0.179823
+Ks 0.190265 0.190265 0.190265
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd dstar.jpg
