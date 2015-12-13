@@ -15,7 +15,7 @@ class GameObject : public IDrawable {
 public:
     GameObject();
 
-    GameObject(Mesh *mesh);
+    GameObject(Mesh *mesh, GameObjectType type);
 
     ~GameObject();
 
@@ -32,7 +32,7 @@ public:
     void addComponent(IComponent*);
 
     void update(float dt);
-    void callEvent(EventType);
+    void callEvent(EventType, GameObjectType data);
 
     AABB* getAABB();
     bool isDynamicObject();
@@ -53,7 +53,7 @@ private:
     Mesh *mesh;
     chag::float4x4 m_modelMatrix;
 
-    GameObjectType type = Friendly;
+    GameObjectType type = SpaceEntity;
 
     /* COMPONENTS */
     IRenderComponent* renderComponent;

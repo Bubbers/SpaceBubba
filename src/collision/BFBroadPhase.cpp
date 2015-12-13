@@ -47,17 +47,17 @@ void BFBroadPhase::updateCollision() {
                             std::find(collidingList.begin(), collidingList.end(), std::pair<int, int>(object1->getId(), object2->getId())) != collidingList.end();
         if(octreeOctreeIntersection(object1Oct,object1ModelMatrix,object2Oct, object2ModelMatrix)) {
             if(wasColliding) {
-                object1->callEvent(EventType::DuringCollision);
-                object2->callEvent(EventType::DuringCollision);
+                object1->callEvent(EventType::DuringCollision,object2->getType());
+                object2->callEvent(EventType::DuringCollision,object1->getType());
             } else {
-                object1->callEvent(EventType::BeforeCollision);
-                object2->callEvent(EventType::BeforeCollision);
+                object1->callEvent(EventType::BeforeCollision,object2->getType());
+                object2->callEvent(EventType::BeforeCollision,object1->getType());
                 collidingList.push_back(std::pair<int, int> (object1->getId(), object2->getId()));
                 collidingList.push_back(std::pair<int, int> (object2->getId(), object1->getId()));
             }
         } else if (wasColliding) {
-            object1->callEvent(EventType::AfterCollision);
-            object2->callEvent(EventType::AfterCollision);
+            object1->callEvent(EventType::AfterCollision, object2->getType());
+            object2->callEvent(EventType::AfterCollision, object1->getType());
             collidingList.erase(std::remove(collidingList.begin(), collidingList.end(),
                                             std::pair<int, int>(object1->getId(), object2->getId())));
             collidingList.erase(std::remove(collidingList.begin(), collidingList.end(),
@@ -91,8 +91,8 @@ CollisionPairList BFBroadPhase::computeCollisionPairs() {
             } else {
                 if(std::find(collidingList.begin(), collidingList.end(), std::pair<int, int>(gameObject1->getId(), gameObject2->getId())) != collidingList.end() ||
                                       std::find(collidingList.begin(), collidingList.end(), std::pair<int, int>(gameObject1->getId(), gameObject2->getId())) != collidingList.end()) {
-                    gameObject1->callEvent(EventType::AfterCollision);
-                    gameObject2->callEvent(EventType::AfterCollision);
+                    gameObject1->callEvent(EventType::AfterCollision, gameObject2->getType());
+                    gameObject2->callEvent(EventType::AfterCollision, gameObject1->getType());
                     collidingList.erase(std::remove(collidingList.begin(), collidingList.end(),
                                                     std::pair<int, int>(gameObject1->getId(), gameObject2->getId())));
                     collidingList.erase(std::remove(collidingList.begin(), collidingList.end(),

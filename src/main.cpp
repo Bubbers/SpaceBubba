@@ -316,7 +316,7 @@ void createMeshes() {
     
 	//SKYBOX
 	Mesh *skyBoxM = ResourceManager::loadAndFetchMesh("../scenes/sphere.obj");
-	skyBox = GameObject(skyBoxM);
+	skyBox = GameObject(skyBoxM,Environment);
     SkyBoxRenderer *skyboxRenderer = new SkyBoxRenderer(playerCamera, skyBoxM, skyBox.getModelMatrix());
     skyboxRenderer->init("../scenes/x.png", "../scenes/fancyx.png", "../scenes/fancyy.png", "../scenes/y.png", "../scenes/fancyz.png", "../scenes/z.png");
     skyBox.addRenderComponent(skyboxRenderer);
@@ -327,7 +327,7 @@ void createMeshes() {
 	standardShader->setUniformBufferObjectBinding(UNIFORM_BUFFER_OBJECT_MATRICES_NAME, UNIFORM_BUFFER_OBJECT_MATRICES_INDEX);
 
 	Mesh* rWingM = ResourceManager::loadAndFetchMesh("../scenes/R_wing.obj");
-	rWing = GameObject(rWingM);
+	rWing = GameObject(rWingM, Player);
 	rWing.move(make_translation(make_vector(0.0f, 0.0f, 0.0f)));
 	StandardRenderer *carRenderer = new StandardRenderer(rWingM, rWing.getModelMatrix(), standardShader);
 	rWing.addRenderComponent(carRenderer);
@@ -345,7 +345,7 @@ void createMeshes() {
 	broadPhaseCollider.addGameObject(&rWing);
 
 	Mesh* asteroidM = ResourceManager::loadAndFetchMesh("../scenes/asteroid.obj");
-	asteroid = GameObject(asteroidM);
+	asteroid = GameObject(asteroidM, SpaceEntity);
 	StandardRenderer *asteroidRenderer = new StandardRenderer(asteroidM, asteroid.getModelMatrix(), standardShader);
 	asteroid.addRenderComponent(asteroidRenderer);
 	asteroid.setDynamic(true);
@@ -355,23 +355,25 @@ void createMeshes() {
 	asteroidMover->setLocation(make_vector(10.0f, -2.0f, 10.0f));
 	asteroidMover->setAcceleration(make_vector(-0.0000005f, 0.0f, 0.0f));
 	asteroidMover->setScaleSpeed(make_vector(0.0005f,0.0005f,0.0005f));
+	asteroidMover->setScale(make_vector(1.0f,1.0f,1.0f));
 	asteroid.addComponent(asteroidMover);
 
-	DeathOnCollision* dca = new DeathOnCollision(&asteroid, Friendly, 1, &points);
+	DeathOnCollision* dca = new DeathOnCollision(&asteroid, Laser, 0, &points);
 	asteroid.addComponent(dca);
 
-	SpawnAsteroidOnDeath *childrenSpawner = new SpawnAsteroidOnDeath(&asteroid,&scene,&broadPhaseCollider,make_vector(1.0f,1.0f,1.0f), playerCamera);
+	SpawnAsteroidOnDeath *childrenSpawner = new SpawnAsteroidOnDeath(&asteroid,&scene,&broadPhaseCollider,
+																	 make_vector(1.0f,1.0f,1.0f), playerCamera, &points);
 	asteroid.addComponent(childrenSpawner);
 
 	scene.shadowCasters.push_back(&asteroid);
 	broadPhaseCollider.addGameObject(&asteroid);
 
 	Mesh* dstarM = ResourceManager::loadAndFetchMesh("../scenes/dstar.obj");
-	dstar = GameObject(dstarM);
+	dstar = GameObject(dstarM, SpaceEntity);
 	StandardRenderer *dstarRenderer = new StandardRenderer(dstarM, dstar.getModelMatrix(), standardShader);
 	dstar.addRenderComponent(dstarRenderer);
 
-    DeathOnCollision *dc = new DeathOnCollision(&dstar, Friendly, 100, &points);
+    DeathOnCollision *dc = new DeathOnCollision(&dstar, Laser, 0, &points);
     dstar.addComponent(dc);
 
 	MoveComponent *dstarMover = new MoveComponent(&dstar);
@@ -380,24 +382,25 @@ void createMeshes() {
 	dstarMover->setScale(make_vector(2000.0f, 2000.0f, 2000.0f));
 	dstar.setDynamic(true);
 
-	asteroid.addComponent(dstarMover);
+	dstar.addComponent(dstarMover);
 	scene.shadowCasters.push_back(&dstar);
 	broadPhaseCollider.addGameObject(&dstar);
 
 	Mesh* planetM = ResourceManager::loadAndFetchMesh("../scenes/planet.obj");
-	planet = GameObject(planetM);
+	planet = GameObject(planetM, SpaceEntity);
 	StandardRenderer *planetRenderer = new StandardRenderer(planetM, planet.getModelMatrix(), standardShader);
 	planet.addRenderComponent(planetRenderer);
 	MoveComponent *planetMover = new MoveComponent(&planet);
 	planetMover->setLocation(make_vector(-25000.0f, 0.0f, 0.0f));
 	planetMover->setScale(make_vector(2000.0f, 2000.0f, 2000.0f));
 	planetMover->setRotationSpeed(make_vector(0.0f, 0.0001f, 0.0f));
-	asteroid.addComponent(planetMover);
+	planet.addComponent(planetMover);
+
 	scene.shadowCasters.push_back(&planet);
 	broadPhaseCollider.addGameObject(&planet);
 
 	Mesh* sunM = ResourceManager::loadAndFetchMesh("../scenes/sun.obj");
-	sun = GameObject(sunM);
+	sun = GameObject(sunM, SpaceEntity);
 	MoveComponent *sunMover = new MoveComponent(&sun);
 	sunMover->setLocation(make_vector(20000.0f, 0.0f, 0.0f));
 	sunMover->setScale(make_vector(2000.0f, 2000.0f, 2000.0f));

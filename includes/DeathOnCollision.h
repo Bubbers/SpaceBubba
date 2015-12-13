@@ -12,7 +12,7 @@ public:
     DeathOnCollision(GameObject *parent, GameObjectType relevantType, int pointsWorth, int *scoreBoard);
 
     void update(float dt);
-    void beforeCollision();
+    void beforeCollision(GameObjectType collider);
 
 private:
     GameObjectType relevantType;
