@@ -1,3 +1,4 @@
+#include <Utils.h>
 #include "FireParticle.h"
 
 float3 FireParticle::calcPosition(float3 genPos) {

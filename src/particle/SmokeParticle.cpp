@@ -1,3 +1,4 @@
+#include <Utils.h>
 #include "SmokeParticle.h"
 
 

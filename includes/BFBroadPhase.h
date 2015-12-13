@@ -18,7 +18,7 @@ public:
 private:
     std::vector<GameObject*> GameObjectList;
     std::vector<std::pair<int, int>> collidingList;
-
+    void removeDirty();
 
 };
 

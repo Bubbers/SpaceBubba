@@ -21,13 +21,6 @@ public:
 
     GLuint blendFunc = GL_ONE_MINUS_SRC_ALPHA;
 
-protected:
-
-    float getRand(float min, float max) {
-        int decimals = 100000;
-        float range = max - min;
-        return (((rand() % decimals) / ((float)decimals)) * range) + min;
-    }
 };
 
 

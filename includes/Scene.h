@@ -26,10 +26,10 @@ public:
 	std::vector<GameObject*> shadowCasters;
 	std::vector<GameObject*> transparentObjects;
 
-	void update(float dt);
+	void update(float dt, std::vector<GameObject*> *toDelete);
 
 private:
-	void removeDirty(std::vector<GameObject*> *v);
+	void removeDirty(std::vector<GameObject*> *v, std::vector<GameObject*> *toDelete);
 };
 
 #endif // __SCENE_H__

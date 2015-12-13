@@ -58,6 +58,8 @@ GameObject::~GameObject() {
 }
 
 void GameObject::makeDirty() {
+    for(auto &component : components)
+        component->onDeath();
     dirty = true;
 }
 

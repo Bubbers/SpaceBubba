@@ -17,10 +17,17 @@ void BFBroadPhase::addGameObject(GameObject *gameObject){
     GameObjectList.push_back(gameObject);
 }
 
+void BFBroadPhase::removeDirty(){
+    for(auto it = GameObjectList.begin() ; it < GameObjectList.end() ; it++)
+        if((*it)->isDirty())
+            it = GameObjectList.erase(it);
+}
 
 void BFBroadPhase::updateCollision() {
     utils::Timer timer;
     timer.start();
+
+    removeDirty();
 
     CollisionPairList possibleCollision = computeCollisionPairs();
 

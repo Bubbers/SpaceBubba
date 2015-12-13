@@ -14,6 +14,7 @@ public:
     virtual void beforeCollision() {};
     virtual void duringCollision() {};
     virtual void afterCollision() {};
+    virtual void onDeath() {};
 private:
 };
 

@@ -16,6 +16,7 @@
 #include <SpaceShipComponent.h>
 #include <SmokeParticle.h>
 #include <ParticleGenerator.h>
+#include <SpawnAsteroidOnDeath.h>
 
 #include "GameObjectType.h"
 #include "DeathOnCollision.h"
@@ -212,11 +213,19 @@ void idle( int v )
 
 		currentTime = float(glutGet(GLUT_ELAPSED_TIME)) / 1000.0f - startTime;
 
-        scene.update(elapsedTime);
+		std::vector<GameObject*>* toDelete = new std::vector<GameObject*>();
+
+        scene.update(elapsedTime, toDelete);
 
 		playerCamera->setPosition(calculateNewCameraPosition());
 
         broadPhaseCollider.updateCollision();
+
+		for(auto it = toDelete->begin(); it < toDelete->end(); it++){
+			//delete *it;
+		}
+
+		delete toDelete;
 
 		glutPostRedisplay();
 
@@ -240,6 +249,7 @@ int main(int argc, char *argv[])
 	int w = SCREEN_WIDTH;
 	int h = SCREEN_HEIGHT;
 
+	srand(time(NULL));
 	renderer = new Renderer(argc, argv, w, h);
 	glutTimerFunc(50, idle, 0);
 	glutDisplayFunc(display);
@@ -341,10 +351,17 @@ void createMeshes() {
 
 	MoveComponent *asteroidMover = new MoveComponent(&asteroid);
 	asteroidMover->setRotationSpeed(make_vector(0.005f, 0.0f, 0.0f));
-	asteroidMover->setLocation(make_vector(10.0f, 10.0f, 10.0f));
+	asteroidMover->setLocation(make_vector(10.0f, -2.0f, 10.0f));
 	asteroidMover->setAcceleration(make_vector(-0.0000005f, 0.0f, 0.0f));
 	asteroidMover->setScaleSpeed(make_vector(0.0005f,0.0005f,0.0005f));
 	asteroid.addComponent(asteroidMover);
+
+	DeathOnCollision* dca = new DeathOnCollision(&asteroid, Friendly, 1, &points);
+	asteroid.addComponent(dca);
+
+	SpawnAsteroidOnDeath *childrenSpawner = new SpawnAsteroidOnDeath(&asteroid,&scene,&broadPhaseCollider,make_vector(1.0f,1.0f,1.0f));
+	asteroid.addComponent(childrenSpawner);
+
 	scene.shadowCasters.push_back(&asteroid);
 	broadPhaseCollider.addGameObject(&asteroid);
 
