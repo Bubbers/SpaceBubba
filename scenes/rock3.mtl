@@ -1,0 +1,12 @@
+# Blender MTL File: 'rock2.blend'
+# Material Count: 1
+
+newmtl Material.001
+Ns 96.078431
+Ka 0.000000 0.000000 0.000000
+Kd 0.672000 0.672000 0.672000
+Ks 0.015000 0.015000 0.015000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd wal69ar_small.jpg
