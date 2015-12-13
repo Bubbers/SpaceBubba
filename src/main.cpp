@@ -57,6 +57,7 @@ GameObject asteroid;
 GameObject dstar;
 SpaceShipComponent *spaceMover;
 GameObject shot;
+GameObject planet;
 
 Scene scene;
 
@@ -179,7 +180,7 @@ float3 calculateNewCameraPosition() {
 
 	if (chase) {
 		if (camspeed < 1.5f) {
-			camspeed += .0008f;
+			camspeed += .0018f;
 		} else {
 			chase = false;
 		}
@@ -212,7 +213,6 @@ void idle( int v )
 		currentTime = float(glutGet(GLUT_ELAPSED_TIME)) / 1000.0f - startTime;
 
         scene.update(elapsedTime);
-
 
 		playerCamera->setPosition(calculateNewCameraPosition());
 
@@ -247,7 +247,6 @@ int main(int argc, char *argv[])
 	InputManager* im = InputManager::getInstance();
 	im->addMouseMoveListener(motion);
 	im->addSpecialKeyListener(specialKey);
-
 
 	soundManager = new SoundManager();
 	renderer->initGL();
@@ -349,8 +348,6 @@ void createMeshes() {
 	scene.shadowCasters.push_back(&asteroid);
 	broadPhaseCollider.addGameObject(&asteroid);
 
-
-
 	Mesh* dstarM = ResourceManager::loadAndFetchMesh("../scenes/dstar.obj");
 	dstar = GameObject(dstarM);
 	dstar.move(make_translation(make_vector(-10.0f, 0.0f, 16000.0f)) * make_scale<float4x4>(make_vector(2000.0f, 2000.0f, 2000.0f)));
@@ -363,6 +360,21 @@ void createMeshes() {
 	asteroid.addComponent(dstarMover);
 	scene.shadowCasters.push_back(&dstar);
 	broadPhaseCollider.addGameObject(&dstar);
+
+
+
+	Mesh* planetM = ResourceManager::loadAndFetchMesh("../scenes/planet.obj");
+	planet = GameObject(planetM);
+	planet.move(make_translation(make_vector(-10.0f, 0.0f, 8000.0f)) * make_scale<float4x4>(make_vector(2000.0f, 2000.0f, 2000.0f)));
+	StandardRenderer *planetRenderer = new StandardRenderer(planetM, planet.getModelMatrix(), standardShader);
+	planet.addRenderComponent(planetRenderer);
+	MoveComponent *planetMover = new MoveComponent(&planet,
+												  make_vector(0.0f, 0.001f, 0.0f),
+												  make_vector(0.0f, 0.0f, 0.0f),
+												  make_vector(0.0f, 0.0f, 0.0f));
+	asteroid.addComponent(planetMover);
+	scene.shadowCasters.push_back(&planet);
+	broadPhaseCollider.addGameObject(&planet);
 
 	Logger::logInfo("Finished loading meshes.");
 }
