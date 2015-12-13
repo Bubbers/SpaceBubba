@@ -30,7 +30,12 @@ void SpawnAsteroidOnDeath::onDeath(){
 
     for(int i = 0 ; i<4 ; i++) {
 
-        Mesh* asteroidM = ResourceManager::loadAndFetchMesh("../scenes/asteroid.obj");
+        int ix = (int)getRand(1.0f, 3.99f);
+        string mesh = "../scenes/rock";
+        mesh.append(to_string(ix));
+        mesh.append(".obj");
+
+        Mesh* asteroidM = ResourceManager::loadAndFetchMesh(mesh);
         GameObject *asteroid = new GameObject(asteroidM);
 
         StandardRenderer *asteroidRenderer = new StandardRenderer(asteroidM, asteroid->getModelMatrix(), standardShader);
