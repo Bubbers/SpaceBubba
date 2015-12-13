@@ -65,14 +65,14 @@ struct HudRenderer::HudConfig* HudRenderer::getConfig() {
 void HudRenderer::render() {
     float4x4 modelMat;
 
-    if (start) {
+    if (*state == Start) {
         modelMat = make_translation(make_vector(-.5f, -.5f, 0.0f));
         Texture *texture = ResourceManager::loadAndFetchTexture("../scenes/HUD/mission_box.png");
         render2DHud(texture, &modelMat);
 
         InputManager *im = InputManager::getInstance();
         if (im->isKeyDown(13, true)) {
-            start = false;
+            *state = Playing;
         }
     }
 

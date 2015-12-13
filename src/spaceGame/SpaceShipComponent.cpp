@@ -40,8 +40,8 @@ void SpaceShipComponent::update(float dt) {
 
     float3 normVector = normalize(frontDir);
     float3 left = cross(normVector, make_vector(0.0f, 1.0f, 0.0f));
-    generator1->m_position = location - normVector * 4.5 + left;
-    generator2->m_position = location - normVector * 4.5 - left;
+    generator1->m_position = location - normVector * 4.0 + left;
+    generator2->m_position = location - normVector * 4.0 - left;
 
 };
 

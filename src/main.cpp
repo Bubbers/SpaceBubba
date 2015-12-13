@@ -321,16 +321,16 @@ void createMeshes() {
 	DeathOnCollision* wingD = new DeathOnCollision(&rWing, Asteroid, 0, &points);
 	rWing.addComponent(wingD);
 
-	Texture *particleTexture = ResourceManager::loadAndFetchTexture("../scenes/sun.png");
+	Texture *particleTexture = ResourceManager::loadAndFetchTexture("../scenes/fire_part.png");
+
 	FireParticle *fireConf = new FireParticle();
 	ParticleGenerator *gen = new ParticleGenerator(particleTexture, 500, playerCamera, make_vector(0.0f, 0.0f, 0.0f), fireConf);
 	GameObject *particleGenerator = new GameObject();
 	particleGenerator->addRenderComponent(gen);
 	scene.transparentObjects.push_back(particleGenerator);
 
-	Texture *particleTexture2 = ResourceManager::loadAndFetchTexture("../scenes/sun.png");
 	FireParticle *fireConf2 = new FireParticle();
-	ParticleGenerator *gen2 = new ParticleGenerator(particleTexture2, 500, playerCamera, make_vector(0.0f, 0.0f, 0.0f), fireConf2);
+	ParticleGenerator *gen2 = new ParticleGenerator(particleTexture, 500, playerCamera, make_vector(0.0f, 0.0f, 0.0f), fireConf2);
 	GameObject *particleGenerator2 = new GameObject();
 	particleGenerator2->addRenderComponent(gen2);
 	scene.transparentObjects.push_back(particleGenerator2);

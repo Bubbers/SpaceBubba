@@ -51,7 +51,7 @@ void SpawnAsteroidOnDeath::onDeath(){
 
         MoveComponent *asteroidMover = new MoveComponent(asteroid);
         asteroidMover->setRotation(createRandomVector(-0.01f, 0.01f));
-        asteroidMover->setVelocity(make_vector(getRand(-0.01f,0.01f),0.0f,0.0f));
+        asteroidMover->setVelocity(createRandomVector(-0.01f, 0.01f));
         asteroidMover->setScale(scale*4.0f);
         asteroidMover->setLocation(location + createRandomVector(1.0f,2.0f));
         asteroid->addComponent(asteroidMover);
