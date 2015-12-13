@@ -3,6 +3,7 @@
 //
 
 #include <ResourceManager.h>
+#include <InputManager.h>
 #include "HudRenderer.h"
 
 HudRenderer::HudRenderer(int *scoreBoard){
@@ -62,9 +63,27 @@ struct HudRenderer::HudConfig* HudRenderer::getConfig() {
 void HudRenderer::render() {
     float4x4 modelMat;
 
+    if (start) {
+        modelMat = make_translation(make_vector(-.5f, -.5f, 0.0f));
+        Texture *texture = ResourceManager::loadAndFetchTexture("../scenes/HUD/mission_box.png");
+        render2DHud(texture, &modelMat);
+
+        InputManager *im = InputManager::getInstance();
+        if (im->isKeyDown(13, true)) {
+            start = false;
+        }
+    }
+
     modelMat = make_translation(make_vector(-.5f, -.9f, 0.0f)) * make_scale<float4x4>(make_vector(0.2f, 0.2f, 0.5f));
 
     int score = *scoreBoard;
+
+
+    if (score >= 100) {
+        modelMat = make_translation(make_vector(-.5f, -.5f, 0.0f));
+        Texture *texture = ResourceManager::loadAndFetchTexture("../scenes/HUD/win_box.png");
+        render2DHud(texture, &modelMat);
+    }
 
     if (score == 0) {
        renderNum(0, &modelMat);

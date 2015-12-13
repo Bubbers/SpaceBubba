@@ -27,6 +27,8 @@ public:
 private:
     void renderNum(int, float4x4 *modelMatrix);
 
+    bool start = true;
+
     int *scoreBoard;
     GLuint m_vaob;
     struct HudConfig* conf;
