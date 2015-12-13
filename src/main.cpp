@@ -17,6 +17,8 @@
 #include <SmokeParticle.h>
 #include <ParticleGenerator.h>
 
+#include "GameObjectType.h"
+#include "DeathOnCollision.h"
 #include "Renderer.h"
 #include "ResourceManager.h"
 #include "constants.h"
@@ -41,9 +43,9 @@ using namespace chag;
 float currentTime = 0.0f;			// Tells us the current time
 float timeSinceDraw = 0.0f;
 
-float points = 0.0f;
+int points = 0;
 
-const float WIN_CONDITION = 100.0f;
+const int WIN_CONDITION = 100;
 
 //*****************************************************************************
 //	OBJ Model declarations
@@ -356,6 +358,8 @@ void createMeshes() {
 	dstar.move(make_translation(make_vector(-10.0f, 0.0f, 16000.0f)) * make_scale<float4x4>(make_vector(2000.0f, 2000.0f, 2000.0f)));
 	StandardRenderer *dstarRenderer = new StandardRenderer(dstarM, dstar.getModelMatrix(), standardShader);
 	dstar.addRenderComponent(dstarRenderer);
+    DeathOnCollision *dc = new DeathOnCollision(&dstar, Friendly, 100, &points);
+    dstar.addComponent(dc);
 	MoveComponent *dstarMover = new MoveComponent(&dstar,
 													 make_vector(0.0f, 0.001f, 0.0f),
 													 make_vector(0.0f, 0.0f, 0.0f),
