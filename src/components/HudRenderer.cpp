@@ -5,7 +5,9 @@
 #include <ResourceManager.h>
 #include "HudRenderer.h"
 
-HudRenderer::HudRenderer(){
+HudRenderer::HudRenderer(int *scoreBoard){
+    this->scoreBoard = scoreBoard;
+
     ResourceManager::loadShader("../shaders/hud.vert", "../shaders/hud.frag", "hudShader");
     shaderProgram = ResourceManager::getShader("hudShader");
     conf = new HudConfig;
@@ -43,12 +45,38 @@ HudRenderer::~HudRenderer(){
     delete conf;
 }
 
+void HudRenderer::renderNum(int n, float4x4 *modelMatrix) {
+
+    std::string texturePath = "../scenes/HUD/num";
+    texturePath.append(std::to_string(n));
+    texturePath.append(".png");
+
+    Texture* texture = ResourceManager::loadAndFetchTexture(texturePath);
+    render2DHud(texture, modelMatrix);
+}
+
 struct HudRenderer::HudConfig* HudRenderer::getConfig() {
     return conf;
 }
 
 void HudRenderer::render() {
     float4x4 modelMat;
+
+    modelMat = make_translation(make_vector(-.5f, -.9f, 0.0f)) * make_scale<float4x4>(make_vector(0.2f, 0.2f, 0.5f));
+
+    int score = *scoreBoard;
+
+    if (score == 0) {
+       renderNum(0, &modelMat);
+    } else {
+        while (score > 0) {
+            int n = score % 10;
+            renderNum(n, &modelMat);
+            modelMat = make_translation(make_vector(-0.1f, 0.0f, 0.0f)) * modelMat;
+            score /= 10;
+        }
+    }
+
 
     modelMat = make_translation(make_vector(0.5f, -0.9f, 0.0f)) * make_scale<float4x4>(make_vector(0.4f, 0.4f, 0.5f));
     Texture* texture = ResourceManager::loadAndFetchTexture("../scenes/HUD/meter2.0.png");
@@ -59,6 +87,7 @@ void HudRenderer::render() {
 
     Texture* texture1 = ResourceManager::loadAndFetchTexture("../scenes/HUD/arrow.png");
     render2DHud(texture1, &modelMat);
+
 }
 
 void HudRenderer::render2DHud(Texture* texture, float4x4 *modelMatrix) {

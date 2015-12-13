@@ -304,7 +304,7 @@ void createMeshes() {
 
     //HUD
 	hud = new GameObject();
-	HudRenderer *hudRenderer = new HudRenderer();
+	HudRenderer *hudRenderer = new HudRenderer(&points);
 	hud->addRenderComponent(hudRenderer);
 	scene.transparentObjects.push_back(hud);
     

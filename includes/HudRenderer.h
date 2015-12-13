@@ -11,7 +11,7 @@
 class HudRenderer : public IRenderComponent
 {
 public:
-    HudRenderer();
+    HudRenderer(int *scoreBoard);
     ~HudRenderer();
     struct HudConfig{
         //percentage (0-100)
@@ -25,6 +25,9 @@ public:
     struct HudConfig* getConfig();
 
 private:
+    void renderNum(int, float4x4 *modelMatrix);
+
+    int *scoreBoard;
     GLuint m_vaob;
     struct HudConfig* conf;
 
