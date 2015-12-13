@@ -24,5 +24,9 @@ float3 FireParticle::getScale() {
 }
 
 bool FireParticle::loop(float dt) {
-    return true;
+    return looping;
+}
+
+void FireParticle::setLooping(bool value){
+    looping = value;
 }

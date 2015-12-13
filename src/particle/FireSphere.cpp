@@ -2,7 +2,7 @@
 // Created by johan on 2015-12-13.
 //
 
-#include <Utils.h>"
+#include <Utils.h>
 #include "FireSphere.h"
 
 float3 FireSphere::calcPosition(float3 genPos) {

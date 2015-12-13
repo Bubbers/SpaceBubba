@@ -4,9 +4,11 @@
 
 #include <ResourceManager.h>
 #include <InputManager.h>
+#include <Utils.h>
 #include "HudRenderer.h"
 
-HudRenderer::HudRenderer(int *scoreBoard){
+HudRenderer::HudRenderer(int *scoreBoard, State *state){
+    this->state = state;
     this->scoreBoard = scoreBoard;
 
     ResourceManager::loadShader("../shaders/hud.vert", "../shaders/hud.frag", "hudShader");
@@ -83,7 +85,12 @@ void HudRenderer::render() {
         modelMat = make_translation(make_vector(-.5f, -.5f, 0.0f));
         Texture *texture = ResourceManager::loadAndFetchTexture("../scenes/HUD/win_box.png");
         render2DHud(texture, &modelMat);
+    } else if(*state == Died) {
+        modelMat = make_translation(make_vector(-.5f, -.5f, 0.0f));
+        Texture *texture = ResourceManager::loadAndFetchTexture("../scenes/HUD/fail_box.png");
+        render2DHud(texture, &modelMat);
     }
+
 
     if (score == 0) {
        renderNum(0, &modelMat);

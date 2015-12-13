@@ -65,6 +65,9 @@ GameObject shot;
 GameObject planet;
 GameObject sun;
 
+State state = Start;
+
+
 Scene scene;
 
 BFBroadPhase broadPhaseCollider;
@@ -302,11 +305,7 @@ void createCubeMaps() {
 void createMeshes() {
 	Logger::logInfo("Started loading meshes");
 
-    //HUD
-	hud = new GameObject();
-	HudRenderer *hudRenderer = new HudRenderer(&points);
-	hud->addRenderComponent(hudRenderer);
-	scene.transparentObjects.push_back(hud);
+
     
 	//SKYBOX
 	Mesh *skyBoxM = ResourceManager::loadAndFetchMesh("../scenes/sphere.obj");
@@ -326,11 +325,32 @@ void createMeshes() {
 	StandardRenderer *carRenderer = new StandardRenderer(rWingM, rWing.getModelMatrix(), standardShader);
 	rWing.addRenderComponent(carRenderer);
 
-	TimedLife *tl = new TimedLife(&asteroid, 1000);
-	asteroid.addComponent(tl);
+	DeathOnCollision* wingD = new DeathOnCollision(&rWing, Asteroid, 0, &points);
+	rWing.addComponent(wingD);
+
+	Texture *particleTexture = ResourceManager::loadAndFetchTexture("../scenes/sun.png");
+	FireParticle *fireConf = new FireParticle();
+	ParticleGenerator *gen = new ParticleGenerator(particleTexture, 500, playerCamera, make_vector(0.0f, 0.0f, 0.0f), fireConf);
+	GameObject *particleGenerator = new GameObject();
+	particleGenerator->addRenderComponent(gen);
+	scene.transparentObjects.push_back(particleGenerator);
+
+	Texture *particleTexture2 = ResourceManager::loadAndFetchTexture("../scenes/sun.png");
+	FireParticle *fireConf2 = new FireParticle();
+	ParticleGenerator *gen2 = new ParticleGenerator(particleTexture2, 500, playerCamera, make_vector(0.0f, 0.0f, 0.0f), fireConf2);
+	GameObject *particleGenerator2 = new GameObject();
+	particleGenerator2->addRenderComponent(gen2);
+	scene.transparentObjects.push_back(particleGenerator2);
 
 
-	spaceMover = new SpaceShipComponent(hudRenderer->getConfig(),&camera_theta, &rWing);
+	//HUD
+	hud = new GameObject();
+	HudRenderer *hudRenderer = new HudRenderer(&points, &state);
+	hud->addRenderComponent(hudRenderer);
+	scene.transparentObjects.push_back(hud);
+
+
+	spaceMover = new SpaceShipComponent(hudRenderer->getConfig(),&camera_theta, &rWing, gen, gen2, &state);
 	ShootComponent *shooter = new ShootComponent(&rWing, spaceMover, &scene, &broadPhaseCollider, 1000);
 	rWing.addComponent(shooter);
 	rWing.addComponent(spaceMover);
@@ -344,23 +364,10 @@ void createMeshes() {
 	asteroid.addRenderComponent(asteroidRenderer);
 	asteroid.setDynamic(true);
 
-	MoveComponent *asteroidMover = new MoveComponent(&asteroid);
-	asteroidMover->setRotationSpeed(make_vector(0.005f, 0.0f, 0.0f));
-	asteroidMover->setLocation(make_vector(10.0f, -2.0f, 10.0f));
-	asteroidMover->setAcceleration(make_vector(-0.0000005f, 0.0f, 0.0f));
-	asteroidMover->setScaleSpeed(make_vector(0.0005f,0.0005f,0.0005f));
-	asteroidMover->setScale(make_vector(1.0f,1.0f,1.0f));
-	asteroid.addComponent(asteroidMover);
+	TimedLife *tl = new TimedLife(&asteroid, 1000);
+	asteroid.addComponent(tl);
 
-	DeathOnCollision* dca = new DeathOnCollision(&asteroid, Laser, 1, &points);
-	asteroid.addComponent(dca);
 
-	SpawnAsteroidOnDeath *childrenSpawner = new SpawnAsteroidOnDeath(&asteroid,&scene,&broadPhaseCollider,
-																	 make_vector(1.0f,1.0f,1.0f), playerCamera, &points);
-	asteroid.addComponent(childrenSpawner);
-
-	scene.shadowCasters.push_back(&asteroid);
-	broadPhaseCollider.addGameObject(&asteroid);
 
 	Mesh* dstarM = ResourceManager::loadAndFetchMesh("../scenes/dstar.obj");
 	dstar = GameObject(dstarM, SpaceEntity);
@@ -416,7 +423,7 @@ void createMeshes() {
         asteroid->addRenderComponent(asteroidRenderer);
         asteroid->setDynamic(true);
 
-        float3 location = createRandomVector(-300.0f, 300.0f);
+        float3 location = createRandomVector(-200.0f, 200.0f) + make_vector(0.0f, 0.0f, 300.0f);
         float3 velocity = createRandomVector(-0.015f, 0.015f);
         float3 rotation = createRandomVector(-0.0025f, 0.0025f);
 

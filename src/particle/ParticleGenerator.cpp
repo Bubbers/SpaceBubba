@@ -57,6 +57,7 @@ void ParticleGenerator::setScaleLod(bool value) {
 }
 
 
+
 void ParticleGenerator::render() {
 	glDisable(GL_CULL_FACE);
 	glEnable(GL_BLEND);
@@ -135,4 +136,9 @@ float3x3 ParticleGenerator::getModelMatrix3x3() {
 	float3 uprim = cross(n, r);
 	
 	return make_matrix(r,uprim,n);
+}
+
+
+void ParticleGenerator::setLooping(bool value) {
+	conf->setLooping(value);
 }

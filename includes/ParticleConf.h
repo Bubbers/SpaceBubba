@@ -21,6 +21,14 @@ public:
 
     GLuint blendFunc = GL_ONE_MINUS_SRC_ALPHA;
 
+    void setLooping(bool value){
+        looping = value;
+    }
+
+
+protected:
+    bool looping = true;
+
 };
 
 

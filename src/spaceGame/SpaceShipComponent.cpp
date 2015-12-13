@@ -4,15 +4,32 @@
 
 #include <MoveComponent.h>
 #include <InputManager.h>
+#include <ResourceManager.h>
+#include <Camera.h>
+#include <SmokeParticle.h>
+#include <ParticleGenerator.h>
+#include <Utils.h>
 #include "SpaceShipComponent.h"
 #include "float3x3.h"
 
 
-SpaceShipComponent::SpaceShipComponent(struct HudRenderer::HudConfig* hudConf, float* cameraThetaLocation, GameObject* ship)
+SpaceShipComponent::SpaceShipComponent(struct HudRenderer::HudConfig* hudConf, float* cameraThetaLocation, GameObject* ship,
+                                       ParticleGenerator* generator1, ParticleGenerator* generator2, State* state)
         : MoveComponent(ship){
     this->hudConf = hudConf;
     this->cameraThetaLocation = cameraThetaLocation;
     maxSpeed = 0.5f;
+    this->generator1 = generator1;
+    this->generator2 = generator2;
+    this->state = state;
+
+
+}
+
+void SpaceShipComponent::onDeath() {
+        generator1->setLooping(false);
+        generator2->setLooping(false);
+    *state = Died;
 }
 
 void SpaceShipComponent::update(float dt) {
@@ -20,6 +37,11 @@ void SpaceShipComponent::update(float dt) {
     checkKeyPresses(dt);
     MoveComponent::update(dt);
     hudConf->speed = length(velocity)*200;
+
+    float3 normVector = normalize(frontDir);
+    float3 left = cross(normVector, make_vector(0.0f, 1.0f, 0.0f));
+    generator1->m_position = location - normVector * 4.5 + left;
+    generator2->m_position = location - normVector * 4.5 - left;
 
 };
 
