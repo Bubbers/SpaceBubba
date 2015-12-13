@@ -39,15 +39,12 @@ void MoveComponent::update(float dt) {
 }
 
 void MoveComponent::afterCollision() {
-    Logger::logInfo("AfterCollision");
 }
 
 void MoveComponent::duringCollision() {
-    Logger::logInfo("DuringCollision");
 }
 
 void MoveComponent::beforeCollision() {
-    Logger::logInfo("BeforeCollision");
 }
 
 

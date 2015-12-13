@@ -2,7 +2,7 @@
 #define BUBBA_3D_GAMEOBJECTTYPE_H
 
 enum GameObjectType {
-    Friendly, Hostile
+    Player, Asteroid, SpaceEntity, Laser, Environment
 };
 
 #endif //BUBBA_3D_GAMEOBJECTTYPE_H

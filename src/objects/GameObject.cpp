@@ -16,8 +16,10 @@ GameObject::GameObject() {
     id = ++uniqueId;
 }
 
-GameObject::GameObject(Mesh *mesh) {
+GameObject::GameObject(Mesh *mesh, GameObjectType type) {
+
     GameObject();
+    this->type = type;
     id = ++uniqueId;
     this->mesh = mesh;
     shininess = 0.0f;
@@ -129,21 +131,22 @@ void GameObject::update(float dt) {
     }
 }
 
-void GameObject::callEvent(EventType type){
+void GameObject::callEvent(EventType type, GameObjectType data){
+
     switch(type) {
     case EventType::BeforeCollision:
         for (auto &component : components) {
-            component->beforeCollision();
+            component->beforeCollision(data);
         }
         break;
     case EventType::DuringCollision:
         for (auto &component : components) {
-            component->duringCollision();
+            component->duringCollision(data);
         }
         break;
     case EventType::AfterCollision:
         for (auto &component : components) {
-            component->afterCollision();
+            component->afterCollision(data);
         }
         break;
     }

@@ -15,7 +15,10 @@ void DeathOnCollision::update(float dt) {
 //    pointsWorth += int(dt / 1000.0f);
 }
 
-void DeathOnCollision::beforeCollision() {
+void DeathOnCollision::beforeCollision(GameObjectType collider) {
+
+    if(collider != relevantType)
+        return;
 
     if (pointsWorth > 0) {
         *scoreBoard += pointsWorth;

@@ -13,6 +13,8 @@
 #include <al.h>
 #include <alut.h>
 #include <error.h>
+#include <DeathOnCollision.h>
+#include <chrono>
 #include "ShootComponent.h"
 #include "InputManager.h"
 
@@ -33,7 +35,10 @@ ShootComponent::ShootComponent(GameObject* object, SpaceShipComponent *objectMov
 
 void ShootComponent::update(float dt) {
     InputManager* im = InputManager::getInstance();
-    if(im->isKeyDown((int)'r', false)) {
+    long ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+
+    if(im->isKeyDown((int)'r', false) && ms > canShootAfter) {
+        canShootAfter = ms + 500;
         spawnBullet();
     }
 }
@@ -51,21 +56,25 @@ void ShootComponent::spawnBullet() {
     alSourcePlay(source);
 
     Mesh* shotM = ResourceManager::loadAndFetchMesh("../scenes/shot.obj");
-    GameObject *shot = new GameObject(shotM);
+    GameObject *shot = new GameObject(shotM, Laser);
     //shot->move(make_translation(location));
     //shot->update(make_rotation_y<float4x4>(degreeToRad(90)));
 
     StandardRenderer *shotRenderer = new StandardRenderer(shotM, shot->getModelMatrix(), standardShader);
     shot->addRenderComponent(shotRenderer);
-    shot->setDynamic(false);
+    shot->setDynamic(true);
 
     MoveComponent *shotMover = new MoveComponent(shot);
     shotMover->setRotation(objectMover->getRotation());
-    shotMover->setVelocity(normalize(objectMover->getFrontDir()) );
-    shotMover->setLocation(location);
+    shotMover->setVelocity(normalize(objectMover->getFrontDir()) /10);
+    shotMover->setLocation(location + normalize(objectMover->getFrontDir())*6);
     TimedLife *tl = new TimedLife(shot, timeToLive);
     shot->addComponent(tl);
     shot->addComponent(shotMover);
+
+    DeathOnCollision* dc = new DeathOnCollision(shot, Asteroid);
+    shot->addComponent(dc);
+
     scene->shadowCasters.push_back(shot);
     collisionHandler->addGameObject(shot);
 }

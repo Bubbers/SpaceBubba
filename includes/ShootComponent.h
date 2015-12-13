@@ -19,6 +19,7 @@ private:
     Scene *scene;
     BFBroadPhase *collisionHandler;
     float timeToLive = 0;
+    long canShootAfter = 0;
 
     void spawnBullet();
     ALuint buffer;
