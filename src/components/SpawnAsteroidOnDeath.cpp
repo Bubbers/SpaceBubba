@@ -21,7 +21,6 @@ SpawnAsteroidOnDeath::SpawnAsteroidOnDeath(GameObject* gameObject, Scene *scene,
 }
 
 void SpawnAsteroidOnDeath::onDeath(){
-    printf("hej hej \n");
     float4 ps = gameObject->getModelMatrix()->c4;
     float3 location = make_vector(ps.x, ps.y, ps.z);
 
