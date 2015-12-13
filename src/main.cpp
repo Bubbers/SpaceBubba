@@ -17,12 +17,15 @@
 #include <SmokeParticle.h>
 #include <ParticleGenerator.h>
 
+#include "GameObjectType.h"
+#include "DeathOnCollision.h"
 #include "Renderer.h"
 #include "ResourceManager.h"
 #include "constants.h"
 #include "BFBroadPhase.h"
 #include "HudRenderer.h"
 #include "SoundManager.h"
+#include "ShootComponent.h"
 
 using namespace std;
 using namespace chag;
@@ -40,10 +43,15 @@ using namespace chag;
 float currentTime = 0.0f;			// Tells us the current time
 float timeSinceDraw = 0.0f;
 
+int points = 0;
+
+const int WIN_CONDITION = 100;
 
 //*****************************************************************************
 //	OBJ Model declarations
 //*****************************************************************************
+
+
 GameObject rWing;
 GameObject skyBox;
 GameObject *hud;
@@ -51,6 +59,7 @@ GameObject asteroid;
 GameObject dstar;
 SpaceShipComponent *spaceMover;
 GameObject shot;
+GameObject planet;
 
 Scene scene;
 
@@ -104,43 +113,12 @@ void display(void)
 	renderer->swapBuffer();
 }
 
-
-void spawnBullet() {
-
-	float4 ps = rWing.getModelMatrix()->c4;
-	float3 location = make_vector(ps.x, ps.y, ps.z);
-
-	Shader* standardShader = ResourceManager::getShader(SIMPLE_SHADER_NAME);
-	standardShader->setUniformBufferObjectBinding(UNIFORM_BUFFER_OBJECT_MATRICES_NAME, UNIFORM_BUFFER_OBJECT_MATRICES_INDEX);
-
-	Mesh* shotM = ResourceManager::loadAndFetchMesh("../scenes/shot.obj");
-	GameObject *shot = new GameObject(shotM);
-	//shot->move(make_translation(location));
-	//shot->update(make_rotation_y<float4x4>(spaceMover->getTotalRotation()));
-
-	StandardRenderer *shotRenderer = new StandardRenderer(shotM, shot->getModelMatrix(), standardShader);
-	shot->addRenderComponent(shotRenderer);
-	shot->setDynamic(false);
-
-	MoveComponent *shotMover = new MoveComponent(shot);
-	shotMover->setRotation(spaceMover->getRotation());
-	shotMover->setVelocity(normalize(spaceMover->getFrontDir()) / 5);
-	shotMover->setLocation(location);
-	TimedLife *tl = new TimedLife(shot, 1000);
-	shot->addComponent(tl);
-	shot->addComponent(shotMover);
-	scene.shadowCasters.push_back(shot);
-	broadPhaseCollider.addGameObject(shot);
-}
-
 void checkKeys()
 {
 	InputManager* im = InputManager::getInstance();
 	if(im->isKeyDown(27,true))
 		exit(0);
-	if(im->isKeyDown((int)'r', false)) {
-		spawnBullet();
-	}
+
 }
 
 void specialKey(int key, int x, int y)
@@ -202,7 +180,7 @@ float3 calculateNewCameraPosition() {
 
 	if (chase) {
 		if (camspeed < 1.5f) {
-			camspeed += .0008f;
+			camspeed += .0018f;
 		} else {
 			chase = false;
 		}
@@ -236,12 +214,19 @@ void idle( int v )
 
         scene.update(elapsedTime);
 
-
 		playerCamera->setPosition(calculateNewCameraPosition());
 
         broadPhaseCollider.updateCollision();
 
 		glutPostRedisplay();
+
+		if (points >= WIN_CONDITION) {
+			Logger::logInfo("WIN CONDITION HAS BEEN MET :D");
+		}
+
+        string s = "Points: ";
+        Logger::logDebug(s.append(to_string(points)));
+
 	}
 	else {
 		glutTimerFunc(int(time), idle, 0);
@@ -263,7 +248,6 @@ int main(int argc, char *argv[])
 	im->addMouseMoveListener(motion);
 	im->addSpecialKeyListener(specialKey);
 
-
 	soundManager = new SoundManager();
 	renderer->initGL();
 
@@ -281,6 +265,8 @@ int main(int argc, char *argv[])
 void createEffects(){
 	Fog f;
 	f.fEquation = FOG_EQ::LINEAR;
+	f.fStart = 5000.0f;
+	f.fEnd   = 1000000.0f;
 	renderer->effects.fog = f;
 }
 
@@ -338,7 +324,10 @@ void createMeshes() {
 	TimedLife *tl = new TimedLife(&asteroid, 1000);
 	asteroid.addComponent(tl);
 
+
 	spaceMover = new SpaceShipComponent(hudRenderer->getConfig(),&camera_theta, &rWing);
+	ShootComponent *shooter = new ShootComponent(&rWing, spaceMover, &scene, &broadPhaseCollider, 1000);
+	rWing.addComponent(shooter);
 	rWing.addComponent(spaceMover);
 	rWing.setDynamic(true);
 	scene.shadowCasters.push_back(&rWing);
@@ -346,7 +335,6 @@ void createMeshes() {
 
 	Mesh* asteroidM = ResourceManager::loadAndFetchMesh("../scenes/asteroid.obj");
 	asteroid = GameObject(asteroidM);
-	//asteroid.move(make_translation(make_vector(10.0f, 10.0f, 10.0f)));
 	StandardRenderer *asteroidRenderer = new StandardRenderer(asteroidM, asteroid.getModelMatrix(), standardShader);
 	asteroid.addRenderComponent(asteroidRenderer);
 	asteroid.setDynamic(true);
@@ -360,32 +348,37 @@ void createMeshes() {
 	scene.shadowCasters.push_back(&asteroid);
 	broadPhaseCollider.addGameObject(&asteroid);
 
-
-
 	Mesh* dstarM = ResourceManager::loadAndFetchMesh("../scenes/dstar.obj");
 	dstar = GameObject(dstarM);
-	dstar.move(make_translation(make_vector(-10.0f, 0.0f, 40.0f)) * make_scale<float4x4>(make_vector(5.0f, 5.0f, 5.0f)));
 	StandardRenderer *dstarRenderer = new StandardRenderer(dstarM, dstar.getModelMatrix(), standardShader);
 	dstar.addRenderComponent(dstarRenderer);
+
+    DeathOnCollision *dc = new DeathOnCollision(&dstar, Friendly, 100, &points);
+    dstar.addComponent(dc);
+
 	MoveComponent *dstarMover = new MoveComponent(&dstar);
 	dstarMover->setRotationSpeed(make_vector(0.0f, 0.001f, 0.0f));
-	dstarMover->setLocation(make_vector(-10.0f, 0.0f, 40.0f));
+	dstarMover->setLocation(make_vector(-10.0f, 0.0f, 16000.0f));
+	dstarMover->setScale(make_vector(2000.0f, 2000.0f, 2000.0f));
+	dstar.setDynamic(true);
+
 	asteroid.addComponent(dstarMover);
 	scene.shadowCasters.push_back(&dstar);
 	broadPhaseCollider.addGameObject(&dstar);
 
+	Mesh* planetM = ResourceManager::loadAndFetchMesh("../scenes/planet.obj");
+	planet = GameObject(planetM);
+	StandardRenderer *planetRenderer = new StandardRenderer(planetM, planet.getModelMatrix(), standardShader);
+	planet.addRenderComponent(planetRenderer);
+	MoveComponent *planetMover = new MoveComponent(&planet);
+	planetMover->setLocation(make_vector(-10.0f, 0.0f, 8000.0f));
+	planetMover->setScale(make_vector(2000.0f, 2000.0f, 2000.0f));
+	planetMover->setRotationSpeed(make_vector(0.0f, 0.001f, 0.0f));
+	asteroid.addComponent(planetMover);
+	scene.shadowCasters.push_back(&planet);
+	broadPhaseCollider.addGameObject(&planet);
+
 	Logger::logInfo("Finished loading meshes.");
-
-
-
-	float4 ps = rWing.getModelMatrix()->c4;
-	float3 location = make_vector(ps.x, ps.y, ps.z);
-
-	//Shader* standardShader = ResourceManager::getShader(SIMPLE_SHADER_NAME);
-	//standardShader->setUniformBufferObjectBinding(UNIFORM_BUFFER_OBJECT_MATRICES_NAME, UNIFORM_BUFFER_OBJECT_MATRICES_INDEX);
-
-
-
 }
 
 void createCameras() {
@@ -399,10 +392,8 @@ void createCameras() {
 		sphericalToCartesian(camera_theta, camera_phi, camera_r),
 		make_vector(0.0f, camera_target_altitude, 0.0f),
 		make_vector(0.0f, 1.0f, 0.0f),
-		45, float(w) / float(h), 0.1f, 1000.0f
+		45, float(w) / float(h), 0.1f, 50000.0f
 		);
-
-
 }
 
 // Helper function to turn spherical coordinates into cartesian (x,y,z)

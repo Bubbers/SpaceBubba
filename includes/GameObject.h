@@ -6,6 +6,7 @@
 #include <Triangle.h>
 #include "IRenderComponent.h"
 #include "Octree.h"
+#include "GameObjectType.h"
 
 enum EventType {BeforeCollision, DuringCollision, AfterCollision};
 
@@ -43,10 +44,16 @@ public:
 
     static int uniqueId;
     int getId();
+
+    GameObjectType getType() { return type; };
+    void setType(GameObjectType t) { type = t; };
+
 private:
     int id;
     Mesh *mesh;
     chag::float4x4 m_modelMatrix;
+
+    GameObjectType type = Friendly;
 
     /* COMPONENTS */
     IRenderComponent* renderComponent;
