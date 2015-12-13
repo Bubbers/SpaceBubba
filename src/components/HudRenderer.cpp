@@ -80,11 +80,21 @@ void HudRenderer::render() {
     int score = *scoreBoard;
 
 
-    if (score >= 50) {
+    if (score >= 1 && *state != Credits) {
         modelMat = make_translation(make_vector(-.5f, -.5f, 0.0f));
         Texture *texture = ResourceManager::loadAndFetchTexture("../scenes/HUD/win_box.png");
         render2DHud(texture, &modelMat);
-    } else if(*state == Died) {
+
+        InputManager *im = InputManager::getInstance();
+        if (im->isKeyDown(13, true)) {
+            *state = Credits;
+        }
+
+    } else if(*state == Credits) {
+        modelMat = make_translation(make_vector(-.5f, -.5f, 0.0f));
+        Texture *texture = ResourceManager::loadAndFetchTexture("../scenes/HUD/credit_box.png");
+        render2DHud(texture, &modelMat);
+    }else if(*state == Died) {
         modelMat = make_translation(make_vector(-.5f, -.5f, 0.0f));
         Texture *texture = ResourceManager::loadAndFetchTexture("../scenes/HUD/fail_box.png");
         render2DHud(texture, &modelMat);
