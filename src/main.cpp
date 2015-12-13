@@ -307,13 +307,13 @@ void createMeshes() {
 	hud->addRenderComponent(hudRenderer);
 	scene.transparentObjects.push_back(hud);
 
-	/*Texture *particleTexture = ResourceManager::loadAndFetchTexture("../scenes/sun.png");
+	Texture *particleTexture = ResourceManager::loadAndFetchTexture("../scenes/sun.png");
 
 	FireParticle *fireParticle = new FireParticle();
 	ParticleGenerator *gen = new ParticleGenerator(particleTexture, 200, playerCamera, make_vector(0.0f, 0.0f, 0.0f), fireParticle);
 	GameObject *particleGenerator = new GameObject();
 	particleGenerator->addRenderComponent(gen);
-	scene.transparentObjects.push_back(particleGenerator);*/
+	scene.transparentObjects.push_back(particleGenerator);
     
 	//SKYBOX
 	Mesh *skyBoxM = ResourceManager::loadAndFetchMesh("../scenes/sphere.obj");
@@ -421,15 +421,14 @@ void createMeshes() {
         standardShader->setUniformBufferObjectBinding(UNIFORM_BUFFER_OBJECT_MATRICES_NAME, UNIFORM_BUFFER_OBJECT_MATRICES_INDEX);
 
         Mesh* asteroidM = ResourceManager::loadAndFetchMesh("../scenes/asteroid.obj");
-        GameObject *asteroid = new GameObject(asteroidM);
+        GameObject *asteroid = new GameObject(asteroidM, Asteroid);
         StandardRenderer *asteroidRenderer = new StandardRenderer(asteroidM, asteroid->getModelMatrix(), standardShader);
         asteroid->addRenderComponent(asteroidRenderer);
         asteroid->setDynamic(true);
 
         float3 location = createRandomVector(-300.0f, 300.0f);
-        float3 velocity = createRandomVector(-0.001f, 0.001f);
+        float3 velocity = createRandomVector(-0.015f, 0.015f);
         float3 rotation = createRandomVector(-0.0025f, 0.0025f);
-        float3 scale    = createRandomVector(-0.0005f, 0.0005f);
 
         location += spaceMover->getLocation();
 
@@ -441,10 +440,10 @@ void createMeshes() {
         asteroidMover->setScaleSpeed(make_vector(0.0005f,0.0005f,0.0005f));
         asteroid->addComponent(asteroidMover);
 
-        DeathOnCollision* dca = new DeathOnCollision(asteroid, Friendly, 1, &points);
+        DeathOnCollision* dca = new DeathOnCollision(asteroid, Laser, 1, &points);
         asteroid->addComponent(dca);
 
-        SpawnAsteroidOnDeath *childrenSpawner = new SpawnAsteroidOnDeath(asteroid,&scene,&broadPhaseCollider,make_vector(1.0f,1.0f,1.0f), playerCamera);
+        SpawnAsteroidOnDeath *childrenSpawner = new SpawnAsteroidOnDeath(asteroid,&scene,&broadPhaseCollider,make_vector(1.0f,1.0f,1.0f), playerCamera, &points);
         asteroid->addComponent(childrenSpawner);
 
         scene.shadowCasters.push_back(asteroid);
