@@ -12,12 +12,15 @@
 #include <Utils.h>
 #include <BFBroadPhase.h>
 #include <Scene.h>
+#include <SmokeParticle.h>
+#include <ParticleGenerator.h>
 
-SpawnAsteroidOnDeath::SpawnAsteroidOnDeath(GameObject* gameObject, Scene *scene, BFBroadPhase *collisionHandler, float3 scale){
+SpawnAsteroidOnDeath::SpawnAsteroidOnDeath(GameObject* gameObject, Scene *scene, BFBroadPhase *collisionHandler, float3 scale, Camera* camera){
     this->gameObject = gameObject;
     this->scene = scene;
     this->collisionHandler = collisionHandler;
     this->scale = scale;
+    this->camera = camera;
 }
 
 void SpawnAsteroidOnDeath::onDeath(){
@@ -29,7 +32,8 @@ void SpawnAsteroidOnDeath::onDeath(){
 
     for(int i = 0 ; i<4 ; i++) {
 
-        string mesh = getRandomElem({"../scenes/rock1.obj", " ../scenes/rock2.obj", "../scenes/rock3.obj" });
+        string strings[] = {"../scenes/rock1.obj", " ../scenes/rock2.obj", "../scenes/rock3.obj" };
+        string mesh = getRandomElem(strings);
         Mesh* asteroidM = ResourceManager::loadAndFetchMesh(mesh);
         GameObject *asteroid = new GameObject(asteroidM);
 
@@ -47,5 +51,16 @@ void SpawnAsteroidOnDeath::onDeath(){
         collisionHandler->addGameObject(asteroid);
 
     }
+
+    Texture *particleTexture = ResourceManager::loadAndFetchTexture("../scenes/smoke_part.png");
+
+    float3 cameraLocationUnit = normalize(camera->getPosition() - location);
+
+    SmokeParticle *smokeConf = new SmokeParticle();
+    ParticleGenerator *gen = new ParticleGenerator(particleTexture, 200, camera, location + cameraLocationUnit * 5, smokeConf);
+    GameObject *particleGenerator = new GameObject();
+    particleGenerator->addRenderComponent(gen);
+    particleGenerator->setDynamic(true);
+    scene->transparentObjects.push_back(particleGenerator);
 
 }

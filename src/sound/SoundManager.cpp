@@ -128,6 +128,15 @@ SoundManager::SoundManager() {
     alSourcePlay(sourceID);
 
     Logger::logInfo("Generating OpenAL data completed.");
+
+
+
+    ALuint source;
+    buffer = alutCreateBufferFromFile("../scenes/laser.wav");
+    alGenSources(1, &source);
+    alSourcei(source, AL_BUFFER, buffer);
+    alSourcePlay(source);
+
 }
 
 SoundManager::~SoundManager() {

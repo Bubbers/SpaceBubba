@@ -24,6 +24,7 @@ ShootComponent::ShootComponent(GameObject* object, SpaceShipComponent *objectMov
     this->collisionHandler = collisionHandler;
     this->timeToLive = timeToLive;
     buffer = alutCreateBufferFromFile("../scenes/laser.wav");
+
 }
 
 void ShootComponent::update(float dt) {

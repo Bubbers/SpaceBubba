@@ -305,14 +305,14 @@ void createMeshes() {
 	hud->addRenderComponent(hudRenderer);
 	scene.transparentObjects.push_back(hud);
 
-	Texture *particleTexture = ResourceManager::loadAndFetchTexture("../scenes/smoke_part.png");
+	/*Texture *particleTexture = ResourceManager::loadAndFetchTexture("../scenes/smoke_part.png");
 
 	SmokeParticle *smokeConf = new SmokeParticle();
 	ParticleGenerator *gen = new ParticleGenerator(particleTexture, 200, playerCamera, make_vector(0.0f, 15.0f, 0.0f), smokeConf);
 	GameObject *particleGenerator = new GameObject();
 	particleGenerator->addRenderComponent(gen);
 	particleGenerator->setDynamic(true);
-	scene.transparentObjects.push_back(particleGenerator);
+	scene.transparentObjects.push_back(particleGenerator);*/
     
 	//SKYBOX
 	Mesh *skyBoxM = ResourceManager::loadAndFetchMesh("../scenes/sphere.obj");
@@ -360,7 +360,7 @@ void createMeshes() {
 	DeathOnCollision* dca = new DeathOnCollision(&asteroid, Friendly, 1, &points);
 	asteroid.addComponent(dca);
 
-	SpawnAsteroidOnDeath *childrenSpawner = new SpawnAsteroidOnDeath(&asteroid,&scene,&broadPhaseCollider,make_vector(1.0f,1.0f,1.0f));
+	SpawnAsteroidOnDeath *childrenSpawner = new SpawnAsteroidOnDeath(&asteroid,&scene,&broadPhaseCollider,make_vector(1.0f,1.0f,1.0f), playerCamera);
 	asteroid.addComponent(childrenSpawner);
 
 	scene.shadowCasters.push_back(&asteroid);
@@ -389,9 +389,9 @@ void createMeshes() {
 	StandardRenderer *planetRenderer = new StandardRenderer(planetM, planet.getModelMatrix(), standardShader);
 	planet.addRenderComponent(planetRenderer);
 	MoveComponent *planetMover = new MoveComponent(&planet);
-	planetMover->setLocation(make_vector(-10.0f, 0.0f, 8000.0f));
+	planetMover->setLocation(make_vector(-25000.0f, 0.0f, 0.0f));
 	planetMover->setScale(make_vector(2000.0f, 2000.0f, 2000.0f));
-	planetMover->setRotationSpeed(make_vector(0.0f, 0.001f, 0.0f));
+	planetMover->setRotationSpeed(make_vector(0.0f, 0.0001f, 0.0f));
 	asteroid.addComponent(planetMover);
 	scene.shadowCasters.push_back(&planet);
 	broadPhaseCollider.addGameObject(&planet);
