@@ -22,6 +22,7 @@ private:
 
     void spawnBullet();
     ALuint buffer;
+    ALuint source;
 };
 
 

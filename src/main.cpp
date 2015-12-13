@@ -201,7 +201,6 @@ float3 calculateNewCameraPosition() {
 	return pc + cameraDiff;
 }
 
-
 void idle( int v )
 {
 	float elapsedTime = glutGet(GLUT_ELAPSED_TIME) - timeSinceDraw;
@@ -222,6 +221,8 @@ void idle( int v )
 		playerCamera->setPosition(calculateNewCameraPosition());
 
         broadPhaseCollider.updateCollision();
+
+
 
 		for(auto it = toDelete->begin(); it < toDelete->end(); it++){
 			//delete *it;
@@ -247,7 +248,7 @@ void idle( int v )
 
 int main(int argc, char *argv[])
 {
-	Logger::debug = false;
+	Logger::debug = true;
 	int w = SCREEN_WIDTH;
 	int h = SCREEN_HEIGHT;
 
@@ -408,6 +409,44 @@ void createMeshes() {
 
 	scene.shadowCasters.push_back(&sun);
 	broadPhaseCollider.addGameObject(&sun);
+
+
+
+    for( int i = 0; i < 50; i++) {
+        //OBJECTS
+        Shader* standardShader = ResourceManager::getShader(SIMPLE_SHADER_NAME);
+        standardShader->setUniformBufferObjectBinding(UNIFORM_BUFFER_OBJECT_MATRICES_NAME, UNIFORM_BUFFER_OBJECT_MATRICES_INDEX);
+
+        Mesh* asteroidM = ResourceManager::loadAndFetchMesh("../scenes/asteroid.obj");
+        GameObject *asteroid = new GameObject(asteroidM);
+        StandardRenderer *asteroidRenderer = new StandardRenderer(asteroidM, asteroid->getModelMatrix(), standardShader);
+        asteroid->addRenderComponent(asteroidRenderer);
+        asteroid->setDynamic(true);
+
+        float3 location = createRandomVector(-300.0f, 300.0f);
+        float3 velocity = createRandomVector(-0.001f, 0.001f);
+        float3 rotation = createRandomVector(-0.0025f, 0.0025f);
+        float3 scale    = createRandomVector(-0.0005f, 0.0005f);
+
+        location += spaceMover->getLocation();
+
+        MoveComponent *asteroidMover = new MoveComponent(asteroid);
+        asteroidMover->setVelocity(velocity);
+        asteroidMover->setRotationSpeed(rotation);
+        asteroidMover->setLocation(location);
+        //asteroidMover->setAcceleration(make_vector(-0.0000005f, 0.0f, 0.0f));
+        asteroidMover->setScaleSpeed(make_vector(0.0005f,0.0005f,0.0005f));
+        asteroid->addComponent(asteroidMover);
+
+        DeathOnCollision* dca = new DeathOnCollision(asteroid, Friendly, 1, &points);
+        asteroid->addComponent(dca);
+
+        SpawnAsteroidOnDeath *childrenSpawner = new SpawnAsteroidOnDeath(asteroid,&scene,&broadPhaseCollider,make_vector(1.0f,1.0f,1.0f), playerCamera);
+        asteroid->addComponent(childrenSpawner);
+
+        scene.shadowCasters.push_back(asteroid);
+        broadPhaseCollider.addGameObject(asteroid);
+    }
 
 	Logger::logInfo("Finished loading meshes.");
 }

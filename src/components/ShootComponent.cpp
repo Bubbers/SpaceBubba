@@ -25,6 +25,10 @@ ShootComponent::ShootComponent(GameObject* object, SpaceShipComponent *objectMov
     this->timeToLive = timeToLive;
     buffer = alutCreateBufferFromFile("../scenes/laser.wav");
 
+
+    alGenSources(1, &source);
+    alSourcei(source, AL_BUFFER, buffer);
+
 }
 
 void ShootComponent::update(float dt) {
@@ -43,10 +47,7 @@ void ShootComponent::spawnBullet() {
     Shader* standardShader = ResourceManager::getShader(SIMPLE_SHADER_NAME);
     standardShader->setUniformBufferObjectBinding(UNIFORM_BUFFER_OBJECT_MATRICES_NAME, UNIFORM_BUFFER_OBJECT_MATRICES_INDEX);
 
-    ALuint source;
 
-    alGenSources(1, &source);
-    alSourcei(source, AL_BUFFER, buffer);
     alSourcePlay(source);
 
     Mesh* shotM = ResourceManager::loadAndFetchMesh("../scenes/shot.obj");

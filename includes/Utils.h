@@ -37,7 +37,7 @@ template <typename T, unsigned S>
 static T getRandomElem(const T (&ts)[S])
 {
 	if (S > 0) {
-		int ix = (int) getRand(0.0f, S - 0.01f);
+		int ix = (int) getRand(0.0f, S - 0.1f);
 		return ts[ix];
 	} else {
 		return NULL;
