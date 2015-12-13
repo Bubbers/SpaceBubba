@@ -13,6 +13,7 @@
 #include "MoveComponent.h"
 #include <InputManager.h>
 #include <TimedLife.h>
+#include <SpaceShipComponent.h>
 
 #include "Renderer.h"
 #include "ResourceManager.h"
@@ -146,14 +147,13 @@ void motion(int x, int y, int delta_x, int delta_y)
 	}
 }
 
+float camspeed = 0.0f;
+bool chase = false;
 void idle( int v )
 {
 	float elapsedTime = glutGet(GLUT_ELAPSED_TIME) - timeSinceDraw;
-	float4 ps = rWing.getModelMatrix()->c4;
-	float3 location = make_vector(ps.x, ps.y, ps.z);
 
 	float time = (1000 / TICK_PER_SECOND) - elapsedTime;
-	playerCamera->setLookAt(location + make_vector(0.0f, camera_target_altitude, 0.0f));
 	checkKeys();
 	if (time < 0) {
 		glutTimerFunc(1000 / TICK_PER_SECOND, idle, 0);
@@ -162,13 +162,60 @@ void idle( int v )
 
 		currentTime = float(glutGet(GLUT_ELAPSED_TIME)) / 1000.0f - startTime;
 
-
-		//Calculate camera matrix
-		playerCamera->setLookAt(location + make_vector(0.0f, camera_target_altitude, 0.0f));
-		playerCamera->setPosition(location + sphericalToCartesian(camera_theta, camera_phi, camera_r));
-
         scene.update(elapsedTime);
 
+		float4 ps = rWing.getModelMatrix()->c4;
+		float3 location = make_vector(ps.x, ps.y, ps.z);
+
+		playerCamera->setLookAt(location + make_vector(0.0f, camera_target_altitude, 0.0f));
+		float3 pc = playerCamera->getPosition();
+
+
+		Logger::logDebug("### location ###");
+		Logger::logDebug(to_string(location.x));
+		Logger::logDebug(to_string(location.y));
+		Logger::logDebug(to_string(location.z));
+		float3 diff = (location - pc);
+		float dist = 20.f;
+		if (length(diff) > dist) {
+			chase = true;
+		}
+
+		if (chase) {
+			if (camspeed < 1.5f) {
+				camspeed += .001f;
+			} else {
+				chase = false;
+			}
+		} else {
+			if(camspeed > 0.0) {
+				camspeed -= 0.0f;
+			} else {
+				camspeed = 0.0f;
+			}
+		}
+
+		Logger::logDebug("### DIFF ###");
+		Logger::logDebug(to_string(diff.x));
+		Logger::logDebug(to_string(diff.y));
+		Logger::logDebug(to_string(diff.z));
+
+		Logger::logDebug("### PC ###");
+		Logger::logDebug(to_string(pc.x));
+		Logger::logDebug(to_string(pc.y));
+		Logger::logDebug(to_string(pc.z));
+
+		float3 newPos = location + sphericalToCartesian(camera_theta, camera_phi, camera_r);
+
+		float3 cameraDiff = (camspeed) * (newPos - pc);
+
+		playerCamera->setPosition(pc + cameraDiff);
+
+
+		Logger::logDebug("### CAM ###");
+		Logger::logDebug(to_string(playerCamera->getPosition().x));
+		Logger::logDebug(to_string(playerCamera->getPosition().y));
+		Logger::logDebug(to_string(playerCamera->getPosition().z));
         broadPhaseCollider.updateCollision();
 
 		glutPostRedisplay();
@@ -180,7 +227,7 @@ void idle( int v )
 
 int main(int argc, char *argv[])
 {
-	Logger::debug = false;
+	Logger::debug = true;
 	int w = SCREEN_WIDTH;
 	int h = SCREEN_HEIGHT;
 
@@ -223,7 +270,7 @@ void createLights() {
 }
 
 void createCubeMaps() {
-	reflectionCubeMap = new CubeMapTexture("../scenes/pic4.png", "../scenes/pic4.png", "../scenes/pic4.png", "../scenes/pic4.png", "../scenes/pic4.png", "../scenes/pic4.png");
+	reflectionCubeMap = new CubeMapTexture("../scenes/space.png", "../scenes/space.png", "../scenes/space.png", "../scenes/space.png", "../scenes/space.png", "../scenes/space.png");
 	scene.cubeMap = reflectionCubeMap;
 }
 
@@ -241,7 +288,7 @@ void createMeshes() {
 	Mesh *skyBoxM = ResourceManager::loadAndFetchMesh("../scenes/sphere.obj");
 	skyBox = GameObject(skyBoxM);
     SkyBoxRenderer *skyboxRenderer = new SkyBoxRenderer(playerCamera, skyBoxM, skyBox.getModelMatrix());
-    skyboxRenderer->init("../scenes/pic1.png", "../scenes/pic2.png", "../scenes/pic3.png", "../scenes/pic4.png", "../scenes/pic4.png", "../scenes/pic4.png");
+    skyboxRenderer->init("../scenes/x.png", "../scenes/fancyx.png", "../scenes/fancyy.png", "../scenes/y.png", "../scenes/fancyz.png", "../scenes/z.png");
     skyBox.addRenderComponent(skyboxRenderer);
     scene.shadowCasters.push_back(&skyBox);
 
@@ -257,8 +304,8 @@ void createMeshes() {
 //	TimedLife *tl = new TimedLife(&rWing, 5000);
 //	rWing.addComponent(tl);
 
-	MoveComponent *carMoveComponent = new MoveComponent(hudRenderer->getConfig(),&camera_theta, &rWing);
-	rWing.addComponent(carMoveComponent);
+	MoveComponent *shipComponent = new SpaceShipComponent(hudRenderer->getConfig(),&camera_theta, &rWing);
+	rWing.addComponent(shipComponent);
 	rWing.setDynamic(true);
 	scene.shadowCasters.push_back(&rWing);
 	broadPhaseCollider.addGameObject(&rWing);
