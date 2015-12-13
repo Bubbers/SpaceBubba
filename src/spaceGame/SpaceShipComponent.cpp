@@ -41,7 +41,7 @@ void SpaceShipComponent::checkKeyPresses(float dt) {
         acceleration = make_vector(0.0f,0.0f,0.0f);
     }
 
-    if(im->isKeyDown('o',false)){
+    if(im->isKeyDown('p',false)){
         velocity.y = 0.05f;
     }else if(im->isKeyDown('l',false)){
         velocity.y = -0.05f;
