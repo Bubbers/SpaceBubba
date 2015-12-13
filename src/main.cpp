@@ -61,6 +61,7 @@ GameObject dstar;
 SpaceShipComponent *spaceMover;
 GameObject shot;
 GameObject planet;
+GameObject sun;
 
 Scene scene;
 
@@ -394,6 +395,15 @@ void createMeshes() {
 	asteroid.addComponent(planetMover);
 	scene.shadowCasters.push_back(&planet);
 	broadPhaseCollider.addGameObject(&planet);
+
+	Mesh* sunM = ResourceManager::loadAndFetchMesh("../scenes/sun.obj");
+	sun = GameObject(sunM);
+	sun.move(make_translation(make_vector(100.0f, 0.0f, 400.0f)));
+	StandardRenderer *sunRenderer = new StandardRenderer(sunM, sun.getModelMatrix(), standardShader);
+	sun.addRenderComponent(sunRenderer);
+
+	scene.shadowCasters.push_back(&sun);
+	broadPhaseCollider.addGameObject(&sun);
 
 	Logger::logInfo("Finished loading meshes.");
 }
