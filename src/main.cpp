@@ -14,6 +14,8 @@
 #include <InputManager.h>
 #include <TimedLife.h>
 #include <SpaceShipComponent.h>
+#include <SmokeParticle.h>
+#include <ParticleGenerator.h>
 
 #include "Renderer.h"
 #include "ResourceManager.h"
@@ -284,7 +286,16 @@ void createMeshes() {
 	hud->addRenderComponent(hudRenderer);
 	scene.transparentObjects.push_back(hud);
 
-    //SKYBOX
+	Texture *particleTexture = ResourceManager::loadAndFetchTexture("../scenes/smoke_part.png");
+
+	SmokeParticle *smokeConf = new SmokeParticle();
+	ParticleGenerator *gen = new ParticleGenerator(particleTexture, 200, playerCamera, make_vector(0.0f, 15.0f, 0.0f), smokeConf);
+	GameObject *particleGenerator = new GameObject();
+	particleGenerator->addRenderComponent(gen);
+	particleGenerator->setDynamic(true);
+	scene.transparentObjects.push_back(particleGenerator);
+    
+	//SKYBOX
 	Mesh *skyBoxM = ResourceManager::loadAndFetchMesh("../scenes/sphere.obj");
 	skyBox = GameObject(skyBoxM);
     SkyBoxRenderer *skyboxRenderer = new SkyBoxRenderer(playerCamera, skyBoxM, skyBox.getModelMatrix());

@@ -18,6 +18,13 @@ float3 SmokeParticle::accelerate(float3 velocity) {
 }
 
 float SmokeParticle::getLife() {
-    return getRand(0.0f, 2000.0f);
+    return getRand(0.0f, 60000.0f);
 }
 
+float3 SmokeParticle::getScale() {
+    return make_vector(.7f, .7f, .7f);
+}
+
+bool SmokeParticle::loop(float dt) {
+    return false;
+};
