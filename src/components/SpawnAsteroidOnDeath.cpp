@@ -60,7 +60,6 @@ void SpawnAsteroidOnDeath::onDeath(){
     ParticleGenerator *gen = new ParticleGenerator(particleTexture, 200, camera, location + cameraLocationUnit * 5, smokeConf);
     GameObject *particleGenerator = new GameObject();
     particleGenerator->addRenderComponent(gen);
-    particleGenerator->setDynamic(true);
     scene->transparentObjects.push_back(particleGenerator);
 
 }

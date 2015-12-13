@@ -17,6 +17,7 @@
 #include <SmokeParticle.h>
 #include <ParticleGenerator.h>
 #include <SpawnAsteroidOnDeath.h>
+#include <FireParticle.h>
 
 #include "GameObjectType.h"
 #include "DeathOnCollision.h"
@@ -305,13 +306,12 @@ void createMeshes() {
 	hud->addRenderComponent(hudRenderer);
 	scene.transparentObjects.push_back(hud);
 
-	/*Texture *particleTexture = ResourceManager::loadAndFetchTexture("../scenes/smoke_part.png");
+	/*Texture *particleTexture = ResourceManager::loadAndFetchTexture("../scenes/sun.png");
 
-	SmokeParticle *smokeConf = new SmokeParticle();
-	ParticleGenerator *gen = new ParticleGenerator(particleTexture, 200, playerCamera, make_vector(0.0f, 15.0f, 0.0f), smokeConf);
+	FireParticle *fireParticle = new FireParticle();
+	ParticleGenerator *gen = new ParticleGenerator(particleTexture, 200, playerCamera, make_vector(0.0f, 0.0f, 0.0f), fireParticle);
 	GameObject *particleGenerator = new GameObject();
 	particleGenerator->addRenderComponent(gen);
-	particleGenerator->setDynamic(true);
 	scene.transparentObjects.push_back(particleGenerator);*/
     
 	//SKYBOX
@@ -398,7 +398,11 @@ void createMeshes() {
 
 	Mesh* sunM = ResourceManager::loadAndFetchMesh("../scenes/sun.obj");
 	sun = GameObject(sunM);
-	sun.move(make_translation(make_vector(100.0f, 0.0f, 400.0f)));
+	MoveComponent *sunMover = new MoveComponent(&sun);
+	sunMover->setLocation(make_vector(20000.0f, 0.0f, 0.0f));
+	sunMover->setScale(make_vector(2000.0f, 2000.0f, 2000.0f));
+	sunMover->setRotationSpeed(make_vector(0.0f, 0.0001f, 0.0f));
+	sun.addComponent(sunMover);
 	StandardRenderer *sunRenderer = new StandardRenderer(sunM, sun.getModelMatrix(), standardShader);
 	sun.addRenderComponent(sunRenderer);
 
