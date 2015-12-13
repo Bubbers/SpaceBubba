@@ -250,6 +250,9 @@ void idle( int v )
 			Logger::logInfo("WIN CONDITION HAS BEEN MET :D");
 		}
 
+        string s = "Points: ";
+        Logger::logDebug(s.append(to_string(points)));
+
 	}
 	else {
 		glutTimerFunc(int(time), idle, 0);
