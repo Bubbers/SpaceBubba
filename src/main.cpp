@@ -270,6 +270,12 @@ void createMeshes() {
 	scene.shadowCasters.push_back(&asteroid);
 	broadPhaseCollider.addGameObject(&asteroid);
 
+	MoveComponent* asteroidMovement = new MoveComponent(&asteroid,
+													   make_vector(0.1f, 0.0f, 0.0f),
+													   make_vector(0.001f, 0.0f, 0.0f),
+													   make_vector(0.0f, 0.0f, 0.0f));
+	asteroid.addComponent(asteroidMovement);
+
 	Logger::logInfo("Finished loading meshes.");
 }
 

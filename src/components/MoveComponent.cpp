@@ -22,17 +22,14 @@ MoveComponent::MoveComponent(GameObject* meshObject) {
     maxSpeed = INT32_MAX;
 }
 
-MoveComponent::MoveComponent(GameObject* meshObject, float3 location, float3 velocity, float3 acceleration) : MoveComponent (meshObject){
-    this->location = location;
+MoveComponent::MoveComponent(GameObject* meshObject, float3 rotation, float3 velocity, float3 acceleration) : MoveComponent (meshObject){
     this->velocity = velocity;
     this->acceleration = acceleration;
+    this->rotation = rotation;
 }
 
 void MoveComponent::update(float dt) {
     updateMeshObject(dt);
-    anglex = 0;
-    angley = 0;
-    anglez = 0;
 }
 
 void MoveComponent::afterCollision() {
@@ -48,7 +45,6 @@ void MoveComponent::beforeCollision() {
 }
 
 void MoveComponent::updateMeshObject(float dt){
-    float3 vUp = make_vector(0.0f, 1.0f, 0.0f);
 
     velocity += acceleration*dt;
     if(length(velocity) > maxSpeed){
@@ -56,17 +52,11 @@ void MoveComponent::updateMeshObject(float dt){
         velocity = ratio*velocity;
     }
 
-    float3 n_frontDir = normalize(frontDir);
-    float3 rightDir = normalize(cross(frontDir, vUp));
+    Quaternion qatX = make_quaternion_axis_angle(make_vector(1.0f,0.0f,0.0f), rotation.x);
+    Quaternion qatY = make_quaternion_axis_angle(make_vector(0.0f,1.0f,0.0f), rotation.y);
+    Quaternion qatZ = make_quaternion_axis_angle(make_vector(0.0f,0.0f,1.0f), rotation.z);
 
-    float anglex = -(degreeToRad(90.0f) - acosf(dot(normalize(upDir), n_frontDir)));
-    float anglez = (degreeToRad(90.0f) - acosf(dot(normalize(upDir), rightDir)));
-
-    Quaternion qatX = make_quaternion_axis_angle(rightDir, anglex);
-    Quaternion qatY = make_quaternion_axis_angle(vUp, angley);
-    Quaternion qatZ = make_quaternion_axis_angle(make_rotation_y<float3x3>(-angley) * n_frontDir, anglez);
-
-    meshObject->update(make_translation(location + velocity*frontDir));
+    meshObject->update(make_translation(velocity*dt));
     meshObject->update(makematrix(qatX));
     meshObject->update(makematrix(qatY));
     meshObject->update(makematrix(qatZ));

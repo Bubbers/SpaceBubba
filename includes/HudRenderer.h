@@ -14,6 +14,7 @@ public:
     HudRenderer();
     ~HudRenderer();
     struct HudConfig{
+        //percentage (0-100)
         float speed = 0.0f;
     };
 

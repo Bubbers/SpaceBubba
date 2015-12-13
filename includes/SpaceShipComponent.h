@@ -19,6 +19,8 @@ private:
     float* cameraThetaLocation;
     void checkKeyPresses();
 
+    float rotationSpeed = (float) (2 * M_PI / 180);
+
 };
 
 
