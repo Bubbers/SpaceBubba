@@ -35,7 +35,7 @@ void SpaceShipComponent::checkKeyPresses(float dt) {
             float ratio = 0.00007f/abs(accelerationSpeed);
             accelerationSpeed *= ratio;
         } else
-            accelerationSpeed += 0.000005f;
+            accelerationSpeed += 0.0000005f;
         acceleration = normalize(frontDir)*accelerationSpeed * (im->isKeyDown('w',false) ? 1 : -1);
     }else{
         acceleration = make_vector(0.0f,0.0f,0.0f);
