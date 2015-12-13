@@ -40,6 +40,9 @@ using namespace chag;
 float currentTime = 0.0f;			// Tells us the current time
 float timeSinceDraw = 0.0f;
 
+float points = 0.0f;
+
+const float WIN_CONDITION = 100.0f;
 
 //*****************************************************************************
 //	OBJ Model declarations
@@ -235,6 +238,11 @@ void idle( int v )
         broadPhaseCollider.updateCollision();
 
 		glutPostRedisplay();
+
+		if (points >= WIN_CONDITION) {
+			Logger::logInfo("WIN CONDITION HAS BEEN MET :D");
+		}
+
 	}
 	else {
 		glutTimerFunc(int(time), idle, 0);
