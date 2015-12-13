@@ -33,6 +33,17 @@ static float getRand(float min, float max) {
 	return (((rand() % decimals) / ((float)decimals)) * range) + min;
 }
 
+template <typename T, unsigned S>
+static T getRandomElem(const T (&ts)[S])
+{
+	if (S > 0) {
+		int ix = (int) getRand(0.0f, S + 0.99f);
+		return ts[ix];
+	} else {
+		return NULL;
+	}
+}
+
 static float3 createRandomVector(float minValue, float maxValue){
 	return make_vector(getRand(minValue,maxValue),getRand(minValue,maxValue),getRand(minValue,maxValue));
 }
