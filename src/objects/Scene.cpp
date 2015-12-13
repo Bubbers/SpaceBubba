@@ -25,11 +25,14 @@ void Scene::update(float dt) {
 }
 
 void Scene::removeDirty(std::vector<GameObject*> *v) {
-    for(auto i = v->begin(); v->end() != i; i++)
+    for(auto i = v->begin(); i < v->end(); i++)
     {
         if((*i)->isDirty())
         {
             i = v->erase(i);
+            /*if(i == v->end()) {
+                return;
+            }*/
         }
     }
 }

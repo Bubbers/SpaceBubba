@@ -44,6 +44,7 @@ void MoveComponent::beforeCollision() {
     Logger::logInfo("BeforeCollision");
 }
 
+
 void MoveComponent::updateMeshObject(float dt){
 
     velocity += acceleration*dt;
