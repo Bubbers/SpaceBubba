@@ -5,6 +5,7 @@
 #include <MoveComponent.h>
 #include <InputManager.h>
 #include "SpaceShipComponent.h"
+#include "float3x3.h"
 
 
 SpaceShipComponent::SpaceShipComponent(struct HudRenderer::HudConfig* hudConf, float* cameraThetaLocation, GameObject* ship)
@@ -38,9 +39,17 @@ void SpaceShipComponent::checkKeyPresses() {
     if (im->isKeyDown('a',false)) {
         rotation.y = rotationSpeed;
         *cameraThetaLocation += rotationSpeed;
+        frontDir = make_rotation_y<float3x3>(rotationSpeed) * frontDir;
     } else if (im->isKeyDown('d',false)) {
         rotation.y = - rotationSpeed;
         *cameraThetaLocation -= rotationSpeed;
+        frontDir = make_rotation_y<float3x3>(-rotationSpeed) * frontDir;
     }else
         rotation.y = 0;
 }
+
+float3 SpaceShipComponent::getFrontDir() {
+    return frontDir;
+}
+
+
