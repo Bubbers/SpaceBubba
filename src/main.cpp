@@ -175,22 +175,22 @@ void idle( int v )
 		Logger::logDebug(to_string(location.y));
 		Logger::logDebug(to_string(location.z));
 		float3 diff = (location - pc);
-		float dist = 100.f;
+		float dist = 20.f;
 		if (length(diff) > dist) {
 			chase = true;
 		}
 
 		if (chase) {
-			if (camspeed < 1.0f) {
-				camspeed += .01f;
+			if (camspeed < 1.5f) {
+				camspeed += .001f;
 			} else {
 				chase = false;
 			}
 		} else {
-			if(camspeed > 0.7) {
-				camspeed -= 0.01f;
+			if(camspeed > 0.0) {
+				camspeed -= 0.0f;
 			} else {
-				camspeed = 0.7f;
+				camspeed = 0.0f;
 			}
 		}
 
