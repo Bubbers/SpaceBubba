@@ -2,8 +2,8 @@
 // Created by basse on 2015-12-12.
 //
 
-#include "../../../includes/Weapon.h"
-#include "../../../includes/Projectile.h"
+#include "Weapon.h"
+#include "Projectile.h"
 #include <thread>
 
 void Weapon::destroyAfter(int time, Projectile* projectile) {

@@ -12,6 +12,7 @@
 #include <StandardRenderer.h>
 #include "MoveComponent.h"
 #include <InputManager.h>
+#include <TimedLife.h>
 #include <SpaceShipComponent.h>
 
 #include "Renderer.h"
@@ -315,6 +316,8 @@ void createMeshes() {
 	rWing.move(make_translation(make_vector(0.0f, 0.0f, 0.0f)));
 	StandardRenderer *carRenderer = new StandardRenderer(rWingM, rWing.getModelMatrix(), standardShader);
 	rWing.addRenderComponent(carRenderer);
+//	TimedLife *tl = new TimedLife(&rWing, 5000);
+//	rWing.addComponent(tl);
 
 	MoveComponent *shipComponent = new SpaceShipComponent(hudRenderer->getConfig(),&camera_theta, &rWing);
 	rWing.addComponent(shipComponent);

@@ -2,8 +2,8 @@
 // Created by basse on 2015-12-12.
 //
 
-#include "../../../includes/LaserCannon.h"
-#include "../../../includes/LaserProjectile.h"
+#include "LaserCannon.h"
+#include "LaserProjectile.h"
 #include <thread>
 int LaserCannon::baseDamage = 10;
 
