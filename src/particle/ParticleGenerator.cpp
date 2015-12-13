@@ -52,6 +52,10 @@ ParticleGenerator::~ParticleGenerator()
 
 }
 
+void ParticleGenerator::setScaleLod(bool value) {
+	doScale = value;
+}
+
 
 void ParticleGenerator::render() {
 	glDisable(GL_CULL_FACE);
@@ -86,8 +90,13 @@ void ParticleGenerator::render() {
 		if (iterations > maxParticles) { break; }
 		iterations++;
 
+		float3 scale;
 		if (particle->isAlive()) {
-			float3 scale = conf->getScale() * (1.0 + distance / LINEAR_SCALE_FACTOR);
+			if(doScale) {
+				scale = conf->getScale() * (1.0 + distance / LINEAR_SCALE_FACTOR);
+			} else {
+				scale = make_vector(1.0f, 1.0f, 1.0f);
+			}
 			float4x4 modelMatrix4x4 = make_matrix(modelMatrix3x3, particle->getPosition()) * make_scale<float4x4>(scale);
 
 			shaderProgram->setUniformMatrix4fv("modelMatrix", modelMatrix4x4);

@@ -18,6 +18,7 @@
 #include <ParticleGenerator.h>
 #include <SpawnAsteroidOnDeath.h>
 #include <FireParticle.h>
+#include "FireSphere.h"
 
 #include "GameObjectType.h"
 #include "DeathOnCollision.h"
@@ -306,14 +307,6 @@ void createMeshes() {
 	HudRenderer *hudRenderer = new HudRenderer();
 	hud->addRenderComponent(hudRenderer);
 	scene.transparentObjects.push_back(hud);
-
-	Texture *particleTexture = ResourceManager::loadAndFetchTexture("../scenes/sun.png");
-
-	FireParticle *fireParticle = new FireParticle();
-	ParticleGenerator *gen = new ParticleGenerator(particleTexture, 200, playerCamera, make_vector(0.0f, 0.0f, 0.0f), fireParticle);
-	GameObject *particleGenerator = new GameObject();
-	particleGenerator->addRenderComponent(gen);
-	scene.transparentObjects.push_back(particleGenerator);
     
 	//SKYBOX
 	Mesh *skyBoxM = ResourceManager::loadAndFetchMesh("../scenes/sphere.obj");

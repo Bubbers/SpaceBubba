@@ -29,6 +29,8 @@ public:
 	void renderShadow(Shader* shaderProgram) {};
 	void render();
 
+	void setScaleLod(bool value);
+
 	Camera *m_camera;
 	float3 m_position;
 
@@ -39,6 +41,7 @@ private:
 	int m_amount;
 
 	ParticleConf *conf;
+	bool doScale = true;
 
 	float3x3 getModelMatrix3x3();
 };
