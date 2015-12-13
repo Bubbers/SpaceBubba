@@ -10,7 +10,7 @@
 
 class ShootComponent : public IComponent {
 public:
-    ShootComponent(GameObject* object, SpaceShipComponent *objectMover, Scene *scene, BFBroadPhase *collisionHandler, float timeToLive);
+    ShootComponent(GameObject* object, SpaceShipComponent *objectMover, Scene *scene, BFBroadPhase *collisionHandler, float timeToLive, int width, int height);
     virtual void update(float dt);
 
 private:
@@ -19,6 +19,7 @@ private:
     Scene *scene;
     BFBroadPhase *collisionHandler;
     float timeToLive = 0;
+    int width, height;
 
     void spawnBullet();
 };

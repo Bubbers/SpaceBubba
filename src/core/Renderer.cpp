@@ -2,8 +2,9 @@
 #include <sstream>
 #include "ResourceManager.h"
 #include "constants.h"
+#include "Utils.h"
 
-
+void loadShaders();
 
 
 namespace patch
@@ -86,7 +87,6 @@ void Renderer::drawScene(Camera camera, Scene scene, float currentTime)
 	float4x4 viewProjectionMatrix = projectionMatrix * viewMatrix;
 
 
-
 	// enable back face culling.
 	glEnable(GL_CULL_FACE);
 
@@ -108,7 +108,8 @@ void Renderer::drawScene(Camera camera, Scene scene, float currentTime)
 	//*************************************************************************
 	// Render the scene from the cameras viewpoint, to the default framebuffer
 	//*************************************************************************
-	glBindFramebuffer(GL_FRAMEBUFFER, postProcessFbo.id);
+	//glBindFramebuffer(GL_FRAMEBUFFER, postProcessFbo.id);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glClearColor(0.2, 0.2, 0.8, 1.0);
 	glClearDepth(1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -147,9 +148,8 @@ void Renderer::drawScene(Camera camera, Scene scene, float currentTime)
 
 	drawShadowCasters(shaderProgram, scene);
 	drawTransparent(shaderProgram, scene);
-	drawDebug(viewMatrix, projectionMatrix, scene);
 
-	renderPostProcess();
+	//renderPostProcess();
 
 	//Cleanup
 	glUseProgram(0);
@@ -201,7 +201,7 @@ void Renderer::setLights(Shader* shaderProgram, Scene scene) {
 void Renderer::drawShadowCasters(Shader* shaderProgram, Scene scene)
 {
 	for (int i = 0; i < scene.shadowCasters.size(); i++) {
-		shaderProgram->setUniform1f("object_reflectiveness", (*scene.shadowCasters[i]).shininess);
+		//shaderProgram->setUniform1f("object_reflectiveness", (*scene.shadowCasters[i]).shininess);
 		drawModel(*scene.shadowCasters[i], shaderProgram);
 	}
 }
@@ -277,6 +277,7 @@ void Renderer::initGL()
 	//*************************************************************************
 	//	Load shaders
 	//*************************************************************************
+	loadShaders();
 	ResourceManager::loadShader("../shaders/simple.vert", "../shaders/simple.frag", SIMPLE_SHADER_NAME);
 
 	shaderProgram = ResourceManager::getShader(SIMPLE_SHADER_NAME);
@@ -330,20 +331,10 @@ void Renderer::initGL()
 	// Create post process Fbo
 	//*************************************************************************
 
-	string post_fx = "POST_FX_SHADER";
-	string vert_blur = "VERTICAL_BLUR_SHADER";
-	string hor_blur = "HORIZONTAL_BLUR_SHADER";
-	string cutoff = "CUTOFF_SHADER";
-
-	ResourceManager::loadShader("../shaders/postFx.vert", "../shaders/postFx.frag", post_fx);
-	ResourceManager::loadShader("../shaders/postFx.vert", "../shaders/vertical_blur.frag", vert_blur);
-	ResourceManager::loadShader("../shaders/postFx.vert", "../shaders/horizontal_blur.frag", hor_blur);
-	ResourceManager::loadShader("../shaders/postFx.vert", "../shaders/cutoff.frag", cutoff);
-
-	postFxShader = ResourceManager::getShader(post_fx);
-	verticalBlurShader = ResourceManager::getShader(vert_blur);
-	horizontalBlurShader = ResourceManager::getShader(hor_blur);
-	cutoffShader = ResourceManager::getShader(cutoff);
+	postFxShader = ResourceManager::getShader(POST_FX_SHADER_NAME);
+	verticalBlurShader = ResourceManager::getShader(VERTICAL_BLUR_SHADER_NAME);
+	horizontalBlurShader = ResourceManager::getShader(HORIZONTAL_BLUR_SHADER_NAME);
+	cutoffShader = ResourceManager::getShader(CUTOFF_SHADER_NAME);
 
 	postProcessFbo = createPostProcessFbo(width, height);
 	verticalBlurFbo = createPostProcessFbo(width, height);
@@ -352,7 +343,7 @@ void Renderer::initGL()
 
 		
 	//Cleanup
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, DEFAULT_FRAMEBUFFER_ID);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	glEnable(GL_DEPTH_TEST);
@@ -360,33 +351,6 @@ void Renderer::initGL()
 	Logger::logInfo("Generating OpenGL data completed.");
 }
 
-Fbo Renderer::createPostProcessFbo(int width, int height) {
-
-	Fbo fbo;
-
-	fbo.width = width;
-	fbo.height = height;
-
-	glGenFramebuffers(1, &fbo.id);
-	glBindFramebuffer(GL_FRAMEBUFFER, fbo.id);
-
-	glGenTextures(1, &fbo.texture);
-	glBindTexture(GL_TEXTURE_RECTANGLE_ARB, fbo.texture);
-
-	glTexParameteri(GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_RECTANGLE_ARB, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexImage2D(GL_TEXTURE_RECTANGLE_ARB, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-
-
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_RECTANGLE_ARB, fbo.texture, 0);
-
-	glGenRenderbuffers(1, &fbo.depthbuffer);
-	glBindRenderbuffer(GL_RENDERBUFFER, fbo.depthbuffer);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, width, height);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, fbo.depthbuffer);
-
-	return fbo;
-}
 
 void Renderer::renderPostProcess() {
 	int w = glutGet((GLenum)GLUT_WINDOW_WIDTH);
@@ -396,7 +360,7 @@ void Renderer::renderPostProcess() {
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, w, h);
-	glClearColor(0.6, 0.0, 0.0, 1.0);
+	glClearColor(0.0, 0.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	postFxShader->use();
@@ -452,238 +416,12 @@ void Renderer::blurImage() {
 	drawFullScreenQuad();
 }
 
-void Renderer::drawFullScreenQuad()
-{
-	static GLuint vertexArrayObject = 0;
-	static int nofVertices = 4;
-
-	// do this initialization first time the function is called... somewhat dodgy, but works for demonstration purposes
-	if (vertexArrayObject == 0)
-	{
-		glGenVertexArrays(1, &vertexArrayObject);
-		static const float2 positions[] = {
-		/*		{ -1.0f, -1.0f },
-				{ 1.0f, -1.0f },
-				{ 1.0f, 1.0f },
-				{ -1.0f, 1.0f },*/
-				-1.0f, -1.0f,
-				1.0f, 1.0f,
-				-1.0f, 1.0f,
-
-				-1.0f, -1.0f,
-				1.0f, -1.0f,
-				1.0f, 1.0f
-		};
-		createAddAttribBuffer(vertexArrayObject, positions, sizeof(positions), 0, 2, GL_FLOAT);
-		GLuint pos_vbo;
-		glGenBuffers(1, &pos_vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, pos_vbo);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(positions), positions, GL_STATIC_DRAW);
-
-		glBindVertexArray(vertexArrayObject);
-		glVertexAttribPointer(0, 2, GL_FLOAT, false, 0, 0 );
-		glEnableVertexAttribArray(0);
-		CHECK_GL_ERROR();
-	}
-
-	glBindVertexArray(vertexArrayObject);
-	glDrawArrays(GL_TRIANGLES, 0, 6);
-	//glDrawArrays(GL_QUADS, 0, nofVertices);
-}
-
-void Renderer::drawDebug(const float4x4 &viewMatrix, const float4x4 &projectionMatrix, Scene scene) {
-  //debugDrawOctree(viewMatrix, projectionMatrix, octree);
-	if (scene.shadowMapCamera != NULL) {
-		//debugDrawLight(viewMatrix, projectionMatrix, scene.shadowMapCamera->getPosition());
-	}
-	/*debugDrawQuad(viewMatrix, projectionMatrix, carLoc.location + make_vector(0.2f, 1.2f, 0.0f), make_vector(1.0f, 1.0f, 1.5f));
-	float3x3 rot = make_rotation_y<float3x3>(carLoc.angley);
-	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location + rot * carLoc.wheel1, -carLoc.upDir);
-	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location + rot * carLoc.wheel2, -carLoc.upDir);
-	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location + rot * carLoc.wheel3, -carLoc.upDir);
-	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location + rot * carLoc.wheel4, -carLoc.upDir);
-	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location, carLoc.upDir);
-	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location, carLoc.frontDir);
-	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location, normalize(cross(carLoc.frontDir, make_vector(0.0f, 1.0f, 0.0f))));
-	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location, vUp);*/
-}
-
-void Renderer::debugDrawLine(const float4x4 &viewMatrix, const float4x4 &projectionMatrix, float3 origin, float3 rayVector) {
-	GLint temp;
-	glColor3f(1.0, 1.0, 0.0);
-	glGetIntegerv(GL_CURRENT_PROGRAM, &temp);
-	glUseProgram(0);
-	glMatrixMode(GL_PROJECTION);
-	glLoadMatrixf(&projectionMatrix.c1.x);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadMatrixf(&viewMatrix.c1.x);
-
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-	float3 p[8];
-	p[0] = origin;
-	p[1] = origin + (normalize(rayVector) * 5);
-
-	glBegin(GL_LINES);
-
-	glVertex3f(p[0].x, p[0].y, p[0].z);
-	glVertex3f(p[1].x, p[1].y, p[1].z);
-
-	glEnd();
-	glUseProgram(temp);
-}
-
-void Renderer::debugDrawQuad(const float4x4 &viewMatrix, const float4x4 &projectionMatrix, float3 origin, float3 halfVector) {
-	GLint temp;
-	glColor3f(1.0, 1.0, 0.0);
-	glGetIntegerv(GL_CURRENT_PROGRAM, &temp);
-	glUseProgram(0);
-	glMatrixMode(GL_PROJECTION);
-	glLoadMatrixf(&projectionMatrix.c1.x);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadMatrixf(&viewMatrix.c1.x);
-
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-	float3 p[8];
-	p[0] = origin + (halfVector * make_vector(1.0f, 1.0f, 1.0f));
-	p[1] = origin + (halfVector * make_vector(-1.0f, 1.0f, 1.0f));
-
-	p[2] = origin + (halfVector * make_vector(1.0f, -1.0f, 1.0f));
-	p[3] = origin + (halfVector * make_vector(-1.0f, -1.0f, 1.0f));
-
-	p[4] = origin + (halfVector * make_vector(1.0f, 1.0f, -1.0f));
-	p[5] = origin + (halfVector * make_vector(-1.0f, 1.0f, -1.0f));
-
-	p[6] = origin + (halfVector * make_vector(1.0f, -1.0f, -1.0f));
-	p[7] = origin + (halfVector * make_vector(-1.0f, -1.0f, -1.0f));
 
 
-	glBegin(GL_LINES);
-
-	glVertex3f(p[0].x, p[0].y, p[0].z);
-	glVertex3f(p[1].x, p[1].y, p[1].z);
-
-	glVertex3f(p[0].x, p[0].y, p[0].z);
-	glVertex3f(p[2].x, p[2].y, p[2].z);
-
-	glVertex3f(p[0].x, p[0].y, p[0].z);
-	glVertex3f(p[4].x, p[4].y, p[4].z);
-
-	///////
-	glVertex3f(p[7].x, p[7].y, p[7].z);
-	glVertex3f(p[6].x, p[6].y, p[6].z);
-
-	glVertex3f(p[7].x, p[7].y, p[7].z);
-	glVertex3f(p[5].x, p[5].y, p[5].z);
-
-	glVertex3f(p[7].x, p[7].y, p[7].z);
-	glVertex3f(p[3].x, p[3].y, p[3].z);
-
-	///////
-	glVertex3f(p[5].x, p[5].y, p[5].z);
-	glVertex3f(p[1].x, p[1].y, p[1].z);
-
-	glVertex3f(p[5].x, p[5].y, p[5].z);
-	glVertex3f(p[4].x, p[4].y, p[4].z);
-
-	///////
-	glVertex3f(p[3].x, p[3].y, p[3].z);
-	glVertex3f(p[1].x, p[1].y, p[1].z);
-
-	glVertex3f(p[3].x, p[3].y, p[3].z);
-	glVertex3f(p[2].x, p[2].y, p[2].z);
-
-	///////
-	glVertex3f(p[6].x, p[6].y, p[6].z);
-	glVertex3f(p[4].x, p[4].y, p[4].z);
-
-	glVertex3f(p[6].x, p[6].y, p[6].z);
-	glVertex3f(p[2].x, p[2].y, p[2].z);
-
-	glEnd();
-	glUseProgram(temp);
-}
-
-void Renderer::debugDrawOctree(const float4x4 &viewMatrix, const float4x4 &projectionMatrix, Octree tree)
-{
-	GLint temp;
-	glColor3f(1.0, 1.0, 0.0);
-	glGetIntegerv(GL_CURRENT_PROGRAM, &temp);
-	glUseProgram(0);
-	glMatrixMode(GL_PROJECTION);
-	glLoadMatrixf(&projectionMatrix.c1.x);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadMatrixf(&viewMatrix.c1.x);
-
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-	float3 p[8];
-	p[0] = tree.origin + (tree.halfVector * make_vector(1.0f, 1.0f, 1.0f));
-	p[1] = tree.origin + (tree.halfVector * make_vector(-1.0f, 1.0f, 1.0f));
-
-	p[2] = tree.origin + (tree.halfVector * make_vector(1.0f, -1.0f, 1.0f));
-	p[3] = tree.origin + (tree.halfVector * make_vector(-1.0f, -1.0f, 1.0f));
-
-	p[4] = tree.origin + (tree.halfVector * make_vector(1.0f, 1.0f, -1.0f));
-	p[5] = tree.origin + (tree.halfVector * make_vector(-1.0f, 1.0f, -1.0f));
-
-	p[6] = tree.origin + (tree.halfVector * make_vector(1.0f, -1.0f, -1.0f));
-	p[7] = tree.origin + (tree.halfVector * make_vector(-1.0f, -1.0f, -1.0f));
-
-
-	glBegin(GL_LINES);
-
-	glVertex3f(p[0].x, p[0].y, p[0].z);
-	glVertex3f(p[1].x, p[1].y, p[1].z);
-
-	glVertex3f(p[0].x, p[0].y, p[0].z);
-	glVertex3f(p[2].x, p[2].y, p[2].z);
-
-	glVertex3f(p[0].x, p[0].y, p[0].z);
-	glVertex3f(p[4].x, p[4].y, p[4].z);
-
-	///////
-	glVertex3f(p[7].x, p[7].y, p[7].z);
-	glVertex3f(p[6].x, p[6].y, p[6].z);
-
-	glVertex3f(p[7].x, p[7].y, p[7].z);
-	glVertex3f(p[5].x, p[5].y, p[5].z);
-
-	glVertex3f(p[7].x, p[7].y, p[7].z);
-	glVertex3f(p[3].x, p[3].y, p[3].z);
-
-	///////
-	glVertex3f(p[5].x, p[5].y, p[5].z);
-	glVertex3f(p[1].x, p[1].y, p[1].z);
-
-	glVertex3f(p[5].x, p[5].y, p[5].z);
-	glVertex3f(p[4].x, p[4].y, p[4].z);
-
-	///////
-	glVertex3f(p[3].x, p[3].y, p[3].z);
-	glVertex3f(p[1].x, p[1].y, p[1].z);
-
-	glVertex3f(p[3].x, p[3].y, p[3].z);
-	glVertex3f(p[2].x, p[2].y, p[2].z);
-
-	///////
-	glVertex3f(p[6].x, p[6].y, p[6].z);
-	glVertex3f(p[4].x, p[4].y, p[4].z);
-
-	glVertex3f(p[6].x, p[6].y, p[6].z);
-	glVertex3f(p[2].x, p[2].y, p[2].z);
-
-	glEnd();
-	glUseProgram(temp);
-
-
-	std::vector<Octree*> children;
-	tree.getChildren(&children);
-
-	if (children.size() != 0) {
-		for (int i = 0; i < 8; i++) {
-			debugDrawOctree(viewMatrix, projectionMatrix, *children[i]);
-		}
-	}
+void loadShaders() {
+	ResourceManager::loadShader("../shaders/postFx.vert", "../shaders/postFx.frag", POST_FX_SHADER_NAME);
+	ResourceManager::loadShader("../shaders/postFx.vert", "../shaders/vertical_blur.frag", VERTICAL_BLUR_SHADER_NAME);
+	ResourceManager::loadShader("../shaders/postFx.vert", "../shaders/horizontal_blur.frag", HORIZONTAL_BLUR_SHADER_NAME);
+	ResourceManager::loadShader("../shaders/postFx.vert", "../shaders/cutoff.frag", CUTOFF_SHADER_NAME);
+	ResourceManager::loadShader("../shaders/framBufferChange.vert", "../shaders/framBufferChange.frag", FRAME_BUFFER_CHANGE_SHADER_NAME);
 }

@@ -14,12 +14,14 @@
 #include "InputManager.h"
 
 
-ShootComponent::ShootComponent(GameObject* object, SpaceShipComponent *objectMover, Scene *scene, BFBroadPhase *collisionHandler, float timeToLive) {
+ShootComponent::ShootComponent(GameObject* object, SpaceShipComponent *objectMover, Scene *scene, BFBroadPhase *collisionHandler, float timeToLive, int width, int height) {
     this->object = object;
     this->objectMover = objectMover;
     this->scene = scene;
     this->collisionHandler = collisionHandler;
     this->timeToLive = timeToLive;
+    this->width = width;
+    this->height = height;
 }
 
 void ShootComponent::update(float dt) {
@@ -43,7 +45,7 @@ void ShootComponent::spawnBullet() {
     //shot->move(make_translation(location));
     //shot->update(make_rotation_y<float4x4>(degreeToRad(90)));
 
-    StandardRenderer *shotRenderer = new StandardRenderer(shotM, shot->getModelMatrix(), standardShader);
+    StandardRenderer *shotRenderer = new StandardRenderer(shotM, shot->getModelMatrix(), standardShader, width, height);
     shot->addRenderComponent(shotRenderer);
     shot->setDynamic(false);
 

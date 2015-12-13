@@ -7,8 +7,8 @@ StandardRenderer::StandardRenderer(){
 
 }
 
-StandardRenderer::StandardRenderer(Mesh* mesh, float4x4* modelMatrix, Shader* shaderProgram):
-        mesh(mesh), modelMatrix(modelMatrix)
+StandardRenderer::StandardRenderer(Mesh* mesh, float4x4* modelMatrix, Shader* shaderProgram,int width, int height):
+        mesh(mesh), modelMatrix(modelMatrix), IRenderComponent(width, height)
 {
     this->shaderProgram = shaderProgram;
 }
@@ -19,6 +19,12 @@ void StandardRenderer::update(float dt){
 }
 
 void StandardRenderer::render() {
+    glBindFramebuffer(GL_FRAMEBUFFER, frameBufferObject.id);
+    glViewport(0, 0, width, height);
+    glClearColor(0.0, 0.0, 0.0, 1.0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    shaderProgram->backupCurrentShaderProgram();
     shaderProgram->use();
     CHECK_GL_ERROR();
 
@@ -56,7 +62,13 @@ void StandardRenderer::render() {
         CHECK_GL_ERROR();
     }
     CHECK_GL_ERROR();
+
+    blitToDefaultFrameBuffer();
+
+    shaderProgram->restorePreviousShaderProgram();
 }
+
+
 
 void StandardRenderer::renderShadow(Shader *shaderProgram) {
 

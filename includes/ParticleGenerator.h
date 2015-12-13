@@ -22,7 +22,7 @@ using namespace chag;
 class ParticleGenerator : public IRenderComponent
 {
 public:
-	ParticleGenerator(Texture *texture, int amount, Camera *camera, float3 position, ParticleConf *conf);
+	ParticleGenerator(Texture *texture, int amount, Camera *camera, float3 position, ParticleConf *conf, int width, int height);
 	~ParticleGenerator();
 
 	void update(float dt);

@@ -3,7 +3,8 @@
 #include "constants.h"
 #define SKYBOX_SHADER_NAME "skybox_shader"
 
-SkyBoxRenderer::SkyBoxRenderer(Camera *camera, Mesh* skyMesh, float4x4* modelMatrix) : m_camera(camera), m_skyMesh(skyMesh), modelMatrix(modelMatrix) {
+SkyBoxRenderer::SkyBoxRenderer(Camera *camera, Mesh* skyMesh, float4x4* modelMatrix, int width, int height) : m_camera(camera), m_skyMesh(skyMesh), modelMatrix(modelMatrix) ,IRenderComponent(width,height){
+
 }
 
 bool SkyBoxRenderer::init(const string &posXFilename, const string &negXFilename, const string &posYFilename,

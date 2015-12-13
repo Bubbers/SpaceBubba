@@ -11,7 +11,7 @@ using namespace chag;
 class StandardRenderer : public IRenderComponent {
 public:
     StandardRenderer();
-    StandardRenderer(Mesh*, float4x4*, Shader*);
+    StandardRenderer(Mesh*, float4x4*, Shader*, int width, int height);
 
     void update(float dt);
     void render();

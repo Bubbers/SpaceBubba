@@ -7,9 +7,10 @@
 
 using namespace chag;
 
-ParticleGenerator::ParticleGenerator(Texture *texture, int amount, Camera *camera, float3 position, ParticleConf *conf)
-	:  texture(texture), m_amount(amount), m_camera(camera), m_position(position), conf(conf)
+ParticleGenerator::ParticleGenerator(Texture *texture, int amount, Camera *camera, float3 position, ParticleConf *conf, int width, int height)
+	:  texture(texture), m_amount(amount), m_camera(camera), m_position(position), conf(conf), IRenderComponent(width, height)
 {
+
 	ResourceManager::loadShader("../shaders/particle.vert", "../shaders/particle.frag", "particleShader");
 	shaderProgram = ResourceManager::getShader("particleShader");
 	shaderProgram->setUniformBufferObjectBinding(UNIFORM_BUFFER_OBJECT_MATRICES_NAME,UNIFORM_BUFFER_OBJECT_MATRICES_INDEX);

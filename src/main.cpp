@@ -26,6 +26,7 @@
 #include "HudRenderer.h"
 #include "SoundManager.h"
 #include "ShootComponent.h"
+#include "PostProcessingRenderer.h"
 
 using namespace std;
 using namespace chag;
@@ -42,6 +43,7 @@ using namespace chag;
 //*****************************************************************************
 float currentTime = 0.0f;			// Tells us the current time
 float timeSinceDraw = 0.0f;
+int width, height;
 
 int points = 0;
 
@@ -234,13 +236,15 @@ void idle( int v )
 }
 
 
+
+
 int main(int argc, char *argv[])
 {
-	Logger::debug = false;
-	int w = SCREEN_WIDTH;
-	int h = SCREEN_HEIGHT;
+	Logger::debug = true;
+	width = SCREEN_WIDTH;
+	height = SCREEN_HEIGHT;
 
-	renderer = new Renderer(argc, argv, w, h);
+	renderer = new Renderer(argc, argv, width, height);
 	glutTimerFunc(50, idle, 0);
 	glutDisplayFunc(display);
 
@@ -249,6 +253,7 @@ int main(int argc, char *argv[])
 	im->addSpecialKeyListener(specialKey);
 
 	soundManager = new SoundManager();
+
 	renderer->initGL();
 
 	createCubeMaps();
@@ -292,24 +297,24 @@ void createMeshes() {
 	hud = new GameObject();
 	HudRenderer *hudRenderer = new HudRenderer();
 	hud->addRenderComponent(hudRenderer);
-	scene.transparentObjects.push_back(hud);
+	//scene.shadowCasters.push_back(hud);
 
 	Texture *particleTexture = ResourceManager::loadAndFetchTexture("../scenes/smoke_part.png");
 
 	SmokeParticle *smokeConf = new SmokeParticle();
-	ParticleGenerator *gen = new ParticleGenerator(particleTexture, 200, playerCamera, make_vector(0.0f, 15.0f, 0.0f), smokeConf);
+	ParticleGenerator *gen = new ParticleGenerator(particleTexture, 200, playerCamera, make_vector(0.0f, 15.0f, 0.0f), smokeConf, width, height);
 	GameObject *particleGenerator = new GameObject();
 	particleGenerator->addRenderComponent(gen);
 	particleGenerator->setDynamic(true);
-	scene.transparentObjects.push_back(particleGenerator);
+	//scene.transparentObjects.push_back(particleGenerator);
     
 	//SKYBOX
 	Mesh *skyBoxM = ResourceManager::loadAndFetchMesh("../scenes/sphere.obj");
 	skyBox = GameObject(skyBoxM);
-    SkyBoxRenderer *skyboxRenderer = new SkyBoxRenderer(playerCamera, skyBoxM, skyBox.getModelMatrix());
+    SkyBoxRenderer *skyboxRenderer = new SkyBoxRenderer(playerCamera, skyBoxM, skyBox.getModelMatrix(), width, height);
     skyboxRenderer->init("../scenes/x.png", "../scenes/fancyx.png", "../scenes/fancyy.png", "../scenes/y.png", "../scenes/fancyz.png", "../scenes/z.png");
     skyBox.addRenderComponent(skyboxRenderer);
-    scene.shadowCasters.push_back(&skyBox);
+    //scene.shadowCasters.push_back(&skyBox);
 
     //OBJECTS
 	Shader* standardShader = ResourceManager::getShader(SIMPLE_SHADER_NAME);
@@ -318,7 +323,7 @@ void createMeshes() {
 	Mesh* rWingM = ResourceManager::loadAndFetchMesh("../scenes/R_wing.obj");
 	rWing = GameObject(rWingM);
 	rWing.move(make_translation(make_vector(0.0f, 0.0f, 0.0f)));
-	StandardRenderer *carRenderer = new StandardRenderer(rWingM, rWing.getModelMatrix(), standardShader);
+	StandardRenderer *carRenderer = new StandardRenderer(rWingM, rWing.getModelMatrix(), standardShader, width, height);
 	rWing.addRenderComponent(carRenderer);
 
 	TimedLife *tl = new TimedLife(&asteroid, 1000);
@@ -326,7 +331,7 @@ void createMeshes() {
 
 
 	spaceMover = new SpaceShipComponent(hudRenderer->getConfig(),&camera_theta, &rWing);
-	ShootComponent *shooter = new ShootComponent(&rWing, spaceMover, &scene, &broadPhaseCollider, 1000);
+	ShootComponent *shooter = new ShootComponent(&rWing, spaceMover, &scene, &broadPhaseCollider, 1000, width, height);
 	rWing.addComponent(shooter);
 	rWing.addComponent(spaceMover);
 	rWing.setDynamic(true);
@@ -335,7 +340,7 @@ void createMeshes() {
 
 	Mesh* asteroidM = ResourceManager::loadAndFetchMesh("../scenes/asteroid.obj");
 	asteroid = GameObject(asteroidM);
-	StandardRenderer *asteroidRenderer = new StandardRenderer(asteroidM, asteroid.getModelMatrix(), standardShader);
+	StandardRenderer *asteroidRenderer = new StandardRenderer(asteroidM, asteroid.getModelMatrix(), standardShader, width, height);
 	asteroid.addRenderComponent(asteroidRenderer);
 	asteroid.setDynamic(true);
 
@@ -350,7 +355,7 @@ void createMeshes() {
 
 	Mesh* dstarM = ResourceManager::loadAndFetchMesh("../scenes/dstar.obj");
 	dstar = GameObject(dstarM);
-	StandardRenderer *dstarRenderer = new StandardRenderer(dstarM, dstar.getModelMatrix(), standardShader);
+	StandardRenderer *dstarRenderer = new StandardRenderer(dstarM, dstar.getModelMatrix(), standardShader, width, height);
 	dstar.addRenderComponent(dstarRenderer);
 
     DeathOnCollision *dc = new DeathOnCollision(&dstar, Friendly, 100, &points);
@@ -363,19 +368,19 @@ void createMeshes() {
 	dstar.setDynamic(true);
 
 	asteroid.addComponent(dstarMover);
-	scene.shadowCasters.push_back(&dstar);
+	//scene.shadowCasters.push_back(&dstar);
 	broadPhaseCollider.addGameObject(&dstar);
 
 	Mesh* planetM = ResourceManager::loadAndFetchMesh("../scenes/planet.obj");
 	planet = GameObject(planetM);
-	StandardRenderer *planetRenderer = new StandardRenderer(planetM, planet.getModelMatrix(), standardShader);
+	StandardRenderer *planetRenderer = new StandardRenderer(planetM, planet.getModelMatrix(), standardShader, width, height);
 	planet.addRenderComponent(planetRenderer);
 	MoveComponent *planetMover = new MoveComponent(&planet);
 	planetMover->setLocation(make_vector(-10.0f, 0.0f, 8000.0f));
 	planetMover->setScale(make_vector(2000.0f, 2000.0f, 2000.0f));
 	planetMover->setRotationSpeed(make_vector(0.0f, 0.001f, 0.0f));
 	asteroid.addComponent(planetMover);
-	scene.shadowCasters.push_back(&planet);
+	//scene.shadowCasters.push_back(&planet);
 	broadPhaseCollider.addGameObject(&planet);
 
 	Logger::logInfo("Finished loading meshes.");

@@ -14,7 +14,7 @@ using namespace std;
 class SkyBoxRenderer : public IRenderComponent
 {
 public:
-	SkyBoxRenderer(Camera* camera, Mesh* skyMesh, float4x4* modelMatrix);
+	SkyBoxRenderer(Camera* camera, Mesh* skyMesh, float4x4* modelMatrix, int width, int height);
 	~SkyBoxRenderer();
 
 	bool init(const string& posXFilename, const string& negXFilename, const string& posYFilename, const string& negYFilename, const string& posZFilename, const string& negZFilename);

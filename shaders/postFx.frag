@@ -44,7 +44,7 @@ vec2 mushrooms2(vec2 inCoord);
 
 void main() 
 {
-	vec3 color = (texture(frameBufferTexture, gl_FragCoord.xy) + texture(blurredFrameBufferTexture, gl_FragCoord.xy) * 4).xyz;
+        vec3 color = (texture(frameBufferTexture, gl_FragCoord.xy) + texture(blurredFrameBufferTexture, gl_FragCoord.xy) * 4).xyz;
 
 	fragmentColor = vec4(color, 1.0);
 	//fragmentColor = vec4(toSepiaTone(color), 1.0);
