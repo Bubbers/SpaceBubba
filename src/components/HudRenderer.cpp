@@ -76,12 +76,11 @@ void HudRenderer::render() {
         }
     }
 
-    modelMat = make_translation(make_vector(-.5f, -.9f, 0.0f)) * make_scale<float4x4>(make_vector(0.2f, 0.2f, 0.5f));
 
     int score = *scoreBoard;
 
 
-    if (score >= 100) {
+    if (score >= 50) {
         modelMat = make_translation(make_vector(-.5f, -.5f, 0.0f));
         Texture *texture = ResourceManager::loadAndFetchTexture("../scenes/HUD/win_box.png");
         render2DHud(texture, &modelMat);
@@ -90,6 +89,9 @@ void HudRenderer::render() {
         Texture *texture = ResourceManager::loadAndFetchTexture("../scenes/HUD/fail_box.png");
         render2DHud(texture, &modelMat);
     }
+
+
+    modelMat = make_translation(make_vector(-.5f, -.9f, 0.0f)) * make_scale<float4x4>(make_vector(0.2f, 0.2f, 0.5f));
 
 
     if (score == 0) {

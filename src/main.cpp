@@ -236,13 +236,6 @@ void idle( int v )
 
 		glutPostRedisplay();
 
-		if (points >= WIN_CONDITION) {
-			Logger::logInfo("WIN CONDITION HAS BEEN MET :D");
-		}
-
-        string s = "Points: ";
-        Logger::logDebug(s.append(to_string(points)));
-
 	}
 	else {
 		glutTimerFunc(int(time), idle, 0);
