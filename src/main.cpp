@@ -289,7 +289,7 @@ void createLights() {
 	sun.diffuseColor  = make_vector(0.6f, 0.6f, 0.6f);
 	sun.specularColor = make_vector(0.6f, 0.6f, 0.6f);
 	sun.ambientColor  = make_vector(0.15f, 0.15f, 0.15f);
-	sun.direction     = make_vector(0.0f, -100.0f, 0.0f);
+	sun.direction     = -make_vector(20000.0f, 0.0f, 0.0f);//make_vector(0.0f, -100.0f, 0.0f);
 	scene.directionalLight = sun;
 }
 
@@ -352,7 +352,7 @@ void createMeshes() {
 	asteroidMover->setScale(make_vector(1.0f,1.0f,1.0f));
 	asteroid.addComponent(asteroidMover);
 
-	DeathOnCollision* dca = new DeathOnCollision(&asteroid, Laser, 0, &points);
+	DeathOnCollision* dca = new DeathOnCollision(&asteroid, Laser, 1, &points);
 	asteroid.addComponent(dca);
 
 	SpawnAsteroidOnDeath *childrenSpawner = new SpawnAsteroidOnDeath(&asteroid,&scene,&broadPhaseCollider,
@@ -366,9 +366,6 @@ void createMeshes() {
 	dstar = GameObject(dstarM, SpaceEntity);
 	StandardRenderer *dstarRenderer = new StandardRenderer(dstarM, dstar.getModelMatrix(), standardShader);
 	dstar.addRenderComponent(dstarRenderer);
-
-    DeathOnCollision *dc = new DeathOnCollision(&dstar, Laser, 0, &points);
-    dstar.addComponent(dc);
 
 	MoveComponent *dstarMover = new MoveComponent(&dstar);
 	dstarMover->setRotationSpeed(make_vector(0.0f, 0.001f, 0.0f));
