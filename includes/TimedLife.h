@@ -6,7 +6,7 @@
 #include <IComponent.h>
 #include <GameObject.h>
 
-class TimedLife : IComponent{
+class TimedLife : public IComponent{
 public:
     TimedLife(GameObject *gob, float life);
     void update(float dt);
