@@ -41,6 +41,13 @@ void SpaceShipComponent::checkKeyPresses(float dt) {
         acceleration = make_vector(0.0f,0.0f,0.0f);
     }
 
+    if(im->isKeyDown('p',false)){
+        velocity.y = 0.05f;
+    }else if(im->isKeyDown('l',false)){
+        velocity.y = -0.05f;
+    }else
+        velocity.y = 0.0f;
+
     float speedDif = turnSpeed*(im->isKeyDown('a',false) ? 1 : -1);
     if (im->isKeyDown('a',false) || im->isKeyDown('d',false)) {
         rotationSpeed.y = speedDif;
