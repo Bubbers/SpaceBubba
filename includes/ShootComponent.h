@@ -7,6 +7,7 @@
 
 #include "IComponent.h"
 #include "GameObject.h"
+#include <timer.h>
 
 class ShootComponent : public IComponent {
 public:
@@ -20,6 +21,7 @@ private:
     BFBroadPhase *collisionHandler;
     float timeToLive = 0;
     long canShootAfter = 0;
+	utils::Timer timer;
 
     void spawnBullet();
 };

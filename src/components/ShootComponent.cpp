@@ -14,6 +14,8 @@
 #include <chrono>
 #include "ShootComponent.h"
 #include "InputManager.h"
+#include <timer.h>
+#include <Windows.h>
 
 
 ShootComponent::ShootComponent(GameObject* object, SpaceShipComponent *objectMover, Scene *scene, BFBroadPhase *collisionHandler, float timeToLive) {
@@ -22,17 +24,25 @@ ShootComponent::ShootComponent(GameObject* object, SpaceShipComponent *objectMov
     this->scene = scene;
     this->collisionHandler = collisionHandler;
     this->timeToLive = timeToLive;
+	timer.start();
 
 }
 
 void ShootComponent::update(float dt) {
     InputManager* im = InputManager::getInstance();
+
+	SYSTEMTIME time;
+	GetSystemTime(&time);
+
+	long ms = time.wHour *60*60*1000 + time.wMinute *60*1000 + time.wSecond * 1000 + time.wMilliseconds;
+
 	
-    long ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-    if(im->isKeyDown('r', false)){// && ms > canShootAfter) {
+    //long ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+    if(im->isKeyDown('r', false) && ms > canShootAfter) {
 		
         canShootAfter = ms + 500;
         spawnBullet();
+		timer.start();
     }
 }
 

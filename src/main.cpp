@@ -409,7 +409,7 @@ void createMeshes() {
         asteroid->addRenderComponent(asteroidRenderer);
         asteroid->setDynamic(true);
 
-        float3 location = createRandomVector(-200.0f, 200.0f) + make_vector(0.0f, 0.0f, 300.0f);
+        float3 location = createRandomVector(-200.0f, 200.0f) + make_vector(150.0f,100.0f, 600.0f);
         float3 velocity = createRandomVector(-0.015f, 0.015f);
         float3 rotation = createRandomVector(-0.0025f, 0.0025f);
 
