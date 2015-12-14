@@ -10,9 +10,6 @@
 #include <SpaceShipComponent.h>
 #include <Scene.h>
 #include <BFBroadPhase.h>
-#include <al.h>
-#include <alut.h>
-#include <error.h>
 #include <DeathOnCollision.h>
 #include <chrono>
 #include "ShootComponent.h"
@@ -25,11 +22,6 @@ ShootComponent::ShootComponent(GameObject* object, SpaceShipComponent *objectMov
     this->scene = scene;
     this->collisionHandler = collisionHandler;
     this->timeToLive = timeToLive;
-    buffer = alutCreateBufferFromFile("../scenes/laser.wav");
-
-
-    alGenSources(1, &source);
-    alSourcei(source, AL_BUFFER, buffer);
 
 }
 
@@ -52,8 +44,6 @@ void ShootComponent::spawnBullet() {
     Shader* standardShader = ResourceManager::getShader(SIMPLE_SHADER_NAME);
     standardShader->setUniformBufferObjectBinding(UNIFORM_BUFFER_OBJECT_MATRICES_NAME, UNIFORM_BUFFER_OBJECT_MATRICES_INDEX);
 
-
-    alSourcePlay(source);
 
     Mesh* shotM = ResourceManager::loadAndFetchMesh("../scenes/shot.obj");
     GameObject *shot = new GameObject(shotM, Laser);

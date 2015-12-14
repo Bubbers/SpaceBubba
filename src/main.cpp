@@ -26,8 +26,6 @@
 #include "ResourceManager.h"
 #include "constants.h"
 #include "BFBroadPhase.h"
-#include "HudRenderer.h"
-#include "SoundManager.h"
 #include "ShootComponent.h"
 
 using namespace std;
@@ -69,10 +67,7 @@ Scene scene;
 
 BFBroadPhase broadPhaseCollider;
 
-//*****************************************************************************
-//	Sound
-//*****************************************************************************
-SoundManager *soundManager;
+
 
 //*****************************************************************************
 //	Cube Maps
@@ -261,8 +256,6 @@ int main(int argc, char *argv[])
 	InputManager* im = InputManager::getInstance();
 	im->addMouseMoveListener(motion);
 	im->addSpecialKeyListener(specialKey);
-
-	soundManager = new SoundManager();
 	renderer->initGL();
 
 	createCubeMaps();

@@ -22,8 +22,6 @@ private:
     long canShootAfter = 0;
 
     void spawnBullet();
-    ALuint buffer;
-    ALuint source;
 };
 
 
