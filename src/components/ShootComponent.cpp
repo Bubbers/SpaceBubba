@@ -27,9 +27,10 @@ ShootComponent::ShootComponent(GameObject* object, SpaceShipComponent *objectMov
 
 void ShootComponent::update(float dt) {
     InputManager* im = InputManager::getInstance();
+	
     long ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-
-    if(im->isKeyDown((int)'r', false) && ms > canShootAfter) {
+    if(im->isKeyDown('r', false)){// && ms > canShootAfter) {
+		
         canShootAfter = ms + 500;
         spawnBullet();
     }
