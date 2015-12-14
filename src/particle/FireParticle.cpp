@@ -16,7 +16,7 @@ float3 FireParticle::accelerate(float3 velocity) {
 }
 
 float FireParticle::getLife() {
-    return getRand(0.0f, 2000.0f);
+    return getRand(0.0f, 500.0f);
 }
 
 float3 FireParticle::getScale() {
@@ -24,5 +24,9 @@ float3 FireParticle::getScale() {
 }
 
 bool FireParticle::loop(float dt) {
-    return true;
+    return looping;
+}
+
+void FireParticle::setLooping(bool value){
+    looping = value;
 }

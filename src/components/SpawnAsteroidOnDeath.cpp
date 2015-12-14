@@ -40,7 +40,7 @@ void SpawnAsteroidOnDeath::onDeath(){
 
     for(int i = 0 ; i < 4 ; i++) {
 
-        string strings[] = {"../scenes/rock1.obj", " ../scenes/rock2.obj", "../scenes/rock3.obj" };
+        string strings[] = {"../scenes/rock1.obj", "../scenes/rock2.obj", "../scenes/rock3.obj" };
         string mesh = getRandomElem(strings);
         Mesh* asteroidM = ResourceManager::loadAndFetchMesh(mesh);
         GameObject *asteroid = new GameObject(asteroidM, Asteroid);
@@ -51,12 +51,12 @@ void SpawnAsteroidOnDeath::onDeath(){
 
         MoveComponent *asteroidMover = new MoveComponent(asteroid);
         asteroidMover->setRotation(createRandomVector(-0.01f, 0.01f));
-        asteroidMover->setVelocity(make_vector(getRand(-0.01f,0.01f),0.0f,0.0f));
+        asteroidMover->setVelocity(createRandomVector(-0.01f, 0.01f));
         asteroidMover->setScale(scale*4.0f);
         asteroidMover->setLocation(location + createRandomVector(1.0f,2.0f));
         asteroid->addComponent(asteroidMover);
 
-        DeathOnCollision* dc = new DeathOnCollision(asteroid, Laser, 0, points);
+        DeathOnCollision* dc = new DeathOnCollision(asteroid, Laser, 1, points);
         asteroid->addComponent(dc);
 
         SpawnAsteroidOnDeath* spawner = new SpawnAsteroidOnDeath(asteroid,scene,collisionHandler,scale*0.5f,camera,points);

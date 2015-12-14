@@ -18,6 +18,9 @@ public:
     bool loop(float dt);
 
     GLuint blendFunc = GL_ONE;
+
+    void setLooping(bool value);
+private:
 };
 
 

@@ -6,20 +6,21 @@
 #define BUBBA_3D_SPACESHIPCOMPONENT_H
 
 
-
+#include "ParticleGenerator.h"
 
 class SpaceShipComponent : public MoveComponent{
 public:
 
-    SpaceShipComponent(struct HudRenderer::HudConfig* hudConf, float* cameraThetaLocation, GameObject* ship);
+    SpaceShipComponent(struct HudRenderer::HudConfig* hudConf, float* cameraThetaLocation, GameObject* ship, ParticleGenerator* generator1, ParticleGenerator* generator2, State* state);
 
     void update(float dt) ;
     float3 getFrontDir();
     float getTotalRotation();
+    void onDeath();
 
 private:
     struct HudRenderer::HudConfig* hudConf;
-
+    State* state;
     float* cameraThetaLocation;
     void checkKeyPresses(float dt);
 
@@ -27,6 +28,8 @@ private:
     float accelerationSpeed = 0.0f;
     float3 frontDir = make_vector(0.0f, 0.0f, 1.0f);
     float totRotation = 0;
+    ParticleGenerator *generator1;
+    ParticleGenerator *generator2;
 
 };
 

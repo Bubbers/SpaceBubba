@@ -1,6 +1,8 @@
 /Debug/*
 /build/*
-/Release/*
+/Release/executable/*
+/Release/scenes/*
+/Release/shaders/*
 /Testing/*
 Thumbs.db
 *~

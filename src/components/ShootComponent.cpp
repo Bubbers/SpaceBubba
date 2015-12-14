@@ -56,7 +56,7 @@ void ShootComponent::spawnBullet() {
 
     MoveComponent *shotMover = new MoveComponent(shot);
     shotMover->setRotation(objectMover->getRotation());
-    shotMover->setVelocity(normalize(objectMover->getFrontDir()) /1.8f);
+    shotMover->setVelocity(normalize(objectMover->getFrontDir()) / 1.8f);
     shotMover->setLocation(location + normalize(objectMover->getFrontDir())*6);
     TimedLife *tl = new TimedLife(shot, timeToLive);
     shot->addComponent(tl);

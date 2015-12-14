@@ -34,6 +34,7 @@ public:
 	Camera *m_camera;
 	float3 m_position;
 
+	void setLooping(bool value);
 private:
 	std::vector<Particle*> m_particles;
 	GLuint m_vaob;

@@ -7,11 +7,12 @@
 
 #include "IRenderComponent.h"
 #include "GL/glew.h"
+#include "Utils.h"
 
 class HudRenderer : public IRenderComponent
 {
 public:
-    HudRenderer();
+    HudRenderer(int *scoreBoard, State* state);
     ~HudRenderer();
     struct HudConfig{
         //percentage (0-100)
@@ -25,8 +26,14 @@ public:
     struct HudConfig* getConfig();
 
 private:
+    void renderNum(int, float4x4 *modelMatrix);
+
+    bool start = true;
+
+    int *scoreBoard;
     GLuint m_vaob;
     struct HudConfig* conf;
+    State *state;
 
 };
 
