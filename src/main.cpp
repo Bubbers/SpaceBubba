@@ -173,7 +173,7 @@ void motion(int x, int y, int delta_x, int delta_y)
 
 
 float3 calculateNewCameraPosition() {
-	float4 ps = rWing.getModelMatrix()->c4;
+	float4 ps = rWing.getModelMatrix().c4;
 	float3 location = make_vector(ps.x, ps.y, ps.z);
 
 	playerCamera->setLookAt(location + make_vector(0.0f, camera_target_altitude, 0.0f));
@@ -303,7 +303,7 @@ void createMeshes() {
 	//SKYBOX
 	Mesh *skyBoxM = ResourceManager::loadAndFetchMesh("../scenes/sphere.obj");
 	skyBox = GameObject(skyBoxM,Environment);
-    SkyBoxRenderer *skyboxRenderer = new SkyBoxRenderer(playerCamera, skyBoxM, skyBox.getModelMatrix());
+    SkyBoxRenderer *skyboxRenderer = new SkyBoxRenderer(playerCamera, skyBoxM, &skyBox);
     skyboxRenderer->init("../scenes/x.png", "../scenes/fancyx.png", "../scenes/fancyy.png", "../scenes/y.png", "../scenes/fancyz.png", "../scenes/z.png");
     skyBox.addRenderComponent(skyboxRenderer);
     scene.shadowCasters.push_back(&skyBox);
@@ -315,7 +315,7 @@ void createMeshes() {
 	Mesh* rWingM = ResourceManager::loadAndFetchMesh("../scenes/R_wing.obj");
 	rWing = GameObject(rWingM, Player);
 	rWing.move(make_translation(make_vector(0.0f, 0.0f, 0.0f)));
-	StandardRenderer *carRenderer = new StandardRenderer(rWingM, rWing.getModelMatrix(), standardShader);
+	StandardRenderer *carRenderer = new StandardRenderer(rWingM, &rWing, standardShader);
 	rWing.addRenderComponent(carRenderer);
 
 	DeathOnCollision* wingD = new DeathOnCollision(&rWing, Asteroid, 0, &points);
@@ -353,7 +353,7 @@ void createMeshes() {
 
 	Mesh* asteroidM = ResourceManager::loadAndFetchMesh("../scenes/asteroid.obj");
 	asteroid = GameObject(asteroidM, SpaceEntity);
-	StandardRenderer *asteroidRenderer = new StandardRenderer(asteroidM, asteroid.getModelMatrix(), standardShader);
+	StandardRenderer *asteroidRenderer = new StandardRenderer(asteroidM, &asteroid, standardShader);
 	asteroid.addRenderComponent(asteroidRenderer);
 	asteroid.setDynamic(true);
 
@@ -364,7 +364,7 @@ void createMeshes() {
 
 	Mesh* dstarM = ResourceManager::loadAndFetchMesh("../scenes/dstar.obj");
 	dstar = GameObject(dstarM, SpaceEntity);
-	StandardRenderer *dstarRenderer = new StandardRenderer(dstarM, dstar.getModelMatrix(), standardShader);
+	StandardRenderer *dstarRenderer = new StandardRenderer(dstarM, &dstar, standardShader);
 	dstar.addRenderComponent(dstarRenderer);
 
 	MoveComponent *dstarMover = new MoveComponent(&dstar);
@@ -379,7 +379,7 @@ void createMeshes() {
 
 	Mesh* planetM = ResourceManager::loadAndFetchMesh("../scenes/planet.obj");
 	planet = GameObject(planetM, SpaceEntity);
-	StandardRenderer *planetRenderer = new StandardRenderer(planetM, planet.getModelMatrix(), standardShader);
+	StandardRenderer *planetRenderer = new StandardRenderer(planetM, &planet, standardShader);
 	planet.addRenderComponent(planetRenderer);
 	MoveComponent *planetMover = new MoveComponent(&planet);
 	planetMover->setLocation(make_vector(-25000.0f, 0.0f, 0.0f));
@@ -397,7 +397,7 @@ void createMeshes() {
 	sunMover->setScale(make_vector(2000.0f, 2000.0f, 2000.0f));
 	sunMover->setRotationSpeed(make_vector(0.0f, 0.0001f, 0.0f));
 	sun.addComponent(sunMover);
-	StandardRenderer *sunRenderer = new StandardRenderer(sunM, sun.getModelMatrix(), standardShader);
+	StandardRenderer *sunRenderer = new StandardRenderer(sunM, &sun, standardShader);
 	sun.addRenderComponent(sunRenderer);
 
 	scene.shadowCasters.push_back(&sun);
@@ -412,7 +412,7 @@ void createMeshes() {
 
         Mesh* asteroidM = ResourceManager::loadAndFetchMesh("../scenes/asteroid.obj");
         GameObject *asteroid = new GameObject(asteroidM, Asteroid);
-        StandardRenderer *asteroidRenderer = new StandardRenderer(asteroidM, asteroid->getModelMatrix(), standardShader);
+        StandardRenderer *asteroidRenderer = new StandardRenderer(asteroidM, asteroid, standardShader);
         asteroid->addRenderComponent(asteroidRenderer);
         asteroid->setDynamic(true);
 

@@ -9,12 +9,13 @@
 #include "IDrawable.h"
 #include "GameObject.h"
 
+
 using namespace std;
 
 class SkyBoxRenderer : public IRenderComponent
 {
 public:
-	SkyBoxRenderer(Camera* camera, Mesh* skyMesh, float4x4* modelMatrix);
+	SkyBoxRenderer(Camera* camera, Mesh* skyMesh, GameObject* gameObject);
 	~SkyBoxRenderer();
 
 	bool init(const string& posXFilename, const string& negXFilename, const string& posYFilename, const string& negYFilename, const string& posZFilename, const string& negZFilename);
@@ -26,7 +27,7 @@ private:
 	Camera* m_camera;
 	CubeMapTexture* m_pCubemap;
 	Mesh *m_skyMesh;
-	float4x4* modelMatrix;
+	GameObject* gameObject;
 };
 
 

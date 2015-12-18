@@ -3,7 +3,7 @@
 #include "constants.h"
 #define SKYBOX_SHADER_NAME "skybox_shader"
 
-SkyBoxRenderer::SkyBoxRenderer(Camera *camera, Mesh* skyMesh, float4x4* modelMatrix) : m_camera(camera), m_skyMesh(skyMesh), modelMatrix(modelMatrix) {
+SkyBoxRenderer::SkyBoxRenderer(Camera *camera, Mesh* skyMesh, GameObject* gameObject) : m_camera(camera), m_skyMesh(skyMesh), gameObject(gameObject) {
 }
 
 bool SkyBoxRenderer::init(const string &posXFilename, const string &negXFilename, const string &posYFilename,
@@ -17,13 +17,18 @@ bool SkyBoxRenderer::init(const string &posXFilename, const string &negXFilename
 }
 
 void SkyBoxRenderer::update(float dt) {
-    *modelMatrix = make_translation(make_vector(0.0f, 2.0f, 0.0f)) * make_translation(m_camera->getPosition()) *
-                        make_scale<float4x4>(make_vector(10000.0f, 10000.0f, 10000.0f));
+    //*modelMatrix = make_translation(make_vector(0.0f, 2.0f, 0.0f)) * make_translation(m_camera->getPosition()) *
+      //                  make_scale<float4x4>(make_vector(10000.0f, 10000.0f, 10000.0f));
+
+    gameObject->move(make_translation(make_vector(0.0f, 2.0f, 0.0f)) * make_translation(m_camera->getPosition()) *
+                     make_scale<float4x4>(make_vector(10000.0f, 10000.0f, 10000.0f)));
 }
 
 void SkyBoxRenderer::render() {
     shaderProgram->backupCurrentShaderProgram();
     shaderProgram->use();
+
+    float4x4 modelMatrix = gameObject->getModelMatrix();
 
     GLint OldCullFaceMode;
     glGetIntegerv(GL_CULL_FACE_MODE, &OldCullFaceMode);
@@ -36,7 +41,7 @@ void SkyBoxRenderer::render() {
 
     m_pCubemap->bind(GL_TEXTURE0);
     shaderProgram->setUniform1i("cubeMapSampler", 0);
-    shaderProgram->setUniformMatrix4fv("modelMatrix", *modelMatrix);
+    shaderProgram->setUniformMatrix4fv("modelMatrix", modelMatrix);
 
     for (size_t i = 0; i < m_skyMesh->m_chunks.size(); ++i) {
         Chunk &chunk = m_skyMesh->m_chunks[i];

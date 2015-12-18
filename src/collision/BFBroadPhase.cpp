@@ -37,15 +37,15 @@ void BFBroadPhase::updateCollision() {
         GameObject *object1 = pair.first;
         GameObject *object2 = pair.second;
 
-        float4x4 *object1ModelMatrix = object1->getModelMatrix();
-        float4x4 *object2ModelMatrix = object2->getModelMatrix();
+        float4x4 object1ModelMatrix = object1->getModelMatrix();
+        float4x4 object2ModelMatrix = object2->getModelMatrix();
 
         Octree* object1Oct = object1->getOctree();
         Octree* object2Oct = object2->getOctree();
 
         bool wasColliding = std::find(collidingList.begin(), collidingList.end(), std::pair<int, int>(object1->getId(), object2->getId())) != collidingList.end() ||
                             std::find(collidingList.begin(), collidingList.end(), std::pair<int, int>(object1->getId(), object2->getId())) != collidingList.end();
-        if(octreeOctreeIntersection(object1Oct,object1ModelMatrix,object2Oct, object2ModelMatrix)) {
+        if(octreeOctreeIntersection(object1Oct,&object1ModelMatrix,object2Oct, &object2ModelMatrix)) {
             if(wasColliding) {
                 object1->callEvent(EventType::DuringCollision,object2->getType());
                 object2->callEvent(EventType::DuringCollision,object1->getType());
@@ -86,7 +86,10 @@ CollisionPairList BFBroadPhase::computeCollisionPairs() {
                 continue;
             }
 
-            if(gameObject1 != gameObject2 && AabbAabbintersection(gameObject1->getAABB(), gameObject2->getAABB())) {
+            AABB aabb1 = gameObject1->getAABB();
+            AABB aabb2 = gameObject2->getAABB();
+
+            if(gameObject1 != gameObject2 && AabbAabbintersection(&aabb1, &aabb2)) {
                 collisionPairs.push_back(std::pair<GameObject*,GameObject*>(gameObject1, gameObject2));
             } else {
                 if(std::find(collidingList.begin(), collidingList.end(), std::pair<int, int>(gameObject1->getId(), gameObject2->getId())) != collidingList.end() ||

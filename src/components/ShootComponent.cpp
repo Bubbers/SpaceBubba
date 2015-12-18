@@ -46,7 +46,7 @@ void ShootComponent::update(float dt) {
 
 void ShootComponent::spawnBullet() {
 
-    float4 ps = object->getModelMatrix()->c4;
+    float4 ps = object->getModelMatrix().c4;
     float3 location = make_vector(ps.x, ps.y, ps.z);
 
     Shader* standardShader = ResourceManager::getShader(SIMPLE_SHADER_NAME);
@@ -60,7 +60,7 @@ void ShootComponent::spawnBullet() {
     //shot->move(make_translation(location));
     //shot->update(make_rotation_y<float4x4>(degreeToRad(90)));
 
-    StandardRenderer *shotRenderer = new StandardRenderer(shotM, shot->getModelMatrix(), standardShader);
+    StandardRenderer *shotRenderer = new StandardRenderer(shotM, shot, standardShader);
     shot->addRenderComponent(shotRenderer);
     shot->setDynamic(true);
 
@@ -72,8 +72,8 @@ void ShootComponent::spawnBullet() {
     shot->addComponent(tl);
     shot->addComponent(shotMover);
 
-    DeathOnCollision* dc = new DeathOnCollision(shot, Asteroid);
-    shot->addComponent(dc);
+    //DeathOnCollision* dc = new DeathOnCollision(shot, Asteroid);
+    //shot->addComponent(dc);
 
     scene->shadowCasters.push_back(shot);
     collisionHandler->addGameObject(shot);
