@@ -16,6 +16,7 @@
 #include "InputManager.h"
 #include <timer.h>
 
+
 #ifdef WIN32
 #include <Windows.h>
 #endif
@@ -29,6 +30,14 @@ ShootComponent::ShootComponent(GameObject* object, SpaceShipComponent *objectMov
     this->timeToLive = timeToLive;
 	timer.start();
 
+    if (!buffer.loadFromFile("../scenes/laser.wav")) {
+        Logger::logSevere("Error loading laser.wav");
+    }
+    sound.setBuffer(buffer);
+}
+
+ShootComponent::~ShootComponent() {
+    sound.stop();
 }
 
 void ShootComponent::update(float dt) {
@@ -51,6 +60,8 @@ void ShootComponent::update(float dt) {
         canShootAfter = ms + 500;
         spawnBullet();
 		timer.start();
+
+        sound.play();
     }
 }
 
@@ -81,9 +92,11 @@ void ShootComponent::spawnBullet() {
     shot->addComponent(tl);
     shot->addComponent(shotMover);
 
-    //DeathOnCollision* dc = new DeathOnCollision(shot, Asteroid);
-    //shot->addComponent(dc);
+    DeathOnCollision* dc = new DeathOnCollision(shot, Asteroid);
+    shot->addComponent(dc);
 
     scene->shadowCasters.push_back(shot);
     collisionHandler->addGameObject(shot);
+
+
 }

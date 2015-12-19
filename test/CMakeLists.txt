@@ -77,6 +77,18 @@ if(NOT ASSIMP_FOUND)
     message(ERROR " ASSIMP not found!")
 endif(NOT ASSIMP_FOUND)
 
+#########################################################
+# FIND SFML AUDIO
+#########################################################
+
+find_package(SFML 2 COMPONENTS audio REQUIRED)
+include_directories(${SFML_INCLUDE_DIR})
+target_link_libraries(${TEST_NAME}  ${SFML_LIBRARIES})
+
+if(NOT SFML_FOUND)
+    message(ERROR " SFML not found!")
+endif(NOT SFML_FOUND)
+
 # configure unit tests via CTest
 enable_testing()
 add_test(NAME trolo COMMAND ${TEST_NAME})

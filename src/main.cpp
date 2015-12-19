@@ -18,6 +18,7 @@
 #include <ParticleGenerator.h>
 #include <SpawnAsteroidOnDeath.h>
 #include <FireParticle.h>
+#include <SoundManager.h>
 #include "FireSphere.h"
 
 #include "GameObjectType.h"
@@ -69,6 +70,9 @@ State state = Start;
 Scene scene;
 
 BFBroadPhase broadPhaseCollider;
+
+
+SoundManager* soundManager;
 
 
 
@@ -253,6 +257,8 @@ int main(int argc, char *argv[])
 	im->addMouseMoveListener(motion);
 	im->addSpecialKeyListener(specialKey);
 	renderer->initGL();
+
+	soundManager = new SoundManager();
 
 	createCubeMaps();
 	createCameras();

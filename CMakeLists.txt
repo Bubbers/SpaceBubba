@@ -47,7 +47,8 @@ file(GLOB files_SOURCE
         "${PROJECT_SOURCE_DIR}/shaders/*"
         "${PROJECT_SOURCE_DIR}/src/spaceGame/*.cpp"
         "${PROJECT_SOURCE_DIR}/src/spaceGame/weapons*.cpp"
-        "${PROJECT_SOURCE_DIR}/src/spaceGame/projectiles*.cpp")
+        "${PROJECT_SOURCE_DIR}/src/spaceGame/projectiles*.cpp"
+        "${PROJECT_SOURCE_DIR}/src/sound/*.cpp")
 
 
 #########################################################
