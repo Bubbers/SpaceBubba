@@ -31,10 +31,15 @@ ShootComponent::ShootComponent(GameObject* object, SpaceShipComponent *objectMov
 void ShootComponent::update(float dt) {
     InputManager* im = InputManager::getInstance();
 
+#ifdef WIN32
 	SYSTEMTIME time;
 	GetSystemTime(&time);
-
 	long ms = time.wHour *60*60*1000 + time.wMinute *60*1000 + time.wSecond * 1000 + time.wMilliseconds;
+#endif
+#ifdef LINUX
+	long ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
+#endif
+
 
 	
     //long ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
