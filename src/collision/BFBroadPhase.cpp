@@ -18,9 +18,14 @@ void BFBroadPhase::addGameObject(GameObject *gameObject){
 }
 
 void BFBroadPhase::removeDirty(){
-    for(auto it = GameObjectList.begin() ; it < GameObjectList.end() ; it++)
-        if((*it)->isDirty())
-            it = GameObjectList.erase(it);
+	for (auto it = GameObjectList.begin(); it != GameObjectList.end();) {
+		if ((*it)->isDirty()) {
+			it = GameObjectList.erase(it);
+		}
+		else {
+			it++;
+		}
+	}
 }
 
 void BFBroadPhase::updateCollision() {

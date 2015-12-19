@@ -29,7 +29,7 @@ GameObject::GameObject(Mesh *mesh, GameObjectType type) {
 
     for (int i = 0; i < mesh->m_chunks.size(); i++) {
 
-        for (int j = 0; j < mesh->m_chunks[i].m_positions.size(); j += 3) {
+        for (int j = 0; j + 2 < mesh->m_chunks[i].m_positions.size(); j += 3) {
 
 
             Triangle *t = new Triangle(make_vector(mesh->m_chunks[i].m_positions[j + 0].x,
