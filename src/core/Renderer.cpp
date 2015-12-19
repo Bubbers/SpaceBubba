@@ -67,7 +67,7 @@ void Renderer::setDisplayMethod(void(*display)(void)) {
 	glutDisplayFunc(display);
 }
 
-void Renderer::setIdleMethod(void(*idle)(int), float delay) {
+void Renderer::setIdleMethod(void(*idle)(int), int delay) {
 	glutTimerFunc(delay, idle, 0);
 }
 
@@ -109,8 +109,8 @@ void Renderer::drawScene(Camera camera, Scene scene, float currentTime)
 	// Render the scene from the cameras viewpoint, to the default framebuffer
 	//*************************************************************************
 	glBindFramebuffer(GL_FRAMEBUFFER, postProcessFbo.id);
-	glClearColor(0.2, 0.2, 0.8, 1.0);
-	glClearDepth(1.0);
+	glClearColor(0.2f, 0.2f, 0.8f, 1.0f);
+	glClearDepth(1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	int w = glutGet((GLenum)GLUT_WINDOW_WIDTH);
 	int h = glutGet((GLenum)GLUT_WINDOW_HEIGHT);
@@ -200,7 +200,7 @@ void Renderer::setLights(Shader* shaderProgram, Scene scene) {
 */
 void Renderer::drawShadowCasters(Shader* shaderProgram, Scene scene)
 {
-	for (int i = 0; i < scene.shadowCasters.size(); i++) {
+	for (unsigned int i = 0; i < scene.shadowCasters.size(); i++) {
 		shaderProgram->setUniform1f("object_reflectiveness", (*scene.shadowCasters[i]).shininess);
 		drawModel(*scene.shadowCasters[i], shaderProgram);
 	}
@@ -208,7 +208,7 @@ void Renderer::drawShadowCasters(Shader* shaderProgram, Scene scene)
 
 void Renderer::drawTransparent(Shader* shaderProgram, Scene scene)
 {
-	for (int i = 0; i < scene.transparentObjects.size(); i++) {
+	for (unsigned int i = 0; i < scene.transparentObjects.size(); i++) {
 		shaderProgram->setUniform1f("object_reflectiveness", (*scene.transparentObjects[i]).shininess);
 		drawModel(*scene.transparentObjects[i], shaderProgram);
 	}
@@ -230,8 +230,7 @@ void Renderer::drawShadowMap(Fbo sbo, float4x4 viewProjectionMatrix, Scene scene
 	sbo.shaderProgram->use();
 	sbo.shaderProgram->setUniformMatrix4fv("viewProjectionMatrix", viewProjectionMatrix);
 
-	//TODO
-	for (int i = 0; i < scene.shadowCasters.size(); i++) {
+	for (unsigned int i = 0; i < scene.shadowCasters.size(); i++) {
 		sbo.shaderProgram->setUniform1f("object_reflectiveness", (*scene.shadowCasters[i]).shininess);
         (*scene.shadowCasters[i]).renderShadow(sbo.shaderProgram);
    	}
@@ -396,7 +395,7 @@ void Renderer::renderPostProcess() {
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, w, h);
-	glClearColor(0.6, 0.0, 0.0, 1.0);
+	glClearColor(0.6f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	postFxShader->use();

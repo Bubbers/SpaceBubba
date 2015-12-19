@@ -108,6 +108,8 @@ bool InputManager::isMouseButtonDown(mouseButton which) {
     case MOUSE_MIDDLE:
         return middleMouseDown;
     }
+
+	return false;
 }
 
 /**

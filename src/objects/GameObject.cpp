@@ -27,9 +27,9 @@ GameObject::GameObject(Mesh *mesh, GameObjectType type) {
     AABB* aabb = this->mesh->getAABB();
     std::vector<Triangle *> triangles;
 
-    for (int i = 0; i < mesh->m_chunks.size(); i++) {
+	for (unsigned int i = 0; i < mesh->m_chunks.size(); i++) {
 
-        for (int j = 0; j + 2 < mesh->m_chunks[i].m_positions.size(); j += 3) {
+		for (unsigned int j = 0; j + 2 < mesh->m_chunks[i].m_positions.size(); j += 3) {
 
 
             Triangle *t = new Triangle(make_vector(mesh->m_chunks[i].m_positions[j + 0].x,
@@ -84,9 +84,9 @@ void GameObject::render() {
 std::vector<Triangle *> GameObject::getTriangles() {
     std::vector<Triangle *> ts;
 
-    for (int i = 0; i < mesh->m_chunks.size(); i++) {
+	for (unsigned int i = 0; i < mesh->m_chunks.size(); i++) {
 
-        for (int j = 0; j < mesh->m_chunks[i].m_positions.size(); j += 3) {
+		for (unsigned int j = 0; j < mesh->m_chunks[i].m_positions.size(); j += 3) {
 
 
             Triangle *t = new Triangle(make_vector(mesh->m_chunks[i].m_positions[j + 0].x,

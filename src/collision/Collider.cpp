@@ -22,7 +22,7 @@ float Collider::rayIntersection(float3 rayOrigin, float3 rayVec) {
     tree->getGeometry(rayOrigin, rayVecInv, &geometry);
 
     float minIns = NULL;
-    for (int i = 0; i < geometry.size(); i++) {
+	for (unsigned int i = 0; i < geometry.size(); i++) {
         Triangle t = *geometry[i];
         float ins;
 
@@ -155,7 +155,7 @@ bool rayTriangle(float3 r_o, float3 r_d, float3 v1, float3 v2, float3 v3, float 
   }                                         \
 }
 
-int coplanar_tri_tri(float3 N,float3 V0,float3 V1,float3 V2,
+bool coplanar_tri_tri(float3 N,float3 V0,float3 V1,float3 V2,
                      float3 U0,float3 U1,float3 U2)
 {
     float A[3];
@@ -201,7 +201,7 @@ int coplanar_tri_tri(float3 N,float3 V0,float3 V1,float3 V2,
     POINT_IN_TRI(V0,U0,U1,U2);
     POINT_IN_TRI(U0,V0,V1,V2);
 
-    return 0;
+    return false;
 }
 
 #define COMPUTE_INTERVALS(VV0,VV1,VV2,D0,D1,D2,D0D1,D0D2,isect0,isect1) \
@@ -288,7 +288,7 @@ bool triangleTriangleIntersection(Triangle *t1, Triangle *t2)
     du0du2=du0*du2;
 
     if(du0du1>0.0f && du0du2>0.0f) /* same sign on all of them + not equal 0 ? */
-        return 0;                    /* no intersection occurs */
+        return false;                    /* no intersection occurs */
 
     /* compute plane of triangle (U0,U1,U2) */
     E1 = U1 - U0;

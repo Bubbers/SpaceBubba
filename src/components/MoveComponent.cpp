@@ -19,7 +19,7 @@ MoveComponent::MoveComponent(){
 
 MoveComponent::MoveComponent(GameObject* meshObject) {
     this->meshObject = meshObject;
-    maxSpeed = INT32_MAX;
+    maxSpeed = FLT_MAX;
 }
 
 MoveComponent::MoveComponent(GameObject* meshObject, float3 rotationSpeed, float3 rotation,

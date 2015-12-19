@@ -39,7 +39,7 @@ public:
 	void start();
 	void render();
 
-	void setIdleMethod(void(*idle)(int), float delay);
+	void setIdleMethod(void(*idle)(int), int delay);
 	void setDisplayMethod(void(*display)(void));
 
 	void swapBuffer() {

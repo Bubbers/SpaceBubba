@@ -75,7 +75,7 @@ void ParticleGenerator::render() {
 
 
 	float distance = length(this->m_camera->getPosition() - this->m_position);
-	int maxParticles = (m_amount * LOD_FACTOR / distance );
+	int maxParticles = (int)(m_amount * LOD_FACTOR / distance );
 	glBindVertexArray(m_vaob);
 	
 	std::vector<Particle*> particles = this->m_particles;
