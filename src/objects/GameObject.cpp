@@ -51,7 +51,7 @@ GameObject::GameObject(Mesh *mesh, GameObjectType type) {
     float3 origin = aabb->maxV - halfVector;
     octree = new Octree(origin, halfVector, 0);
     octree->insertAll(triangles);
-
+    m_modelMatrix = make_identity<float4x4>();
 };
 
 GameObject::~GameObject() {
@@ -107,8 +107,8 @@ std::vector<Triangle *> GameObject::getTriangles() {
     return ts;
 }
 
-float4x4* GameObject::getModelMatrix(){
-    return &m_modelMatrix;
+float4x4 GameObject::getModelMatrix(){
+    return m_modelMatrix;
 }
 
 
@@ -152,11 +152,11 @@ void GameObject::callEvent(EventType type, GameObjectType data){
     }
 }
 
-AABB* GameObject::getAABB(){
+AABB GameObject::getAABB(){
     AABB* meshAabb = this->mesh->getAABB();
-    aabb = multiplyAABBWithModelMatrix(meshAabb, &this->m_modelMatrix);
+    aabb = multiplyAABBWithModelMatrix(meshAabb, m_modelMatrix);
 
-    return &aabb;
+    return aabb;
 }
 
 bool GameObject::isDynamicObject(){

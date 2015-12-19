@@ -32,7 +32,7 @@ void SpawnAsteroidOnDeath::onDeath(){
     if(length(scale) < 0.25f)
         return;
 
-    float4 ps = gameObject->getModelMatrix()->c4;
+    float4 ps = gameObject->getModelMatrix().c4;
     float3 location = make_vector(ps.x, ps.y, ps.z);
 
     Shader* standardShader = ResourceManager::getShader(SIMPLE_SHADER_NAME);
@@ -45,7 +45,7 @@ void SpawnAsteroidOnDeath::onDeath(){
         Mesh* asteroidM = ResourceManager::loadAndFetchMesh(mesh);
         GameObject *asteroid = new GameObject(asteroidM, Asteroid);
 
-        StandardRenderer *asteroidRenderer = new StandardRenderer(asteroidM, asteroid->getModelMatrix(), standardShader);
+        StandardRenderer *asteroidRenderer = new StandardRenderer(asteroidM, asteroid, standardShader);
         asteroid->addRenderComponent(asteroidRenderer);
         asteroid->setDynamic(true);
 

@@ -5,20 +5,21 @@
 #include "float4x4.h"
 #include "Shader.h"
 #include "IRenderComponent.h"
+#include "GameObject.h"
 
 using namespace chag;
 
 class StandardRenderer : public IRenderComponent {
 public:
     StandardRenderer();
-    StandardRenderer(Mesh*, float4x4*, Shader*);
+    StandardRenderer(Mesh*, GameObject*, Shader*);
 
     void update(float dt);
     void render();
     void renderShadow(Shader *shaderProgram);
 private:
     Mesh* mesh;
-    float4x4* modelMatrix;
+    GameObject *gameObject;
 };
 
 

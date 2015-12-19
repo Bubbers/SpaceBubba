@@ -386,7 +386,8 @@ void calculateAndUpdateMinMax(float3 point, float4x4* modelMatrix, float3 *minV,
 }
 
 
-AABB multiplyAABBWithModelMatrix(AABB *aabb, float4x4 *modelMatrix) {
+AABB multiplyAABBWithModelMatrix(AABB *aabb, float4x4 modelMat) {
+    float4x4* modelMatrix = &modelMat;
     AABB convertedAabb = AABB();
 
     calculateAndUpdateMinMax(make_vector(aabb->maxV.x,aabb->maxV.y,aabb->maxV.z), modelMatrix, &convertedAabb.minV, &convertedAabb.maxV);
@@ -404,8 +405,8 @@ AABB multiplyAABBWithModelMatrix(AABB *aabb, float4x4 *modelMatrix) {
 
 bool octreeOctreeIntersection(Octree *object1Octree, float4x4 *object1ModelMatrix, Octree *object2Octree,
                               float4x4 *object2ModelMatrix) {
-    AABB object1Aabb = multiplyAABBWithModelMatrix(object1Octree->getAABB(), object1ModelMatrix);
-    AABB object2Aabb = multiplyAABBWithModelMatrix(object2Octree->getAABB(), object2ModelMatrix);
+    AABB object1Aabb = multiplyAABBWithModelMatrix(object1Octree->getAABB(), *object1ModelMatrix);
+    AABB object2Aabb = multiplyAABBWithModelMatrix(object2Octree->getAABB(), *object2ModelMatrix);
 
     if (!AabbAabbintersection(&object1Aabb, &object2Aabb)) {
         return false;

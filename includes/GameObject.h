@@ -26,7 +26,7 @@ public:
     void update(float4x4 update_matrix);
     std::vector<Triangle*> getTriangles();
 
-    float4x4* getModelMatrix();
+    float4x4 getModelMatrix();
 
     void addRenderComponent(IRenderComponent*);
     void addComponent(IComponent*);
@@ -34,7 +34,7 @@ public:
     void update(float dt);
     void callEvent(EventType, GameObjectType data);
 
-    AABB* getAABB();
+    AABB getAABB();
     bool isDynamicObject();
     void setDynamic(bool);
     Octree* getOctree();

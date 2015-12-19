@@ -60,9 +60,13 @@ void MoveComponent::updateMeshObject(float dt){
     rotation += rotationSpeed*dt;
     scale += scaleSpeed*dt;
 
-    meshObject->move(make_translation(location)*make_rotation_x<float4x4>(rotation.x)*
-                     make_rotation_y<float4x4>(rotation.y)*make_rotation_z<float4x4>(rotation.z)*
-                     make_scale<float4x4>(scale));
+
+    meshObject->move(make_translation(location)*
+                             make_rotation_x<float4x4>(rotation.x)*
+                             make_rotation_y<float4x4>(rotation.y) *
+                             make_rotation_z<float4x4>(rotation.z)*
+                             make_scale<float4x4>(scale));
+
 
 }
 

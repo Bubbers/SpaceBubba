@@ -1,44 +1,33 @@
-#Bubba-3D!
-This is a small 3D-engine programmed in C++
-using Glut and Glew.  Managed by cmake.
-Originally implemented as a school project, now extended for fun!
+Super-Bubba-Awesome-Space
+=========================
 
-###Status
-[![Build Status](https://travis-ci.org/Bubbad/Bubba-3D.svg?branch=develop)](https://travis-ci.org/Bubbad/Bubba-3D)
+This is a small 3D space-shooter game made during Ludum Dare 34 in our own game-engine called Bubba-3D. Your mission is to destroy 50 of the asteroids in this system. Be aware that you do not have any shields. One hit will destroy you. Use w and S to thrust, A and D to rotate, P and L to change altitude and R to fire the laser.
 
-***  
-###Implemented
-* Mesh loading using Assimp
-* Normal maps
-* Different lights (Directional, spot and point lights)
-* Directional shadow map
-* Fog
-* Blur
-* Skyboxes
-* Dynamic / static cube maps
-* Perspective camera
-* Particle system
+It's built cross platform but we only provide executable for debian distributions.
 
-###Current todos
-* Refactor cube maps
-* Finish octrees / implement AABB collision structure
-* Support skinned meshes
-* Optimizations!
-
-***
-###Example
-Code example is outdated, new coming soon!
-
-###Installation
-Requirements:
+Prerequisites:
 * <a href="http://www.cmake.org/">CMake</a>
 * <a href="http://assimp.sourceforge.net/">Assimp</a>
 * <a href="http://freeglut.sourceforge.net/">Glut (Freeglut)</a>
 * <a href="http://glew.sourceforge.net/">Glew</a>
 * <a href="http://freeimage.sourceforge.net/">FreeImage</a><br />
+* OpenAL / ALut
+* Vorbis (OGG)
 
-Linux: Install using the Makefile supplied in root map. run make install. This will install all dependencies for the project. Then you may run it with make run.
+Install dependencies (Debian, Ubuntu):
+```bash
+make install
+```
 
-Windows: Either download the dependencies yourself from the links above, or use the specified libs in the libs folder. For more info how to config cmake using these, see README.md in libs/. 
+Run:
+```bash
+make run
+```
 
-Feel free to contact me regarding questions and/or installation trouble!
+Make binary:
+```bash
+make release
+```
+
+
+

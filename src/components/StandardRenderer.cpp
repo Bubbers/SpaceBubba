@@ -1,3 +1,4 @@
+#include <GameObject.h>
 #include "StandardRenderer.h"
 
 #define NORMAL_TEXTURE_LOCATION 3
@@ -7,8 +8,8 @@ StandardRenderer::StandardRenderer(){
 
 }
 
-StandardRenderer::StandardRenderer(Mesh* mesh, float4x4* modelMatrix, Shader* shaderProgram):
-        mesh(mesh), modelMatrix(modelMatrix)
+StandardRenderer::StandardRenderer(Mesh* mesh, GameObject* gameObject, Shader* shaderProgram):
+        mesh(mesh), gameObject(gameObject)
 {
     this->shaderProgram = shaderProgram;
 }
@@ -22,8 +23,10 @@ void StandardRenderer::render() {
     shaderProgram->use();
     CHECK_GL_ERROR();
 
-    chag::float4x4 normalMatrix = chag::inverse(chag::transpose(*modelMatrix));
-    shaderProgram->setUniformMatrix4fv("modelMatrix", *modelMatrix);
+    float4x4 modelMatrix = gameObject->getModelMatrix();
+
+    chag::float4x4 normalMatrix = chag::inverse(chag::transpose(modelMatrix));
+    shaderProgram->setUniformMatrix4fv("modelMatrix", modelMatrix);
     shaderProgram->setUniformMatrix4fv("normalMatrix", normalMatrix);
 
     for (size_t i = 0; i < mesh->m_chunks.size(); i++) {
@@ -60,7 +63,8 @@ void StandardRenderer::render() {
 
 void StandardRenderer::renderShadow(Shader *shaderProgram) {
 
-    shaderProgram->setUniformMatrix4fv("modelMatrix", *modelMatrix);
+    float4x4 modelMatrix = gameObject->getModelMatrix();
+    shaderProgram->setUniformMatrix4fv("modelMatrix", modelMatrix);
 
     for (size_t i = 0; i < mesh->m_chunks.size(); i++) {
         CHECK_GL_ERROR();
