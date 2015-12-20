@@ -70,6 +70,8 @@ void ShootComponent::spawnBullet() {
 
     float4 ps = object->getModelMatrix().c4;
     float3 location = make_vector(ps.x, ps.y, ps.z);
+    float3 shipVelocity = objectMover->getVelocity();
+
 
     Shader* standardShader = ResourceManager::getShader(SIMPLE_SHADER_NAME);
     standardShader->setUniformBufferObjectBinding(UNIFORM_BUFFER_OBJECT_MATRICES_NAME, UNIFORM_BUFFER_OBJECT_MATRICES_INDEX);
@@ -86,7 +88,7 @@ void ShootComponent::spawnBullet() {
 
     MoveComponent *shotMover = new MoveComponent(shot);
     shotMover->setRotation(objectMover->getRotation());
-    shotMover->setVelocity(normalize(objectMover->getFrontDir()) / 1.8f);
+    shotMover->setVelocity(shipVelocity + normalize(objectMover->getFrontDir()) / 1.8f);
     shotMover->setLocation(location + normalize(objectMover->getFrontDir())*6);
     TimedLife *tl = new TimedLife(shot, timeToLive);
     shot->addComponent(tl);

@@ -11,8 +11,7 @@ Prerequisites:
 * <a href="http://freeglut.sourceforge.net/">Glut (Freeglut)</a>
 * <a href="http://glew.sourceforge.net/">Glew</a>
 * <a href="http://freeimage.sourceforge.net/">FreeImage</a><br />
-* OpenAL / ALut
-* Vorbis (OGG)
+* <a href="http://www.sfml-dev.org/index.php">SFML 2 Audio</a><br />
 
 Install dependencies (Debian, Ubuntu):
 ```bash
