@@ -284,8 +284,10 @@ void createLights() {
 	sun.diffuseColor  = make_vector(0.6f, 0.6f, 0.6f);
 	sun.specularColor = make_vector(0.6f, 0.6f, 0.6f);
 	sun.ambientColor  = make_vector(0.15f, 0.15f, 0.15f);
-	sun.direction     = -make_vector(20000.0f, 0.0f, 0.0f);//make_vector(0.0f, -100.0f, 0.0f);
+	sun.direction     = -make_vector(15000.0f, 0.0f, 0.0f);
 	scene.directionalLight = sun;
+
+
 }
 
 void createCubeMaps() {
@@ -350,24 +352,13 @@ void createMeshes() {
 	scene.shadowCasters.push_back(&rWing);
 	broadPhaseCollider.addGameObject(&rWing);
 
-	Mesh* asteroidM = ResourceManager::loadAndFetchMesh("../scenes/asteroid.obj");
-	asteroid = GameObject(asteroidM, SpaceEntity);
-	StandardRenderer *asteroidRenderer = new StandardRenderer(asteroidM, &asteroid, standardShader);
-	asteroid.addRenderComponent(asteroidRenderer);
-	asteroid.setDynamic(true);
-
-	TimedLife *tl = new TimedLife(&asteroid, 1000);
-	asteroid.addComponent(tl);
-
-
-
 	Mesh* dstarM = ResourceManager::loadAndFetchMesh("../scenes/dstar.obj");
 	dstar = GameObject(dstarM, SpaceEntity);
 	StandardRenderer *dstarRenderer = new StandardRenderer(dstarM, &dstar, standardShader);
 	dstar.addRenderComponent(dstarRenderer);
 
 	MoveComponent *dstarMover = new MoveComponent(&dstar);
-	dstarMover->setRotationSpeed(make_vector(0.0f, 0.001f, 0.0f));
+	dstarMover->setRotationSpeed(make_vector(0.0f, 0.0001f, 0.0f));
 	dstarMover->setLocation(make_vector(-10.0f, 0.0f, 16000.0f));
 	dstarMover->setScale(make_vector(2000.0f, 2000.0f, 2000.0f));
 	dstar.setDynamic(true);
@@ -383,7 +374,7 @@ void createMeshes() {
 	MoveComponent *planetMover = new MoveComponent(&planet);
 	planetMover->setLocation(make_vector(-25000.0f, 0.0f, 0.0f));
 	planetMover->setScale(make_vector(2000.0f, 2000.0f, 2000.0f));
-	planetMover->setRotationSpeed(make_vector(0.0f, 0.0001f, 0.0f));
+	planetMover->setRotationSpeed(make_vector(0.0f, 0.00005f, 0.0f));
 	planet.addComponent(planetMover);
 
 	scene.shadowCasters.push_back(&planet);
@@ -446,7 +437,7 @@ void createCameras() {
 	int w = SCREEN_WIDTH;
 	int h = SCREEN_HEIGHT;
 
-	sunCamera = new PerspectiveCamera( make_vector(30.1f, 450.0f, 0.1f), make_vector(0.0f, 0.0f, 0.0f), make_vector(0.0f, 1.0f, 0.0f), 45, 1.0f, 280.0f, 600.0f);
+	sunCamera = new PerspectiveCamera( make_vector(20000.0f, 0.0f, 0.0f), make_vector(0.0f, 0.0f, 0.0f), make_vector(0.0f, 1.0f, 0.0f), 45, 1.0f, 10.0f, 30000.0f);
 	scene.shadowMapCamera = sunCamera;
 
 	playerCamera = new PerspectiveCamera(
