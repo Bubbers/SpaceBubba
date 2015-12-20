@@ -12,21 +12,15 @@
 #include <StandardRenderer.h>
 #include "MoveComponent.h"
 #include <InputManager.h>
-#include <TimedLife.h>
 #include <SpaceShipComponent.h>
-#include <SmokeParticle.h>
-#include <ParticleGenerator.h>
 #include <SpawnAsteroidOnDeath.h>
 #include <FireParticle.h>
 #include <SoundManager.h>
-#include "FireSphere.h"
 
-#include "GameObjectType.h"
 #include "DeathOnCollision.h"
 #include "Renderer.h"
 #include "ResourceManager.h"
 #include "constants.h"
-#include "BFBroadPhase.h"
 #include "ShootComponent.h"
 
 using namespace std;
@@ -47,8 +41,6 @@ float timeSinceDraw = 0.0f;
 
 int points = 0;
 
-const int WIN_CONDITION = 100;
-
 //*****************************************************************************
 //	OBJ Model declarations
 //*****************************************************************************
@@ -57,10 +49,8 @@ const int WIN_CONDITION = 100;
 GameObject rWing;
 GameObject skyBox;
 GameObject *hud;
-GameObject asteroid;
 GameObject dstar;
 SpaceShipComponent *spaceMover;
-GameObject shot;
 GameObject planet;
 GameObject sun;
 
@@ -396,10 +386,6 @@ void createMeshes() {
 
 
     for( int i = 0; i < 50; i++) {
-        //OBJECTS
-        Shader* standardShader = ResourceManager::getShader(SIMPLE_SHADER_NAME);
-        standardShader->setUniformBufferObjectBinding(UNIFORM_BUFFER_OBJECT_MATRICES_NAME, UNIFORM_BUFFER_OBJECT_MATRICES_INDEX);
-
         Mesh* asteroidM = ResourceManager::loadAndFetchMesh("../scenes/asteroid.obj");
         GameObject *asteroid = new GameObject(asteroidM, Asteroid);
         StandardRenderer *asteroidRenderer = new StandardRenderer(asteroidM, asteroid, standardShader);
