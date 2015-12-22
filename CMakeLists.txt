@@ -38,6 +38,7 @@ file(GLOB files_SOURCE
         "${PROJECT_SOURCE_DIR}/src/Misc/*.cpp"
         "${PROJECT_SOURCE_DIR}/src/effects/*.cpp"
         "${PROJECT_SOURCE_DIR}/src/cameras/*.cpp"
+        "${PROJECT_SOURCE_DIR}/src/Input/*.cpp"
         "${PROJECT_SOURCE_DIR}/src/core/*.cpp"
         "${PROJECT_SOURCE_DIR}/src/objects/*.cpp"
         "${PROJECT_SOURCE_DIR}/src/collision/*.cpp"

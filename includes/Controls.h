@@ -1,0 +1,7 @@
+
+#ifndef BUBBA_3D_CONTROLS_ENUM_H
+#define BUBBA_3D_CONTROLS_ENUM_H
+
+enum Controls {ACELERATE,TURN,ALTITUDE,SHOOT};
+
+#endif

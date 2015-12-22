@@ -15,6 +15,8 @@
 #include "ShootComponent.h"
 #include "InputManager.h"
 #include <timer.h>
+#include <ControlsManager.h>
+#include <Controls.h>
 
 
 #ifdef WIN32
@@ -41,7 +43,7 @@ ShootComponent::~ShootComponent() {
 }
 
 void ShootComponent::update(float dt) {
-    InputManager* im = InputManager::getInstance();
+    ControlsManager* cm = ControlsManager::getInstance();
 
 #ifdef WIN32
 	SYSTEMTIME time;
@@ -53,9 +55,8 @@ void ShootComponent::update(float dt) {
 #endif
 
 
-	
-    //long ms = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now().time_since_epoch()).count();
-    if(im->isKeyDown('r', false) && ms > canShootAfter) {
+
+    if(cm->getStatus(SHOOT).isActive() && ms > canShootAfter) {
 		
         canShootAfter = ms + 500;
         spawnBullet();

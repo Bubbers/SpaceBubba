@@ -7,8 +7,9 @@
 
 #include <GL/freeglut_std.h>
 #include <vector>
+#include <MouseWarp.h>
 
-typedef void (*mouseMoveCallback) (int x,int y, int delta_x, int delta_y);
+typedef MouseWarp (*mouseMoveCallback) (int x,int y, int delta_x, int delta_y);
 typedef void (*specialKeyListener) (int key, int x, int y);
 
 class InputManager{
@@ -24,6 +25,9 @@ private:
     static void handleSpecialKey(int key, int x, int y);
     static void handleMouseClick(int button, int state, int x, int y);
     static void handleMouseMove(int x, int y);
+    //if the mouse position is warped inside the move callback an additional
+    //call will be generated which should be ignored
+    bool ignoreNextMouseMove;
 public:
     static InputManager* getInstance();
     enum mouseButton { MOUSE_LEFT = GLUT_LEFT_BUTTON, MOUSE_RIGHT = GLUT_RIGHT_BUTTON, MOUSE_MIDDLE = GLUT_MIDDLE_BUTTON};
