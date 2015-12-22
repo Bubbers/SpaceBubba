@@ -4,6 +4,7 @@
 
 #include <ctype.h>
 #include <stdio.h>
+#include <MouseWarp.h>
 #include "InputManager.h"
 
 /**
@@ -42,10 +43,26 @@ void InputManager::handleSpecialKey(int key, int x, int y) {
 
 void InputManager::handleMouseMove(int x, int y) {
     InputManager* im = InputManager::getInstance();
-    for(auto it = im->mouseMove.begin() ; it != im->mouseMove.end(); ++it)
-        (*it)(x,y,x - im->prev_x,y - im->prev_y);
-    im->prev_x = x;
-    im->prev_y = y;
+    if(im->ignoreNextMouseMove){
+        im->ignoreNextMouseMove = false;
+        return;
+    }
+    bool warp = false;
+    int wx=0,wy=0;
+    for(auto it = im->mouseMove.begin() ; it != im->mouseMove.end(); ++it) {
+        MouseWarp mw = (*it)(x, y, x - im->prev_x, y - im->prev_y);
+        if(mw.isWarped()){
+            wx = mw.getX();
+            wy = mw.getY();
+            warp = true;
+        }
+    }
+    im->prev_x = warp ? wx : x;
+    im->prev_y = warp ? wy : y;
+    if(warp) {
+        glutWarpPointer(wx, wy);
+        im->ignoreNextMouseMove = true;
+    }
 }
 
 void InputManager::handleMouseClick(int button, int state, int x, int y) {
@@ -73,6 +90,7 @@ InputManager::InputManager() {
     mouseMove = std::vector<mouseMoveCallback>();
     specKeyListeners = std::vector<specialKeyListener>();
     prev_x = prev_y = 0;
+    ignoreNextMouseMove = false;
 
     glutKeyboardFunc(InputManager::handleKeyDown);
     glutKeyboardUpFunc(InputManager::handleKeyUp);

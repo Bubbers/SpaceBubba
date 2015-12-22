@@ -9,8 +9,10 @@
 #include <SmokeParticle.h>
 #include <ParticleGenerator.h>
 #include <Utils.h>
+#include <ControlsManager.h>
 #include "SpaceShipComponent.h"
 #include "float3x3.h"
+#include <Controls.h>
 
 
 SpaceShipComponent::SpaceShipComponent(struct HudRenderer::HudConfig* hudConf, float* cameraThetaLocation, GameObject* ship,
@@ -51,27 +53,25 @@ float SpaceShipComponent::getTotalRotation(){
 
 void SpaceShipComponent::checkKeyPresses(float dt) {
 
-    InputManager* im = InputManager::getInstance();
-    if (im->isKeyDown('w',false) || im->isKeyDown('s',false)) {
+    ControlsManager* cm = ControlsManager::getInstance();
+    ControlStatus cs = cm->getStatus(ACELERATE);
+    if (cm->getStatus(ACELERATE).isActive()) {
         if(abs(accelerationSpeed) >= 0.00007f) {
             float ratio = 0.00007f/abs(accelerationSpeed);
             accelerationSpeed *= ratio;
         } else
             accelerationSpeed += 0.0000005f;
-        acceleration = normalize(frontDir)*accelerationSpeed * (im->isKeyDown('w',false) ? 1 : -1);
+        acceleration = normalize(frontDir)*accelerationSpeed * -(cs.getValue() / 100.0f);
     }else{
         acceleration = make_vector(0.0f,0.0f,0.0f);
     }
 
-    if(im->isKeyDown('p',false)){
-        velocity.y = 0.05f;
-    }else if(im->isKeyDown('l',false)){
-        velocity.y = -0.05f;
-    }else
-        velocity.y = 0.0f;
+    cs = cm->getStatus(ALTITUDE);
+    velocity.y = -cs.getValue()/2000;
 
-    float speedDif = turnSpeed*(im->isKeyDown('a',false) ? 1 : -1);
-    if (im->isKeyDown('a',false) || im->isKeyDown('d',false)) {
+    cs = cm->getStatus(TURN);
+    float speedDif = turnSpeed*-(cs.getValue() /150.0f);
+    if (cs.isActive()) {
         rotationSpeed.y = speedDif;
         totRotation += speedDif*dt;
         *cameraThetaLocation += speedDif*dt;

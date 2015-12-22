@@ -19,6 +19,7 @@
 #include <SpawnAsteroidOnDeath.h>
 #include <FireParticle.h>
 #include <SoundManager.h>
+#include <MouseWarp.h>
 #include "FireSphere.h"
 
 #include "GameObjectType.h"
@@ -28,6 +29,10 @@
 #include "constants.h"
 #include "BFBroadPhase.h"
 #include "ShootComponent.h"
+#include <SFML/Window.hpp>
+#include <ControlsManager.h>
+#include <Controls.h>
+
 
 using namespace std;
 using namespace chag;
@@ -146,27 +151,38 @@ void specialKey(int key, int x, int y)
 		break;
 	}
 }
-void motion(int x, int y, int delta_x, int delta_y)
+MouseWarp motion(int x, int y, int delta_x, int delta_y)
 {
 
 	InputManager* im = InputManager::getInstance();
+	bool someDown = false;
 
 	if(im->isMouseButtonDown(InputManager::MOUSE_MIDDLE))
 	{
 		camera_r -= float(delta_y) * 0.3f;
 		// make sure cameraDistance does not become too small
 		camera_r = max(0.1f, camera_r);
+		someDown = true;
 	}
 	if(im->isMouseButtonDown(InputManager::MOUSE_LEFT))
 	{
 		camera_phi	-= float(delta_y) * 0.3f * float(M_PI) / 180.0f;
 		camera_phi = min(max(0.01f, camera_phi), float(M_PI) - 0.01f);
 		camera_theta -= float(delta_x) * 0.3f * float(M_PI) / 180.0f;
+		someDown = true;
 	}
 
 	if(im->isMouseButtonDown(InputManager::MOUSE_RIGHT))
 	{
 		camera_target_altitude += float(delta_y) * 0.1f; 
+		someDown = true;
+	}
+	if(someDown) {
+		glutSetCursor(GLUT_CURSOR_NONE);
+		return MouseWarp(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
+	}else {
+		glutSetCursor(GLUT_CURSOR_INFO);
+		return MouseWarp::noWarp();
 	}
 }
 
@@ -208,6 +224,7 @@ void idle( int v )
 {
 	float elapsedTime = glutGet(GLUT_ELAPSED_TIME) - timeSinceDraw;
 
+	sf::Joystick::update();
 	float time = (1000 / TICK_PER_SECOND) - elapsedTime;
 	checkKeys();
 	if (time < 0) {
@@ -256,6 +273,12 @@ int main(int argc, char *argv[])
 	InputManager* im = InputManager::getInstance();
 	im->addMouseMoveListener(motion);
 	im->addSpecialKeyListener(specialKey);
+	ControlsManager* cm = ControlsManager::getInstance();
+	cm->addBindings(ALTITUDE,{Button(sf::Keyboard::L,sf::Keyboard::P),Button(sf::Joystick::Axis::V,true)});
+	cm->addBindings(ACELERATE,{Button(sf::Keyboard::S,sf::Keyboard::W),Button(sf::Joystick::Axis::Y,true)});
+	cm->addBindings(TURN,{Button(sf::Keyboard::A,sf::Keyboard::D),Button(sf::Joystick::Axis::U,true)});
+	cm->addBindings(SHOOT,{Button(sf::Keyboard::Space),Button(sf::Joystick::Axis::R,false)});
+
 	renderer->initGL();
 
 	soundManager = new SoundManager();
