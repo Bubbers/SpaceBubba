@@ -24,6 +24,8 @@ public:
 	void render();
 	void update(float dt);
 private:
+	void renderChunk(Chunk& chunk);
+
 	Camera* m_camera;
 	CubeMapTexture* m_pCubemap;
 	Mesh *m_skyMesh;

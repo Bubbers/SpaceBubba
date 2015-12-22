@@ -21,7 +21,7 @@ GameObject::GameObject(Mesh *mesh, GameObjectType type) {
     this->shininess = 0.0f;
     this->id = ++uniqueId;
 
-    createOctree(this->mesh);
+    this->octree = createOctree(this->mesh);
 };
 
 GameObject::~GameObject() {
@@ -29,14 +29,16 @@ GameObject::~GameObject() {
 
 }
 
-void GameObject::createOctree(Mesh* mesh) {
+Octree* GameObject::createOctree(Mesh* mesh) {
     AABB* aabb = this->mesh->getAABB();
     float3 halfVector = (aabb->maxV - aabb->minV) / 2;
     float3 origin = aabb->maxV - halfVector;
-    octree = new Octree(origin, halfVector, 0);
+    Octree* octree = new Octree(origin, halfVector, 0);
 
     std::vector<Triangle *> triangles = mesh->getTriangles();
     octree->insertAll(triangles);
+
+    return octree;
 }
 
 

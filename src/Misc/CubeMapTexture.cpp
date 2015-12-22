@@ -57,7 +57,7 @@ CubeMapTexture::CubeMapTexture(const string& posXFilename, const string& negXFil
 
 void CubeMapTexture::loadCubeMapFace(std::string filename, GLenum face)
 {
-	FIBITMAP *image32Bit = Texture::LoadImageIntoMemory(filename);
+	FIBITMAP *image32Bit = Texture::loadImage(filename);
 	int width, height;
 	width = FreeImage_GetWidth(image32Bit);
 	height = FreeImage_GetHeight(image32Bit);

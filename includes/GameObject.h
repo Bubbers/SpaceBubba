@@ -46,7 +46,7 @@ public:
     void setType(GameObjectType t) { type = t; };
 
 private:
-    void createOctree(Mesh* mesh);
+    Octree* createOctree(Mesh* mesh);
 
     static int uniqueId;
     int id;

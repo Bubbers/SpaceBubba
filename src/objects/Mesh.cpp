@@ -1,6 +1,5 @@
 #include "Mesh.h"
 #include <ResourceManager.h>
-#include <Triangle.h>
 #include "Logger.h"
 
 using namespace chag;
@@ -211,7 +210,6 @@ void Mesh::initMesh(unsigned int index, const aiMesh *paiMesh) {
                      GL_STATIC_DRAW);
         glVertexAttribPointer(5, 3, GL_FLOAT, false, 0, 0);
         glEnableVertexAttribArray(5);
-
     }
 
     m_chunks.push_back(c);
