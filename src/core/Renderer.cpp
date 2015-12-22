@@ -454,7 +454,6 @@ void Renderer::blurImage() {
 void Renderer::drawFullScreenQuad()
 {
 	static GLuint vertexArrayObject = 0;
-	static int nofVertices = 4;
 
 	// do this initialization first time the function is called... somewhat dodgy, but works for demonstration purposes
 	if (vertexArrayObject == 0)

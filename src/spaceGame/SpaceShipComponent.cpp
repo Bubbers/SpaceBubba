@@ -4,9 +4,6 @@
 
 #include <MoveComponent.h>
 #include <InputManager.h>
-#include <ResourceManager.h>
-#include <Camera.h>
-#include <SmokeParticle.h>
 #include <ParticleGenerator.h>
 #include <Utils.h>
 #include <ControlsManager.h>

@@ -3,15 +3,8 @@
 //
 
 #include <GameObject.h>
-#include <linmath/Quaternion.h>
-#include <Logger.h>
-#include <timer.h>
-#include <sstream>
-#include <InputManager.h>
-#include <HudRenderer.h>
 #include "MoveComponent.h"
 #include "float3x3.h"
-#include "Utils.h"
 
 MoveComponent::MoveComponent(){
 

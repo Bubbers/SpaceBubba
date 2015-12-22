@@ -1,6 +1,4 @@
 #include "Octree.h"
-#include <cfloat>
-#include <AABB2.h>
 
 Octree::Octree() {
 
@@ -151,7 +149,6 @@ AABB* Octree::getAABB() {
 }
 
 int Octree::getCount() {
-    std::vector<Octree> octs;
     int c = getChildCount();
 
     if (hasChildren()) {

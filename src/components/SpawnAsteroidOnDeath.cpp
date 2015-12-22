@@ -3,15 +3,10 @@
 //
 
 #include "SpawnAsteroidOnDeath.h"
-#include <Shader.h>
 #include <ResourceManager.h>
 #include <constants.h>
-#include <GameObject.h>
 #include <StandardRenderer.h>
 #include <MoveComponent.h>
-#include <Utils.h>
-#include <BFBroadPhase.h>
-#include <Scene.h>
 #include <SmokeParticle.h>
 #include <ParticleGenerator.h>
 #include <DeathOnCollision.h>

@@ -1,7 +1,6 @@
 #include <glutil/glutil.h>
 #include <Logger.h>
 #include "Texture.h"
-#include "FreeImage.h"
 
 void Texture::bind(GLenum textureUnit){
     glActiveTexture(textureUnit);

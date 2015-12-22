@@ -2,8 +2,6 @@
 #include <Logger.h>
 #include "GameObject.h"
 #include "float3x3.h"
-#include "ResourceManager.h"
-#include "constants.h"
 #include "Collider.h"
 
 #define NORMAL_TEXTURE_LOCATION 3

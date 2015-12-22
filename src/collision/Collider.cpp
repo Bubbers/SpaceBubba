@@ -1,6 +1,5 @@
 #include <GameObject.h>
 #include <Collider.h>
-#include "Octree.h"
 
 #define EPSILON 0.00001f
 bool rayTriangle(float3 r_o, float3 r_d, float3 v1, float3 v2, float3 v3, float *ins);

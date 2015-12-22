@@ -2,7 +2,6 @@
 // Created by johan on 2015-12-13.
 //
 #include <ResourceManager.h>
-#include <Utils.h>
 #include <StandardRenderer.h>
 #include <constants.h>
 #include <MoveComponent.h>
