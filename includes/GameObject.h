@@ -14,9 +14,7 @@ enum EventType {BeforeCollision, DuringCollision, AfterCollision};
 class GameObject : public IDrawable {
 public:
     GameObject();
-
     GameObject(Mesh *mesh, GameObjectType type);
-
     ~GameObject();
 
     virtual void render();
@@ -24,9 +22,6 @@ public:
 
     void move(float4x4 model_matrix);
     void update(float4x4 update_matrix);
-    std::vector<Triangle*> getTriangles();
-
-    float4x4 getModelMatrix();
 
     void addRenderComponent(IRenderComponent*);
     void addComponent(IComponent*);
@@ -34,34 +29,39 @@ public:
     void update(float dt);
     void callEvent(EventType, GameObjectType data);
 
-    AABB getAABB();
     bool isDynamicObject();
     void setDynamic(bool);
+
     Octree* getOctree();
+    std::vector<Triangle*> getTriangles();
+    float4x4 getModelMatrix();
+    AABB getAABB();
+
+    int getId();
 
     void makeDirty();
     bool isDirty();
-
-    static int uniqueId;
-    int getId();
 
     GameObjectType getType() { return type; };
     void setType(GameObjectType t) { type = t; };
 
 private:
+    void createOctree(Mesh* mesh);
+
+    static int uniqueId;
     int id;
     Mesh *mesh;
     chag::float4x4 m_modelMatrix;
 
     GameObjectType type = SpaceEntity;
 
-    /* COMPONENTS */
     IRenderComponent* renderComponent;
     std::vector<IComponent*> components;
 
     AABB aabb;
-    bool dynamicObject = false;
     Octree *octree;
+
+    bool dynamicObject = false;
 
     bool dirty = false;
 };

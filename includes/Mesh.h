@@ -16,6 +16,7 @@
 #include "AABB2.h"
 #include "IDrawable.h"
 #include "Texture.h"
+#include "Triangle.h"
 
 struct Material {
     chag::float3 diffuseColor;
@@ -70,6 +71,8 @@ public:
     ~Mesh();
 
     void loadMesh(const std::string &fileName);
+    void createTriangles();
+    std::vector<Triangle *> getTriangles();
     AABB* getAABB();
 
 private:
@@ -84,6 +87,8 @@ private:
     std::string cleanFileName(std::string filePath);
     float3 getColorFromMaterial(const char* pKey, unsigned int type, unsigned int idx, const aiMaterial &material);
     Texture* getTexture(const aiMaterial *material, const std::string &fileName, aiTextureType type);
+
+    std::vector<Triangle *> triangles;
 
 public:
     std::vector<Material> materials;

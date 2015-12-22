@@ -1,5 +1,6 @@
 #include "Mesh.h"
 #include <ResourceManager.h>
+#include <Triangle.h>
 #include "Logger.h"
 
 using namespace chag;
@@ -44,6 +45,7 @@ void Mesh::initMeshFromScene(const aiScene *pScene, const std::string &fileName)
     }
 
     initMaterials(pScene, fileName);
+    createTriangles();
 }
 
 void Mesh::initMaterials(const aiScene *pScene, const std::string &fileName) {
@@ -217,4 +219,30 @@ void Mesh::initMesh(unsigned int index, const aiMesh *paiMesh) {
 
 AABB* Mesh::getAABB() {
     return &m_aabb;
+}
+
+void Mesh::createTriangles() {
+    for (unsigned int i = 0; i < m_chunks.size(); i++) {
+
+        for (unsigned int j = 0; j + 2 < m_chunks[i].m_positions.size(); j += 3) {
+
+
+            Triangle *t = new Triangle(make_vector(m_chunks[i].m_positions[j + 0].x,
+                                                   m_chunks[i].m_positions[j + 0].y,
+                                                   m_chunks[i].m_positions[j + 0].z),
+                                       make_vector(m_chunks[i].m_positions[j + 1].x,
+                                                   m_chunks[i].m_positions[j + 1].y,
+                                                   m_chunks[i].m_positions[j + 1].z),
+                                       make_vector(m_chunks[i].m_positions[j + 2].x,
+                                                   m_chunks[i].m_positions[j + 2].y,
+                                                   m_chunks[i].m_positions[j + 2].z));
+
+
+            triangles.push_back(t);
+        }
+    }
+}
+
+std::vector<Triangle*> Mesh::getTriangles() {
+    return triangles;
 }

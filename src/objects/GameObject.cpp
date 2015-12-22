@@ -15,47 +15,30 @@ GameObject::GameObject() {
 }
 
 GameObject::GameObject(Mesh *mesh, GameObjectType type) {
-
-    GameObject();
     this->type = type;
-    id = ++uniqueId;
     this->mesh = mesh;
-    shininess = 0.0f;
+    this->m_modelMatrix = make_identity<float4x4>();
+    this->shininess = 0.0f;
+    this->id = ++uniqueId;
 
-    AABB* aabb = this->mesh->getAABB();
-    std::vector<Triangle *> triangles;
-
-	for (unsigned int i = 0; i < mesh->m_chunks.size(); i++) {
-
-		for (unsigned int j = 0; j + 2 < mesh->m_chunks[i].m_positions.size(); j += 3) {
-
-
-            Triangle *t = new Triangle(make_vector(mesh->m_chunks[i].m_positions[j + 0].x,
-                                                   mesh->m_chunks[i].m_positions[j + 0].y,
-                                                   mesh->m_chunks[i].m_positions[j + 0].z),
-                                       make_vector(mesh->m_chunks[i].m_positions[j + 1].x,
-                                                   mesh->m_chunks[i].m_positions[j + 1].y,
-                                                   mesh->m_chunks[i].m_positions[j + 1].z),
-                                       make_vector(mesh->m_chunks[i].m_positions[j + 2].x,
-                                                   mesh->m_chunks[i].m_positions[j + 2].y,
-                                                   mesh->m_chunks[i].m_positions[j + 2].z));
-
-
-            triangles.push_back(t);
-        }
-    }
-
-    float3 halfVector = (aabb->maxV - aabb->minV) / 2;
-    float3 origin = aabb->maxV - halfVector;
-    octree = new Octree(origin, halfVector, 0);
-    octree->insertAll(triangles);
-    m_modelMatrix = make_identity<float4x4>();
+    createOctree(this->mesh);
 };
 
 GameObject::~GameObject() {
     mesh = nullptr;
 
 }
+
+void GameObject::createOctree(Mesh* mesh) {
+    AABB* aabb = this->mesh->getAABB();
+    float3 halfVector = (aabb->maxV - aabb->minV) / 2;
+    float3 origin = aabb->maxV - halfVector;
+    octree = new Octree(origin, halfVector, 0);
+
+    std::vector<Triangle *> triangles = mesh->getTriangles();
+    octree->insertAll(triangles);
+}
+
 
 void GameObject::makeDirty() {
     for(auto &component : components)
@@ -80,29 +63,7 @@ void GameObject::render() {
 }
 
 std::vector<Triangle *> GameObject::getTriangles() {
-    std::vector<Triangle *> ts;
-
-	for (unsigned int i = 0; i < mesh->m_chunks.size(); i++) {
-
-		for (unsigned int j = 0; j < mesh->m_chunks[i].m_positions.size(); j += 3) {
-
-
-            Triangle *t = new Triangle(make_vector(mesh->m_chunks[i].m_positions[j + 0].x,
-                                                   mesh->m_chunks[i].m_positions[j + 0].y,
-                                                   mesh->m_chunks[i].m_positions[j + 0].z),
-
-                                       make_vector(mesh->m_chunks[i].m_positions[j + 1].x,
-                                                   mesh->m_chunks[i].m_positions[j + 1].y,
-                                                   mesh->m_chunks[i].m_positions[j + 1].z),
-
-                                       make_vector(mesh->m_chunks[i].m_positions[j + 2].x,
-                                                   mesh->m_chunks[i].m_positions[j + 2].y,
-                                                   mesh->m_chunks[i].m_positions[j + 2].z));
-            ts.push_back(t);
-        }
-    }
-
-    return ts;
+    return mesh->getTriangles();
 }
 
 float4x4 GameObject::getModelMatrix(){
