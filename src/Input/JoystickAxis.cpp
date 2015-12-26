@@ -3,7 +3,7 @@
 //
 
 #include <JoystickAxis.h>
-#include <SFML/Window/Joystick.hpp>
+#include <SFML/Window.hpp>
 #include <Button.h>
 
 JoystickAxis::JoystickAxis(sf::Joystick::Axis axis, bool dual) : Button(dual){

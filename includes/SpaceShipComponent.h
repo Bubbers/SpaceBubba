@@ -11,24 +11,28 @@
 class SpaceShipComponent : public MoveComponent{
 public:
 
-    SpaceShipComponent(struct HudRenderer::HudConfig* hudConf, float* cameraThetaLocation, GameObject* ship, ParticleGenerator* generator1, ParticleGenerator* generator2, State* state);
+    SpaceShipComponent(struct HudRenderer::HudConfig* hudConf, float* cameraThetaLocation, float* cameraPhiLocation,
+                       GameObject* ship, ParticleGenerator* generator1, ParticleGenerator* generator2, State* state);
 
     void update(float dt) ;
     float3 getFrontDir();
-    float getTotalRotation();
     void onDeath();
 
 private:
     struct HudRenderer::HudConfig* hudConf;
     State* state;
-    float* cameraThetaLocation;
+    float* cameraThetaLocation, *cameraPhiLocation;
     void checkKeyPresses(float dt);
+    float4x4 updateRotation(float dt);
 
     float turnSpeed = (float) (2 * M_PI / (180*20));
     float accelerationSpeed = 0.0f;
     float3 frontDir = make_vector(0.0f, 0.0f, 1.0f);
+    float maxSpeed;
     ParticleGenerator *generator1;
     ParticleGenerator *generator2;
+    float totalTurn = 0.0f;
+    float totalIncl = 0.0f;
 
 };
 

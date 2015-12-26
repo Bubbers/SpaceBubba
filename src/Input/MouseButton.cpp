@@ -4,6 +4,7 @@
 
 #include <MouseButton.h>
 #include <Button.h>
+#include <SFML/Window.hpp>
 
 MouseButton::MouseButton(sf::Mouse::Button button) : Button(false){
     this->mButtonPos = button;

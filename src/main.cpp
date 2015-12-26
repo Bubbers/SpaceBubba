@@ -29,6 +29,7 @@
 #include <Controls.h>
 #include <KeyboardButton.h>
 #include <JoystickAxis.h>
+#include <JoystickButton.h>
 
 
 using namespace std;
@@ -341,7 +342,7 @@ void createMeshes() {
 	scene.transparentObjects.push_back(hud);
 
 
-	spaceMover = new SpaceShipComponent(hudRenderer->getConfig(),&camera_theta, &rWing, gen, gen2, &state);
+	spaceMover = new SpaceShipComponent(hudRenderer->getConfig(),&camera_theta, &camera_phi, &rWing, gen, gen2, &state);
 	ShootComponent *shooter = new ShootComponent(&rWing, spaceMover, &scene, &broadPhaseCollider, 1000);
 	rWing.addComponent(shooter);
 	rWing.addComponent(spaceMover);
@@ -355,7 +356,8 @@ void createMeshes() {
 	dstar.addRenderComponent(dstarRenderer);
 
 	MoveComponent *dstarMover = new MoveComponent(&dstar);
-	dstarMover->setRotationSpeed(make_vector(0.0f, 0.0001f, 0.0f));
+	dstarMover->setRotationAxis(make_vector(0.0f, 1.0f, 0.0f));
+	dstarMover->setRotationSpeed(0.0001f);
 	dstarMover->setLocation(make_vector(-10.0f, 0.0f, 16000.0f));
 	dstarMover->setScale(make_vector(2000.0f, 2000.0f, 2000.0f));
 	dstar.setDynamic(true);
@@ -371,7 +373,8 @@ void createMeshes() {
 	MoveComponent *planetMover = new MoveComponent(&planet);
 	planetMover->setLocation(make_vector(-25000.0f, 0.0f, 0.0f));
 	planetMover->setScale(make_vector(2000.0f, 2000.0f, 2000.0f));
-	planetMover->setRotationSpeed(make_vector(0.0f, 0.00005f, 0.0f));
+	planetMover->setRotationSpeed(0.00005f);
+	planetMover->setRotationAxis(make_vector(0.0f,1.0f,0.0f));
 	planet.addComponent(planetMover);
 
 	scene.shadowCasters.push_back(&planet);
@@ -382,7 +385,8 @@ void createMeshes() {
 	MoveComponent *sunMover = new MoveComponent(&sun);
 	sunMover->setLocation(make_vector(20000.0f, 0.0f, 0.0f));
 	sunMover->setScale(make_vector(2000.0f, 2000.0f, 2000.0f));
-	sunMover->setRotationSpeed(make_vector(0.0f, 0.0001f, 0.0f));
+	sunMover->setRotationSpeed(0.0001f);
+	sunMover->setRotationAxis(make_vector(0.0f, 1.0f, 0.0f));
 	sun.addComponent(sunMover);
 	StandardRenderer *sunRenderer = new StandardRenderer(sunM, &sun, standardShader);
 	sun.addRenderComponent(sunRenderer);
@@ -407,7 +411,8 @@ void createMeshes() {
 
         MoveComponent *asteroidMover = new MoveComponent(asteroid);
         asteroidMover->setVelocity(velocity);
-        asteroidMover->setRotationSpeed(rotation);
+        asteroidMover->setRotationSpeed(length(rotation));
+		asteroidMover->setRotationAxis(rotation);
         asteroidMover->setLocation(location);
         //asteroidMover->setAcceleration(make_vector(-0.0000005f, 0.0f, 0.0f));
         asteroidMover->setScaleSpeed(make_vector(0.0005f,0.0005f,0.0005f));

@@ -4,6 +4,7 @@
 
 #include <KeyboardButton.h>
 #include <Button.h>
+#include <SFML/Window.hpp>
 
 KeyboardButton::KeyboardButton(sf::Keyboard::Key key) : Button(false){
     this->keyPos = key;

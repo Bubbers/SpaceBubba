@@ -13,8 +13,9 @@
 #include <linmath/Quaternion.h>
 
 
-SpaceShipComponent::SpaceShipComponent(struct HudRenderer::HudConfig* hudConf, float* cameraThetaLocation, GameObject* ship,
-                                       ParticleGenerator* generator1, ParticleGenerator* generator2, State* state)
+SpaceShipComponent::SpaceShipComponent(struct HudRenderer::HudConfig* hudConf, float* cameraThetaLocation,
+                                       float* cameraPhiLocation, GameObject* ship, ParticleGenerator* generator1,
+                                       ParticleGenerator* generator2, State* state)
         : MoveComponent(ship){
     this->hudConf = hudConf;
     this->cameraThetaLocation = cameraThetaLocation;
@@ -22,6 +23,7 @@ SpaceShipComponent::SpaceShipComponent(struct HudRenderer::HudConfig* hudConf, f
     this->generator1 = generator1;
     this->generator2 = generator2;
     this->state = state;
+    this->cameraPhiLocation = cameraPhiLocation;
 
 
 }
@@ -35,15 +37,26 @@ void SpaceShipComponent::onDeath() {
 void SpaceShipComponent::update(float dt) {
 
     checkKeyPresses(dt);
-    MoveComponent::update(dt);
-    hudConf->speed = length(velocity)*200;
+    MoveComponent::updateWithExtras(dt,make_identity<float4x4>(),make_identity<float4x4>(),updateRotation(dt),
+                                    make_identity<float4x4>());
+    hudConf->speed = length(getVelocity())*200;
 
     float3 normVector = normalize(frontDir);
     float3 left = cross(normVector, make_vector(0.0f, 1.0f, 0.0f));
-    generator1->m_position = location - normVector * 4.0 + left;
-    generator2->m_position = location - normVector * 4.0 - left;
+    generator1->m_position = getLocation() - normVector * 4.0 + left;
+    generator2->m_position = getLocation() - normVector * 4.0 - left;
 
 };
+
+float4x4 SpaceShipComponent::updateRotation(float dt) {
+    float4x4 roty = make_rotation_y<float4x4>(totalTurn); //to rotate the modelmatrix
+    float3x3 rotvy = make_rotation_y<float3x3>(totalTurn); //to rotate frontDir
+    float3 axisOriginalX = normalize(rotvy*make_vector(-1.0f,0.0f,0.0f)); //The axis that was to the right from the beginning
+                                                                          //But should now be at the rotated position
+    frontDir = make_rotation<float3x3>(axisOriginalX,totalIncl) * rotvy * make_vector(0.0f,0.0f,1.0f);
+    setVelocity(frontDir*length(getVelocity()));
+    return make_rotation<float4x4>(axisOriginalX,totalIncl)*roty;
+}
 
 void SpaceShipComponent::checkKeyPresses(float dt) {
 
@@ -55,29 +68,27 @@ void SpaceShipComponent::checkKeyPresses(float dt) {
             accelerationSpeed *= ratio;
         } else
             accelerationSpeed += 0.0000005f;
-        acceleration = normalize(frontDir)*accelerationSpeed * -(cs.getValue() / 100.0f);
+        setAcceleration(normalize(frontDir)*accelerationSpeed * -(cs.getValue() / 100.0f));
     }else{
-        acceleration = make_vector(0.0f,0.0f,0.0f);
+        setAcceleration(make_vector(0.0f,0.0f,0.0f));
     }
 
+    if(length(getVelocity()) > maxSpeed)
+        setVelocity(getVelocity()*maxSpeed/length(getVelocity()));
+
     cs = cm->getStatus(ALTITUDE);
-    if(cs.isActive()) {
-        velocity.y = -cs.getValue() / 2000;
-    }else
-        velocity.y = 0.0f;
+    float speedDif = turnSpeed*-(cs.getValue() /150.0f);
+    if(cs.isActive()){
+        totalIncl += speedDif*dt;
+        *cameraPhiLocation += speedDif*dt;
+    }
 
-    cs = cm->getStatus(TURN);
-    if (cs.isActive()) {
-        float speedDif = turnSpeed*-(cs.getValue() /150.0f);
-        rotationSpeed.y = speedDif;
+    ControlStatus cs2 = cm->getStatus(TURN);
+    speedDif = turnSpeed*-(cs2.getValue() / 150.0f);
+    if (cs2.isActive()) {
+        totalTurn += speedDif*dt;
         *cameraThetaLocation += speedDif*dt;
-        frontDir = make_rotation_y<float3x3>(speedDif*dt) * frontDir;
-    }else
-        rotationSpeed.y = 0;
+    }
 }
 
-float3 SpaceShipComponent::getFrontDir() {
-    return frontDir;
-}
-
-
+float3 SpaceShipComponent::getFrontDir() { return frontDir; }
