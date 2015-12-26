@@ -12,25 +12,12 @@ class Button {
 public:
     enum MOUSE : int {LEFT_MOUSE = 0,RIGHT_MOUSE = 1,MIDDLE_MOUSE = 2,EXTRA1 = 3,EXTRA2 = 4};
 
-    ControlStatus getStatus();
-    Button(sf::Mouse::Button id);
-    Button(sf::Mouse::Button pos,sf::Mouse::Button neg);
-    Button(unsigned int joystickButton);
-    Button(unsigned int joystickNeg, unsigned int joystickPos);
-    Button(sf::Joystick::Axis axis, bool dual);
-    Button(sf::Keyboard::Key id);
-    Button(sf::Keyboard::Key keyNeg, sf::Keyboard::Key keyPos);
+    virtual ControlStatus getStatus() = 0;
     bool isDual();
 
-private:
-    enum Device {KEYBOARD = 0, MOUSE = 1, JOYSTICK_BUTTON = 2, JOYSTICK_AXIS = 3};
-    Button(Device device, bool dual);
-    Device device;
+protected:
+    Button(bool dual);
     bool dual;
-    unsigned int joystickPos, joystickNeg;
-    sf::Mouse::Button mButtonPos, mButtonNeg;
-    sf::Keyboard::Key keyPos, keyNeg;
-    sf::Joystick::Axis axis;
 
 };
 

@@ -27,6 +27,8 @@
 #include <SFML/Window.hpp>
 #include <ControlsManager.h>
 #include <Controls.h>
+#include <KeyboardButton.h>
+#include <JoystickAxis.h>
 
 
 using namespace std;
@@ -117,31 +119,12 @@ void display(void)
 
 void checkKeys()
 {
-	InputManager* im = InputManager::getInstance();
-	if(im->isKeyDown(27,true))
+	ControlsManager* cm = ControlsManager::getInstance();
+	if(cm->getStatus(QUIT).isActive())
 		exit(0);
 
 }
 
-void specialKey(int key, int x, int y)
-{
-
-	switch(key)
-	{
-	case InputManager::LEFT_ARROW:
-		printf("Left arrow\n");
-		camera = (camera + 1) % 8;
-		break;
-	case InputManager::RIGHT_ARROW:
-		camera = (camera - 1);
-		camera = camera == -1 ? 7 : camera;
-		break;
-	case InputManager::UP_ARROW:
-		break;
-	case InputManager::DOWN_ARROW:
-		break;
-	}
-}
 MouseWarp motion(int x, int y, int delta_x, int delta_y)
 {
 
@@ -236,7 +219,7 @@ void idle( int v )
 
 
 		for(auto it = toDelete->begin(); it < toDelete->end(); it++){
-			//delete *it;
+			delete *it;
 		}
 
 		delete toDelete;
@@ -263,12 +246,12 @@ int main(int argc, char *argv[])
 
 	InputManager* im = InputManager::getInstance();
 	im->addMouseMoveListener(motion);
-	im->addSpecialKeyListener(specialKey);
 	ControlsManager* cm = ControlsManager::getInstance();
-	cm->addBindings(ALTITUDE,{Button(sf::Keyboard::L,sf::Keyboard::P),Button(sf::Joystick::Axis::V,true)});
-	cm->addBindings(ACELERATE,{Button(sf::Keyboard::S,sf::Keyboard::W),Button(sf::Joystick::Axis::Y,true)});
-	cm->addBindings(TURN,{Button(sf::Keyboard::A,sf::Keyboard::D),Button(sf::Joystick::Axis::U,true)});
-	cm->addBindings(SHOOT,{Button(sf::Keyboard::Space),Button(sf::Joystick::Axis::R,false)});
+	cm->addBindings(ALTITUDE,{new KeyboardButton(sf::Keyboard::L,sf::Keyboard::P),new JoystickAxis(sf::Joystick::Axis::V,true)});
+	cm->addBindings(ACCELERATE,{new KeyboardButton(sf::Keyboard::S,sf::Keyboard::W),new JoystickAxis(sf::Joystick::Axis::Y,true)});
+	cm->addBindings(TURN,{new KeyboardButton(sf::Keyboard::D,sf::Keyboard::A),new JoystickAxis(sf::Joystick::Axis::U,true)});
+	cm->addBindings(SHOOT,{new KeyboardButton(sf::Keyboard::Space),new JoystickAxis(sf::Joystick::Axis::R,false)});
+	cm->addBindings(QUIT,{new KeyboardButton(sf::Keyboard::Escape)});
 
 	renderer->initGL();
 

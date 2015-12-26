@@ -10,6 +10,7 @@
 #include "SpaceShipComponent.h"
 #include "float3x3.h"
 #include <Controls.h>
+#include <linmath/Quaternion.h>
 
 
 SpaceShipComponent::SpaceShipComponent(struct HudRenderer::HudConfig* hudConf, float* cameraThetaLocation, GameObject* ship,
@@ -44,15 +45,11 @@ void SpaceShipComponent::update(float dt) {
 
 };
 
-float SpaceShipComponent::getTotalRotation(){
-    return totRotation;
-}
-
 void SpaceShipComponent::checkKeyPresses(float dt) {
 
     ControlsManager* cm = ControlsManager::getInstance();
-    ControlStatus cs = cm->getStatus(ACELERATE);
-    if (cm->getStatus(ACELERATE).isActive()) {
+    ControlStatus cs = cm->getStatus(ACCELERATE);
+    if (cs.isActive()) {
         if(abs(accelerationSpeed) >= 0.00007f) {
             float ratio = 0.00007f/abs(accelerationSpeed);
             accelerationSpeed *= ratio;
@@ -64,13 +61,15 @@ void SpaceShipComponent::checkKeyPresses(float dt) {
     }
 
     cs = cm->getStatus(ALTITUDE);
-    velocity.y = -cs.getValue()/2000;
+    if(cs.isActive()) {
+        velocity.y = -cs.getValue() / 2000;
+    }else
+        velocity.y = 0.0f;
 
     cs = cm->getStatus(TURN);
-    float speedDif = turnSpeed*-(cs.getValue() /150.0f);
     if (cs.isActive()) {
+        float speedDif = turnSpeed*-(cs.getValue() /150.0f);
         rotationSpeed.y = speedDif;
-        totRotation += speedDif*dt;
         *cameraThetaLocation += speedDif*dt;
         frontDir = make_rotation_y<float3x3>(speedDif*dt) * frontDir;
     }else

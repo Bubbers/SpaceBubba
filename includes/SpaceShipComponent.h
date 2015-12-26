@@ -27,7 +27,6 @@ private:
     float turnSpeed = (float) (2 * M_PI / (180*20));
     float accelerationSpeed = 0.0f;
     float3 frontDir = make_vector(0.0f, 0.0f, 1.0f);
-    float totRotation = 0;
     ParticleGenerator *generator1;
     ParticleGenerator *generator2;
 

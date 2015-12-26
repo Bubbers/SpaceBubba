@@ -18,7 +18,7 @@ void ControlStatus::addButton(Activator activator, float value) {
 
 void ControlStatus::merge(ControlStatus cs) {
     for(auto it = cs.buttons.begin(); it != cs.buttons.end(); it++)
-        buttons.insert(std::pair<Activator,int>(it->first,it->second));
+        buttons.insert(std::pair<Activator,float>(it->first,it->second));
 }
 
 ControlStatus::Activator ControlStatus::activatorFromJoystickNumber(int n) {
@@ -31,7 +31,7 @@ ControlStatus::Activator ControlStatus::activatorFromJoystickNumber(int n) {
 float ControlStatus::getValue() {
     float maxValue = 0;
     for(auto it = buttons.begin() ; it != buttons.end() ; it++)
-        if(it->second > 0 && it->second > maxValue || it->second < 0 && it->second < -maxValue)
+        if(abs(it->second) > abs(maxValue))
             maxValue = it->second;
     return maxValue;
 }

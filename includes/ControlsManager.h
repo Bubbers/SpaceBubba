@@ -6,17 +6,18 @@
 
 #include <Button.h>
 
-typedef std::map<int,std::vector<Button>> functionCollection ;
+typedef std::map<int,std::vector<Button*>> functionCollection ;
 
 class ControlsManager {
 public:
-    void addBinding(int function, Button button);
-    void addBindings(int function, std::initializer_list<Button> buttons);
+    void addBinding(int function, Button* button);
+    void addBindings(int function, std::initializer_list<Button*> buttons);
     ControlStatus getStatus(int function);
     static ControlsManager* getInstance();
 
 private:
     ControlsManager();
+    ~ControlsManager();
     functionCollection functions;
 };
 
