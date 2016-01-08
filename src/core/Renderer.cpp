@@ -147,7 +147,6 @@ void Renderer::drawScene(Camera camera, Scene scene, float currentTime)
 
 	drawShadowCasters(shaderProgram, scene);
 	drawTransparent(shaderProgram, scene);
-	drawDebug(viewMatrix, projectionMatrix, scene);
 
 	renderPostProcess();
 
@@ -460,17 +459,13 @@ void Renderer::drawFullScreenQuad()
 	{
 		glGenVertexArrays(1, &vertexArrayObject);
 		static const float2 positions[] = {
-		/*		{ -1.0f, -1.0f },
-				{ 1.0f, -1.0f },
-				{ 1.0f, 1.0f },
-				{ -1.0f, 1.0f },*/
 				-1.0f, -1.0f,
-				1.0f, 1.0f,
-				-1.0f, 1.0f,
+				 1.0f,  1.0f,
+				-1.0f,  1.0f,
 
 				-1.0f, -1.0f,
-				1.0f, -1.0f,
-				1.0f, 1.0f
+				 1.0f, -1.0f,
+				 1.0f,  1.0f
 		};
 		createAddAttribBuffer(vertexArrayObject, positions, sizeof(positions), 0, 2, GL_FLOAT);
 		GLuint pos_vbo;
@@ -486,202 +481,5 @@ void Renderer::drawFullScreenQuad()
 
 	glBindVertexArray(vertexArrayObject);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
-	//glDrawArrays(GL_QUADS, 0, nofVertices);
 }
 
-void Renderer::drawDebug(const float4x4 &viewMatrix, const float4x4 &projectionMatrix, Scene scene) {
-  //debugDrawOctree(viewMatrix, projectionMatrix, octree);
-	if (scene.shadowMapCamera != NULL) {
-		//debugDrawLight(viewMatrix, projectionMatrix, scene.shadowMapCamera->getPosition());
-	}
-	/*debugDrawQuad(viewMatrix, projectionMatrix, carLoc.location + make_vector(0.2f, 1.2f, 0.0f), make_vector(1.0f, 1.0f, 1.5f));
-	float3x3 rot = make_rotation_y<float3x3>(carLoc.angley);
-	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location + rot * carLoc.wheel1, -carLoc.upDir);
-	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location + rot * carLoc.wheel2, -carLoc.upDir);
-	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location + rot * carLoc.wheel3, -carLoc.upDir);
-	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location + rot * carLoc.wheel4, -carLoc.upDir);
-	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location, carLoc.upDir);
-	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location, carLoc.frontDir);
-	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location, normalize(cross(carLoc.frontDir, make_vector(0.0f, 1.0f, 0.0f))));
-	debugDrawLine(viewMatrix, projectionMatrix, carLoc.location, vUp);*/
-}
-
-void Renderer::debugDrawLine(const float4x4 &viewMatrix, const float4x4 &projectionMatrix, float3 origin, float3 rayVector) {
-	GLint temp;
-	glColor3f(1.0, 1.0, 0.0);
-	glGetIntegerv(GL_CURRENT_PROGRAM, &temp);
-	glUseProgram(0);
-	glMatrixMode(GL_PROJECTION);
-	glLoadMatrixf(&projectionMatrix.c1.x);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadMatrixf(&viewMatrix.c1.x);
-
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-	float3 p[8];
-	p[0] = origin;
-	p[1] = origin + (normalize(rayVector) * 5);
-
-	glBegin(GL_LINES);
-
-	glVertex3f(p[0].x, p[0].y, p[0].z);
-	glVertex3f(p[1].x, p[1].y, p[1].z);
-
-	glEnd();
-	glUseProgram(temp);
-}
-
-void Renderer::debugDrawQuad(const float4x4 &viewMatrix, const float4x4 &projectionMatrix, float3 origin, float3 halfVector) {
-	GLint temp;
-	glColor3f(1.0, 1.0, 0.0);
-	glGetIntegerv(GL_CURRENT_PROGRAM, &temp);
-	glUseProgram(0);
-	glMatrixMode(GL_PROJECTION);
-	glLoadMatrixf(&projectionMatrix.c1.x);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadMatrixf(&viewMatrix.c1.x);
-
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-	float3 p[8];
-	p[0] = origin + (halfVector * make_vector(1.0f, 1.0f, 1.0f));
-	p[1] = origin + (halfVector * make_vector(-1.0f, 1.0f, 1.0f));
-
-	p[2] = origin + (halfVector * make_vector(1.0f, -1.0f, 1.0f));
-	p[3] = origin + (halfVector * make_vector(-1.0f, -1.0f, 1.0f));
-
-	p[4] = origin + (halfVector * make_vector(1.0f, 1.0f, -1.0f));
-	p[5] = origin + (halfVector * make_vector(-1.0f, 1.0f, -1.0f));
-
-	p[6] = origin + (halfVector * make_vector(1.0f, -1.0f, -1.0f));
-	p[7] = origin + (halfVector * make_vector(-1.0f, -1.0f, -1.0f));
-
-
-	glBegin(GL_LINES);
-
-	glVertex3f(p[0].x, p[0].y, p[0].z);
-	glVertex3f(p[1].x, p[1].y, p[1].z);
-
-	glVertex3f(p[0].x, p[0].y, p[0].z);
-	glVertex3f(p[2].x, p[2].y, p[2].z);
-
-	glVertex3f(p[0].x, p[0].y, p[0].z);
-	glVertex3f(p[4].x, p[4].y, p[4].z);
-
-	///////
-	glVertex3f(p[7].x, p[7].y, p[7].z);
-	glVertex3f(p[6].x, p[6].y, p[6].z);
-
-	glVertex3f(p[7].x, p[7].y, p[7].z);
-	glVertex3f(p[5].x, p[5].y, p[5].z);
-
-	glVertex3f(p[7].x, p[7].y, p[7].z);
-	glVertex3f(p[3].x, p[3].y, p[3].z);
-
-	///////
-	glVertex3f(p[5].x, p[5].y, p[5].z);
-	glVertex3f(p[1].x, p[1].y, p[1].z);
-
-	glVertex3f(p[5].x, p[5].y, p[5].z);
-	glVertex3f(p[4].x, p[4].y, p[4].z);
-
-	///////
-	glVertex3f(p[3].x, p[3].y, p[3].z);
-	glVertex3f(p[1].x, p[1].y, p[1].z);
-
-	glVertex3f(p[3].x, p[3].y, p[3].z);
-	glVertex3f(p[2].x, p[2].y, p[2].z);
-
-	///////
-	glVertex3f(p[6].x, p[6].y, p[6].z);
-	glVertex3f(p[4].x, p[4].y, p[4].z);
-
-	glVertex3f(p[6].x, p[6].y, p[6].z);
-	glVertex3f(p[2].x, p[2].y, p[2].z);
-
-	glEnd();
-	glUseProgram(temp);
-}
-
-void Renderer::debugDrawOctree(const float4x4 &viewMatrix, const float4x4 &projectionMatrix, Octree tree)
-{
-	GLint temp;
-	glColor3f(1.0, 1.0, 0.0);
-	glGetIntegerv(GL_CURRENT_PROGRAM, &temp);
-	glUseProgram(0);
-	glMatrixMode(GL_PROJECTION);
-	glLoadMatrixf(&projectionMatrix.c1.x);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadMatrixf(&viewMatrix.c1.x);
-
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-	float3 p[8];
-	p[0] = tree.origin + (tree.halfVector * make_vector(1.0f, 1.0f, 1.0f));
-	p[1] = tree.origin + (tree.halfVector * make_vector(-1.0f, 1.0f, 1.0f));
-
-	p[2] = tree.origin + (tree.halfVector * make_vector(1.0f, -1.0f, 1.0f));
-	p[3] = tree.origin + (tree.halfVector * make_vector(-1.0f, -1.0f, 1.0f));
-
-	p[4] = tree.origin + (tree.halfVector * make_vector(1.0f, 1.0f, -1.0f));
-	p[5] = tree.origin + (tree.halfVector * make_vector(-1.0f, 1.0f, -1.0f));
-
-	p[6] = tree.origin + (tree.halfVector * make_vector(1.0f, -1.0f, -1.0f));
-	p[7] = tree.origin + (tree.halfVector * make_vector(-1.0f, -1.0f, -1.0f));
-
-
-	glBegin(GL_LINES);
-
-	glVertex3f(p[0].x, p[0].y, p[0].z);
-	glVertex3f(p[1].x, p[1].y, p[1].z);
-
-	glVertex3f(p[0].x, p[0].y, p[0].z);
-	glVertex3f(p[2].x, p[2].y, p[2].z);
-
-	glVertex3f(p[0].x, p[0].y, p[0].z);
-	glVertex3f(p[4].x, p[4].y, p[4].z);
-
-	///////
-	glVertex3f(p[7].x, p[7].y, p[7].z);
-	glVertex3f(p[6].x, p[6].y, p[6].z);
-
-	glVertex3f(p[7].x, p[7].y, p[7].z);
-	glVertex3f(p[5].x, p[5].y, p[5].z);
-
-	glVertex3f(p[7].x, p[7].y, p[7].z);
-	glVertex3f(p[3].x, p[3].y, p[3].z);
-
-	///////
-	glVertex3f(p[5].x, p[5].y, p[5].z);
-	glVertex3f(p[1].x, p[1].y, p[1].z);
-
-	glVertex3f(p[5].x, p[5].y, p[5].z);
-	glVertex3f(p[4].x, p[4].y, p[4].z);
-
-	///////
-	glVertex3f(p[3].x, p[3].y, p[3].z);
-	glVertex3f(p[1].x, p[1].y, p[1].z);
-
-	glVertex3f(p[3].x, p[3].y, p[3].z);
-	glVertex3f(p[2].x, p[2].y, p[2].z);
-
-	///////
-	glVertex3f(p[6].x, p[6].y, p[6].z);
-	glVertex3f(p[4].x, p[4].y, p[4].z);
-
-	glVertex3f(p[6].x, p[6].y, p[6].z);
-	glVertex3f(p[2].x, p[2].y, p[2].z);
-
-	glEnd();
-	glUseProgram(temp);
-
-
-	std::vector<Octree*> children;
-	tree.getChildren(&children);
-
-	if (children.size() != 0) {
-		for (int i = 0; i < 8; i++) {
-			debugDrawOctree(viewMatrix, projectionMatrix, *children[i]);
-		}
-	}
-}
