@@ -110,6 +110,7 @@ void createMeshes();
 void createCameras();
 void createLights();
 void createEffects();
+void startAudio();
 
 float3 sphericalToCartesian(float theta, float phi, float r);
 
@@ -266,13 +267,14 @@ int main(int argc, char *argv[])
 
 	renderer->initGL();
 
-	soundManager = new SoundManager();
+
 
 	createCubeMaps();
 	createCameras();
 	createMeshes();
 	createLights();
 	createEffects();
+	startAudio();
 
 	glutWarpPointer(SCREEN_WIDTH/2,SCREEN_HEIGHT/2);
 	glutSetCursor(GLUT_CURSOR_NONE);
@@ -456,6 +458,12 @@ void createCameras() {
 		make_vector(0.0f, 1.0f, 0.0f),
 		45, float(w) / float(h), 0.1f, 50000.0f
 		);
+}
+
+void startAudio() {
+	sf::Music* music =ResourceManager::loadAndFetchMusic("../scenes/ambient.ogg");
+	music->setLoop(true);
+	music->play();
 }
 
 // Helper function to turn spherical coordinates into cartesian (x,y,z)

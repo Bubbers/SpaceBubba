@@ -1,11 +1,12 @@
 #include "ResourceManager.h"
 #include <sstream>
+#include <Logger.h>
 
 
 std::map<std::string, Shader> ResourceManager::shaders;
 std::map<std::string, Texture> ResourceManager::textures;
 std::map<std::string, Mesh> ResourceManager::meshes;
-std::map<std::string, sf::Music> ResourceManager::musics;
+std::map<std::string, sf::Music*> ResourceManager::musics;
 std::map<std::string, sf::SoundBuffer> ResourceManager::soundBuffers;
 
 void ResourceManager::loadShader(const std::string &vertexShader, const std::string &fragmentShader, std::string name){
@@ -59,7 +60,7 @@ Mesh* ResourceManager::getMesh(std::string fileName)
 }
 
 
-sf::SoundBuffer* ResourceManager::loadAndFetchSoundBuffer(const std::string &fileName){
+sf::Sound* ResourceManager::loadAndFetchSound(const std::string &fileName){
     try {
         return getSoundBuffer(fileName);
     } catch (std::invalid_argument exception) {
@@ -69,11 +70,19 @@ sf::SoundBuffer* ResourceManager::loadAndFetchSoundBuffer(const std::string &fil
 }
 
 void ResourceManager::loadSoundBuffer(const std::string &fileName) {
+    sf::SoundBuffer soundBuffer;
+    if(soundBuffer.loadFromFile(fileName) == -1) {
+        Logger::logSevere("Unable to load soundbuffer " + fileName);
+    }
 
+    soundBuffers.insert(std::pair<std::string, sf::SoundBuffer>(fileName, soundBuffer));
 }
 
-sf::SoundBuffer* ResourceManager::getSoundBuffer(std::string fileName){
-    return getItemFromMap(&soundBuffers, fileName);
+sf::Sound* ResourceManager::getSoundBuffer(std::string fileName){
+    sf::SoundBuffer *soundBuffer = getItemFromMap(&soundBuffers, fileName);
+    sf::Sound *sound = new sf::Sound();
+    sound->setBuffer(*soundBuffer);
+    return sound;
 }
 
 
@@ -87,11 +96,28 @@ sf::Music* ResourceManager::loadAndFetchMusic(const std::string &fileName) {
 }
 
 void ResourceManager::loadMusic(const std::string &fileName) {
+    sf::Music *music = new sf::Music();
+    if(music->openFromFile(fileName) == -1){
+        Logger::logSevere("Unable to load music " + fileName);
+    }
 
+    musics.insert(std::pair<std::string, sf::Music*>(fileName, music));
 }
 
 sf::Music* ResourceManager::getMusic(std::string fileName) {
-    return getItemFromMap(&musics, fileName);
+    return *getItemFromMap(&musics, fileName);
+}
+
+template<typename Type>
+Type* ResourceManager::getItemFromMap(std::map<std::string, Type> *map, std::string id) {
+    typename std::map<std::string, Type>::iterator it = map->find(id);
+    if( it != map->end()) {
+        return &it->second;
+    } else {
+        std::stringstream errorMessage;
+        errorMessage << id << " hasn't been loaded into ResourceManager before fetched";
+        throw std::invalid_argument(errorMessage.str());
+    }
 }
 
 

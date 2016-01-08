@@ -24,8 +24,7 @@ private:
     float timeToLive = 0;
     long canShootAfter = 0;
 	utils::Timer timer;
-	sf::SoundBuffer buffer;
-    sf::Sound sound;
+    sf::Sound* sound;
 
     void spawnBullet();
 };

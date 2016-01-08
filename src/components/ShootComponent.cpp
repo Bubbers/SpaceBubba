@@ -31,14 +31,12 @@ ShootComponent::ShootComponent(GameObject* object, SpaceShipComponent *objectMov
     this->timeToLive = timeToLive;
 	timer.start();
 
-    if (!buffer.loadFromFile("../scenes/laser.wav")) {
-        Logger::logSevere("Error loading laser.wav");
-    }
-    sound.setBuffer(buffer);
+    sound = ResourceManager::loadAndFetchSound("../scenes/laser.wav");
 }
 
 ShootComponent::~ShootComponent() {
-    sound.stop();
+    sound->stop();
+    delete sound;
 }
 
 void ShootComponent::update(float dt) {
@@ -61,7 +59,7 @@ void ShootComponent::update(float dt) {
         spawnBullet();
 		timer.start();
 
-        sound.play();
+        sound->play();
     }
 }
 
