@@ -11,6 +11,7 @@
 #include "float3x3.h"
 #include <Controls.h>
 #include <linmath/Quaternion.h>
+#include <MousePosition.h>
 
 
 SpaceShipComponent::SpaceShipComponent(struct HudRenderer::HudConfig* hudConf, float* cameraThetaLocation,
@@ -83,9 +84,9 @@ void SpaceShipComponent::checkKeyPresses(float dt) {
         *cameraPhiLocation += speedDif*dt;
     }
 
-    ControlStatus cs2 = cm->getStatus(TURN);
-    speedDif = turnSpeed*-(cs2.getValue() / 150.0f);
-    if (cs2.isActive()) {
+    cs = cm->getStatus(TURN);
+    speedDif = turnSpeed*-(cs.getValue() / 150.0f);
+    if (cs.isActive()) {
         totalTurn += speedDif*dt;
         *cameraThetaLocation += speedDif*dt;
     }

@@ -4,25 +4,28 @@
 
 #include <JoystickButton.h>
 #include <SFML/Window/Joystick.hpp>
-#include <Button.h>
+#include "Input.h"
 
 /**
  * Creates a button representing a joystick button. The boolean
  * true is thrown if the number isn't below sf::Joystick::ButtonCount
  */
-JoystickButton::JoystickButton(unsigned int joystickButton) : Button(false){
+JoystickButton::JoystickButton(unsigned int joystickButton) : Input(false){
     if(joystickButton >= sf::Joystick::ButtonCount)
         throw true;
     this->joystickPos = joystickButton;
 }
 
-JoystickButton::JoystickButton(unsigned int joystickNeg, unsigned int joystickPos) : Button(true) {
+JoystickButton::JoystickButton(unsigned int joystickNeg, unsigned int joystickPos) : Input(true) {
     if(joystickPos >= sf::Joystick::ButtonCount || joystickNeg >= sf::Joystick::ButtonCount)
         throw true;
     this->joystickPos = joystickNeg;
     this->joystickNeg = joystickPos;
 }
 
+ControlStatus::Activator JoystickButton::getActivator() {
+    return ControlStatus::JOYSTICK;
+}
 
 ControlStatus JoystickButton::getStatus() {
     float value;

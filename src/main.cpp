@@ -30,6 +30,8 @@
 #include <KeyboardButton.h>
 #include <JoystickAxis.h>
 #include <JoystickButton.h>
+#include <MouseButton.h>
+#include <MouseAxis.h>
 
 
 using namespace std;
@@ -84,7 +86,7 @@ CubeMapTexture* reflectionCubeMap;
 //	Camera state variables (updated in motion())
 //*****************************************************************************
 float camera_theta = (float) (M_PI / 1.0f);
-float camera_phi = (float) (M_PI / 4.0f);
+float camera_phi = (float) (M_PI / 2.6f);
 float camera_r = 30.0f; 
 float camera_target_altitude = 5.2f;
 
@@ -128,28 +130,26 @@ void checkKeys()
 
 MouseWarp motion(int x, int y, int delta_x, int delta_y)
 {
-
+/*
 	InputManager* im = InputManager::getInstance();
 	bool someDown = false;
+	Logger::logDebug("yo");
 
-	if(im->isMouseButtonDown(InputManager::MOUSE_MIDDLE))
-	{
+	if (im->isMouseButtonDown(InputManager::MOUSE_MIDDLE)) {
 		camera_r -= float(delta_y) * 0.3f;
 		// make sure cameraDistance does not become too small
 		camera_r = max(0.1f, camera_r);
 		someDown = true;
 	}
-	if(im->isMouseButtonDown(InputManager::MOUSE_LEFT))
-	{
-		camera_phi	-= float(delta_y) * 0.3f * float(M_PI) / 180.0f;
+	if (im->isMouseButtonDown(InputManager::MOUSE_LEFT)) {
+		camera_phi -= float(delta_y) * 0.3f * float(M_PI) / 180.0f;
 		camera_phi = min(max(0.01f, camera_phi), float(M_PI) - 0.01f);
 		camera_theta -= float(delta_x) * 0.3f * float(M_PI) / 180.0f;
 		someDown = true;
 	}
 
-	if(im->isMouseButtonDown(InputManager::MOUSE_RIGHT))
-	{
-		camera_target_altitude += float(delta_y) * 0.1f; 
+	if (im->isMouseButtonDown(InputManager::MOUSE_RIGHT)) {
+		camera_target_altitude += float(delta_y) * 0.1f;
 		someDown = true;
 	}
 	if(someDown) {
@@ -158,7 +158,7 @@ MouseWarp motion(int x, int y, int delta_x, int delta_y)
 	}else {
 		glutSetCursor(GLUT_CURSOR_INFO);
 		return MouseWarp::noWarp();
-	}
+	}*/
 }
 
 
@@ -217,7 +217,7 @@ void idle( int v )
 
         broadPhaseCollider.updateCollision();
 
-
+		glutWarpPointer(SCREEN_WIDTH/2,SCREEN_HEIGHT/2);
 
 		for(auto it = toDelete->begin(); it < toDelete->end(); it++){
 			delete *it;
@@ -246,13 +246,23 @@ int main(int argc, char *argv[])
 	glutDisplayFunc(display);
 
 	InputManager* im = InputManager::getInstance();
-	im->addMouseMoveListener(motion);
+	//im->addMouseMoveListener(motion);
 	ControlsManager* cm = ControlsManager::getInstance();
-	cm->addBindings(ALTITUDE,{new KeyboardButton(sf::Keyboard::L,sf::Keyboard::P),new JoystickAxis(sf::Joystick::Axis::V,true)});
-	cm->addBindings(ACCELERATE,{new KeyboardButton(sf::Keyboard::S,sf::Keyboard::W),new JoystickAxis(sf::Joystick::Axis::Y,true)});
-	cm->addBindings(TURN,{new KeyboardButton(sf::Keyboard::D,sf::Keyboard::A),new JoystickAxis(sf::Joystick::Axis::U,true)});
-	cm->addBindings(SHOOT,{new KeyboardButton(sf::Keyboard::Space),new JoystickAxis(sf::Joystick::Axis::R,false)});
-	cm->addBindings(QUIT,{new KeyboardButton(sf::Keyboard::Escape)});
+	try {
+		cm->addBindings(ALTITUDE, {new KeyboardButton(sf::Keyboard::L, sf::Keyboard::P),
+								   new JoystickAxis(sf::Joystick::Axis::V, true),
+								   new MouseAxis(MouseAxis::Axis::Y, 2.0f)});
+		cm->addBindings(ACCELERATE, {new KeyboardButton(sf::Keyboard::S, sf::Keyboard::W),
+									 new JoystickAxis(sf::Joystick::Axis::Y, true)});
+		cm->addBindings(TURN, {new KeyboardButton(sf::Keyboard::D, sf::Keyboard::A),
+							   new JoystickAxis(sf::Joystick::Axis::U, true), new MouseAxis(MouseAxis::Axis::X, 3.0f)});
+		cm->addBindings(SHOOT, {new KeyboardButton(sf::Keyboard::Space), new JoystickAxis(sf::Joystick::Axis::R, false),
+								new MouseButton(sf::Mouse::Button::Left)});
+		cm->addBindings(QUIT, {new KeyboardButton(sf::Keyboard::Escape)});
+	}catch(string unmatchingDuality){
+		Logger::logSevere(unmatchingDuality);
+		return 1;
+	}
 
 	renderer->initGL();
 
@@ -264,6 +274,8 @@ int main(int argc, char *argv[])
 	createLights();
 	createEffects();
 
+	glutWarpPointer(SCREEN_WIDTH/2,SCREEN_HEIGHT/2);
+	glutSetCursor(GLUT_CURSOR_NONE);
 	renderer->start();
 	
 	return 0;

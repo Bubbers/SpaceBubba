@@ -4,6 +4,7 @@
 
 #include "ControlStatus.h"
 #include <map>
+#include <cmath>
 
 ControlStatus::ControlStatus() {
 }
@@ -14,11 +15,13 @@ ControlStatus::ControlStatus(Activator activator, float value) {
 
 void ControlStatus::addButton(Activator activator, float value) {
     buttons.insert(std::pair<Activator,int>(activator,value));
+    maxValue = NO_MAX;
 }
 
 void ControlStatus::merge(ControlStatus cs) {
     for(auto it = cs.buttons.begin(); it != cs.buttons.end(); it++)
         buttons.insert(std::pair<Activator,float>(it->first,it->second));
+    maxValue = NO_MAX;
 }
 
 ControlStatus::Activator ControlStatus::activatorFromJoystickNumber(int n) {
@@ -29,24 +32,34 @@ ControlStatus::Activator ControlStatus::activatorFromJoystickNumber(int n) {
 }
 
 float ControlStatus::getValue() {
-    float maxValue = 0;
-    for(auto it = buttons.begin() ; it != buttons.end() ; it++)
-        if(abs(it->second) > abs(maxValue))
-            maxValue = it->second;
+    if(maxValue == NO_MAX) { //cache max value
+        maxValue = 0.0f;
+        for (auto it = buttons.begin(); it != buttons.end(); it++)
+            if (std::abs(it->second) > std::abs(maxValue)) {
+                maxValue = it->second;
+                maxValueActivator = it->first;
+            }
+    }
     return maxValue;
+}
+
+ControlStatus::Activator ControlStatus::getMaxActivator(){
+    if(maxValue == NO_MAX)
+        getValue();
+    return maxValueActivator;
 }
 
 float ControlStatus::getValue(Activator activator) {
     std::map<Activator ,float>::iterator elem = buttons.find(activator);
-    return elem == buttons.end() ? 0 : elem->second;
+    return elem == buttons.end() ? 0.0f : elem->second;
 }
 
 bool ControlStatus::isActive(){
     float val = getValue();
-    return val > 20.0f || val < -20.0f;
+    return val != 0.0f;
 }
 
 bool ControlStatus::isActive(Activator activator) {
-    float val = getValue();
-    return val > 20 || val < -20.0f;
+    float val = getValue(activator);
+    return val != 0.0f;
 }
