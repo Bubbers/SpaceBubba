@@ -59,7 +59,7 @@ int points = 0;
 //*****************************************************************************
 
 
-GameObject rWing;
+GameObject *rWing;
 GameObject skyBox;
 GameObject *hud;
 GameObject dstar;
@@ -161,7 +161,7 @@ MouseWarp motion(int x, int y, int delta_x, int delta_y)
 
 
 float3 calculateNewCameraPosition() {
-	float4 ps = rWing.getModelMatrix().c4;
+	float4 ps = rWing->getModelMatrix().c4;
 	float3 location = make_vector(ps.x, ps.y, ps.z);
 
 	playerCamera->setLookAt(location + make_vector(0.0f, camera_target_altitude, 0.0f));
@@ -207,6 +207,8 @@ void idle( int v )
 
 		currentTime = float(glutGet(GLUT_ELAPSED_TIME)) / 1000.0f - startTime;
 
+
+		//TODO Cleanup shouldnt be here. Let scene delete?
 		std::vector<GameObject*>* toDelete = new std::vector<GameObject*>();
 
         scene.update(elapsedTime, toDelete);
@@ -218,7 +220,7 @@ void idle( int v )
 		glutWarpPointer(SCREEN_WIDTH/2,SCREEN_HEIGHT/2);
 
 		for(auto it = toDelete->begin(); it < toDelete->end(); it++){
-			delete *it;
+			delete (*it);
 		}
 
 		delete toDelete;
@@ -323,13 +325,13 @@ void createMeshes() {
 	standardShader->setUniformBufferObjectBinding(UNIFORM_BUFFER_OBJECT_MATRICES_NAME, UNIFORM_BUFFER_OBJECT_MATRICES_INDEX);
 
 	Mesh* rWingM = ResourceManager::loadAndFetchMesh("../scenes/R_wing.obj");
-	rWing = GameObject(rWingM, Player);
-	rWing.move(make_translation(make_vector(0.0f, 0.0f, 0.0f)));
-	StandardRenderer *carRenderer = new StandardRenderer(rWingM, &rWing, standardShader);
-	rWing.addRenderComponent(carRenderer);
+	rWing = new GameObject(rWingM, Player);
+	rWing->move(make_translation(make_vector(0.0f, 0.0f, 0.0f)));
+	StandardRenderer *carRenderer = new StandardRenderer(rWingM, rWing, standardShader);
+	rWing->addRenderComponent(carRenderer);
 
-	DeathOnCollision* wingD = new DeathOnCollision(&rWing, Asteroid, 0, &points);
-	rWing.addComponent(wingD);
+	DeathOnCollision* wingD = new DeathOnCollision(rWing, Asteroid, 0, &points);
+	rWing->addComponent(wingD);
 
 	Texture *particleTexture = ResourceManager::loadAndFetchTexture("../scenes/fire_part.png");
 
@@ -353,13 +355,13 @@ void createMeshes() {
 	scene.transparentObjects.push_back(hud);
 
 
-	spaceMover = new SpaceShipComponent(hudRenderer->getConfig(),&camera_theta, &camera_phi, &rWing, gen, gen2, &state);
-	ShootComponent *shooter = new ShootComponent(&rWing, spaceMover, &scene, &broadPhaseCollider, 1000);
-	rWing.addComponent(shooter);
-	rWing.addComponent(spaceMover);
-	rWing.setDynamic(true);
-	scene.shadowCasters.push_back(&rWing);
-	broadPhaseCollider.addGameObject(&rWing);
+	spaceMover = new SpaceShipComponent(hudRenderer->getConfig(),&camera_theta, &camera_phi, rWing, gen, gen2, &state);
+	ShootComponent *shooter = new ShootComponent(rWing, spaceMover, &scene, &broadPhaseCollider, 1000);
+	rWing->addComponent(shooter);
+	rWing->addComponent(spaceMover);
+	rWing->setDynamic(true);
+	scene.shadowCasters.push_back(rWing);
+	broadPhaseCollider.addGameObject(rWing);
 
 	Mesh* dstarM = ResourceManager::loadAndFetchMesh("../scenes/dstar.obj");
 	dstar = GameObject(dstarM, SpaceEntity);
