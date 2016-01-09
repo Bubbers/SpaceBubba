@@ -15,7 +15,6 @@
 #include <SpaceShipComponent.h>
 #include <SpawnAsteroidOnDeath.h>
 #include <FireParticle.h>
-#include <SoundManager.h>
 #include <MouseWarp.h>
 #include "FireSphere.h"
 
@@ -67,14 +66,9 @@ GameObject sun;
 
 State state = Start;
 
-
 Scene scene;
 
 BFBroadPhase broadPhaseCollider;
-
-
-SoundManager* soundManager;
-
 
 
 //*****************************************************************************

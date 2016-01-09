@@ -81,7 +81,7 @@ endif(NOT ASSIMP_FOUND)
 # FIND SFML AUDIO
 #########################################################
 
-find_package(SFML 2 COMPONENTS audio REQUIRED)
+find_package(SFML 2 COMPONENTS audio window REQUIRED)
 include_directories(${SFML_INCLUDE_DIR})
 target_link_libraries(${TEST_NAME}  ${SFML_LIBRARIES})
 
