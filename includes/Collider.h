@@ -1,13 +1,11 @@
 #ifndef __COLLIDER_H__
 #define __COLLIDER_H__
 
-#include <GameObject.h>
-#include <float4.h>
-#include <float3.h>
-#include <Triangle.h>
-#include <Octree.h>
-
 using namespace chag;
+
+class GameObject;
+class Triangle;
+class Octree;
 
 bool octreeOctreeIntersection(Octree *object1Octree, float4x4 *object1ModelMatrix, Octree *object2Octree,
                               float4x4 *object2ModelMatrix);

@@ -3,6 +3,11 @@
 #include "GameObject.h"
 #include "float3x3.h"
 #include "Collider.h"
+#include "Mesh.h"
+#include "IComponent.h"
+#include "IRenderComponent.h"
+#include "Octree.h"
+
 
 #define NORMAL_TEXTURE_LOCATION 3
 #define DIFFUSE_TEXTURE_LOCATION 0

@@ -6,9 +6,9 @@
 #define BUBBA_3D_SHOOTCOMPONENT_H
 
 #include "IComponent.h"
-#include "GameObject.h"
 #include <timer.h>
-#include <SFML/Audio.hpp>
+
+class GameObject;
 
 class ShootComponent : public IComponent {
 public:

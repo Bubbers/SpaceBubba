@@ -1,15 +1,21 @@
 #ifndef __GAMEOBJECT_H__
 #define __GAMEOBJECT_H__
 
-#include "Mesh.h"
+
 #include "IDrawable.h"
-#include <Triangle.h>
-#include "IRenderComponent.h"
-#include "Octree.h"
 #include "GameObjectType.h"
+#include "AABB2.h"
+#include "float4x4.h"
+
+using namespace chag;
 
 enum EventType {BeforeCollision, DuringCollision, AfterCollision};
 
+class Mesh;
+class Triangle;
+class IRenderComponent;
+class IComponent;
+class Octree;
 
 class GameObject : public IDrawable {
 public:

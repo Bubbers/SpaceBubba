@@ -2,7 +2,9 @@
 #include "ParticleGenerator.h"
 #include "constants.h"
 #include "float3x3.h"
-
+#include "Camera.h"
+#include "Particle.h"
+#include "ParticleConf.h"
 
 
 using namespace chag;

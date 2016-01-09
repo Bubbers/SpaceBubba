@@ -15,8 +15,6 @@
 #include <SpaceShipComponent.h>
 #include <SpawnAsteroidOnDeath.h>
 #include <FireParticle.h>
-#include <MouseWarp.h>
-#include "FireSphere.h"
 
 #include "DeathOnCollision.h"
 #include "Renderer.h"
@@ -28,10 +26,15 @@
 #include <Controls.h>
 #include <KeyboardButton.h>
 #include <JoystickAxis.h>
-#include <JoystickButton.h>
 #include <MouseButton.h>
 #include <MouseAxis.h>
-
+#include <SkyBoxRenderer.h>
+#include <BFBroadPhase.h>
+#include <Logger.h>
+#include <PerspectiveCamera.h>
+#include <Scene.h>
+#include "CubeMapTexture.h"
+#include "Camera.h"
 
 using namespace std;
 using namespace chag;
@@ -111,7 +114,7 @@ float3 sphericalToCartesian(float theta, float phi, float r);
 
 void display(void)
 {
-	renderer->drawScene(*playerCamera, scene, currentTime);
+	renderer->drawScene(playerCamera, &scene, currentTime);
 	renderer->swapBuffer();
 }
 

@@ -5,27 +5,17 @@
 #include <windows.h>
 #endif
 
-
-#include <GL/glew.h>
-#include <GL/freeglut.h>
-
-#include <glutil/glutil.h>
-#include <float4x4.h>
-#include <float3x3.h>
-
-#include "Logger.h"
-#include "PerspectiveCamera.h"
-#include "Scene.h"
-#include <Octree.h>
 #include "Utils.h"
 #include "Effects.h"
-#include "IDrawable.h"
-#include "Shader.h"
 
 #define CUBE_MAP_RESOLUTION		512
 #define SHADOW_MAP_RESOLUTION	2048
 
 using namespace chag;
+
+class Camera;
+class Scene;
+class IDrawable;
 
 class Renderer
 {
@@ -35,7 +25,7 @@ public:
 
 	void initGL();
 
-	void drawScene(Camera camera, Scene scene, float currentTime);
+	void drawScene(Camera *camera, Scene* scene, float currentTime);
 	void start();
 	void render();
 
@@ -47,9 +37,6 @@ public:
 		CHECK_GL_ERROR();
 	}
 
-	void setOctree(Octree tree) {
-	  octree = tree;
-	}
 
 	Effects effects;
 private:
@@ -57,11 +44,11 @@ private:
 	float currentTime;
 
 	Fbo createPostProcessFbo(int width, int height);
-	void drawShadowMap(Fbo sbo, float4x4 viewProjectionMatrix, Scene scene);
-	void drawShadowCasters(Shader* shaderProgram, Scene scene);
-	void drawTransparent(Shader* shaderProgram, Scene scene);
+	void drawShadowMap(Fbo sbo, float4x4 viewProjectionMatrix, Scene *scene);
+	void drawShadowCasters(Shader* shaderProgram, Scene *scene);
+	void drawTransparent(Shader* shaderProgram, Scene *scene);
 	void setFog(Shader* shaderProgram);
-	void setLights(Shader* shaderProgram, Scene scene);
+	void setLights(Shader* shaderProgram, Scene *scene);
 
 	Shader* shaderProgram;
 
@@ -81,13 +68,6 @@ private:
 	Shader* verticalBlurShader;
 	Shader* cutoffShader;
 	Fbo postProcessFbo, horizontalBlurFbo, verticalBlurFbo, cutOffFbo;
-
-	//DEBUGS
-	Octree octree;
-	void drawDebug(const float4x4 &viewMatrix, const float4x4 &projectionMatrix, Scene scene);
-	void debugDrawLine(const float4x4 &viewMatrix, const float4x4 &projectionMatrix, float3 origin, float3 rayVector);
-	void debugDrawQuad(const float4x4 &viewMatrix, const float4x4 &projectionMatrix, float3 origin, float3 halfVector);
-	void debugDrawOctree(const float4x4 &viewMatrix, const float4x4 &projectionMatrix, Octree tree);
 };
 
 

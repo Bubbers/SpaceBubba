@@ -1,5 +1,7 @@
 #include <GameObject.h>
 #include "StandardRenderer.h"
+#include "Mesh.h"
+#include "Shader.h"
 
 #define NORMAL_TEXTURE_LOCATION 3
 #define DIFFUSE_TEXTURE_LOCATION 0

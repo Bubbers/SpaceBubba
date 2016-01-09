@@ -1,13 +1,13 @@
 #ifndef BUBBA_3D_STANDARDRENDERER_H
 #define BUBBA_3D_STANDARDRENDERER_H
 
-#include "Mesh.h"
-#include "float4x4.h"
-#include "Shader.h"
-#include "IRenderComponent.h"
-#include "GameObject.h"
 
-using namespace chag;
+#include "IRenderComponent.h"
+
+
+class Mesh;
+class Shader;
+class GameObject;
 
 class StandardRenderer : public IRenderComponent {
 public:

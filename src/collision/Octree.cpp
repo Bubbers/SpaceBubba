@@ -1,3 +1,4 @@
+#include <Triangle.h>
 #include "Octree.h"
 
 Octree::Octree() {

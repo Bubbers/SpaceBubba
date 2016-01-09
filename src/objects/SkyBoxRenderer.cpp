@@ -1,6 +1,10 @@
 #include "SkyBoxRenderer.h"
 #include "ResourceManager.h"
 #include "constants.h"
+#include "Camera.h"
+#include "CubeMapTexture.h"
+#include "GameObject.h"
+
 #define SKYBOX_SHADER_NAME "skybox_shader"
 
 SkyBoxRenderer::SkyBoxRenderer(Camera *camera, Mesh* skyMesh, GameObject* gameObject) : m_camera(camera), m_skyMesh(skyMesh), gameObject(gameObject) {

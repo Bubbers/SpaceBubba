@@ -1,16 +1,16 @@
 #ifndef __SKYBOXRENDERER_H__
 #define __SKYBOXRENDERER_H__
 
-
+#include "IRenderComponent.h"
 #include <string>
-#include "Camera.h"
-#include "CubeMapTexture.h"
-#include "Mesh.h"
-#include "IDrawable.h"
-#include "GameObject.h"
-
 
 using namespace std;
+
+class Camera;
+class CubeMapTexture;
+class Mesh;
+struct Chunk;
+class GameObject;
 
 class SkyBoxRenderer : public IRenderComponent
 {
@@ -18,7 +18,7 @@ public:
 	SkyBoxRenderer(Camera* camera, Mesh* skyMesh, GameObject* gameObject);
 	~SkyBoxRenderer();
 
-	bool init(const string& posXFilename, const string& negXFilename, const string& posYFilename, const string& negYFilename, const string& posZFilename, const string& negZFilename);
+	bool init(const std::string& posXFilename, const std::string& negXFilename, const std::string& posYFilename, const std::string& negYFilename, const std::string& posZFilename, const std::string& negZFilename);
 
 	void renderShadow(Shader* shaderProgram) {};
 	void render();

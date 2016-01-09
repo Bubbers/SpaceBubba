@@ -3,13 +3,6 @@
 
 #include "float3.h"
 #include <vector>
-#include "IDrawable.h"
-#include "GL/glew.h"
-#include "Camera.h"
-#include "Shader.h"
-#include "Texture.h"
-#include "ParticleConf.h"
-#include "Particle.h"
 #include "IRenderComponent.h"
 
 #define LINEAR_SCALE_FACTOR 50.0f
@@ -18,6 +11,9 @@
 
 using namespace chag;
 
+class Camera;
+class Particle;
+class ParticleConf;
 
 class ParticleGenerator : public IRenderComponent
 {
@@ -34,7 +30,7 @@ public:
 	Camera *m_camera;
 	float3 m_position;
 
-	void setLooping(bool value);
+ 	void setLooping(bool value);
 private:
 	std::vector<Particle*> m_particles;
 	GLuint m_vaob;

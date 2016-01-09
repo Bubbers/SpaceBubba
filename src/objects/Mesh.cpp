@@ -1,6 +1,11 @@
 #include "Mesh.h"
 #include <ResourceManager.h>
 #include "Logger.h"
+#include "Triangle.h"
+
+#include <assimp/Importer.hpp>
+#include <assimp/postprocess.h>
+#include <assimp/scene.h>
 
 using namespace chag;
 

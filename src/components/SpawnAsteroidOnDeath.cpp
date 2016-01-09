@@ -10,6 +10,9 @@
 #include <SmokeParticle.h>
 #include <ParticleGenerator.h>
 #include <DeathOnCollision.h>
+#include "Scene.h"
+#include "BFBroadPhase.h"
+#include "Camera.h"
 
 SpawnAsteroidOnDeath::SpawnAsteroidOnDeath(GameObject* gameObject, Scene *scene, BFBroadPhase *collisionHandler, float3 scale, Camera* camera, int* points){
 
@@ -35,8 +38,8 @@ void SpawnAsteroidOnDeath::onDeath(){
 
     for(int i = 0 ; i < 4 ; i++) {
 
-        string strings[] = {"../scenes/rock1.obj", "../scenes/rock2.obj", "../scenes/rock3.obj" };
-        string mesh = getRandomElem(strings);
+        std::string strings[] = {"../scenes/rock1.obj", "../scenes/rock2.obj", "../scenes/rock3.obj" };
+        std::string mesh = getRandomElem(strings);
         Mesh* asteroidM = ResourceManager::loadAndFetchMesh(mesh);
         GameObject *asteroid = new GameObject(asteroidM, Asteroid);
 

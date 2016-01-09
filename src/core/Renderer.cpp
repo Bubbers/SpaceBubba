@@ -2,6 +2,11 @@
 #include <sstream>
 #include "ResourceManager.h"
 #include "constants.h"
+#include "GameObject.h"
+#include "CubeMapTexture.h"
+#include "Logger.h"
+#include "Camera.h"
+#include "Scene.h"
 
 
 
@@ -77,12 +82,12 @@ void Renderer::drawModel(IDrawable &model, Shader* shaderProgram)
 	model.render();
 }
 
-void Renderer::drawScene(Camera camera, Scene scene, float currentTime)
+void Renderer::drawScene(Camera *camera, Scene *scene, float currentTime)
 {
 	Renderer::currentTime = currentTime;
 
-	float4x4 viewMatrix = camera.getViewMatrix();
-	float4x4 projectionMatrix = camera.getProjectionMatrix();
+	float4x4 viewMatrix = camera->getViewMatrix();
+	float4x4 projectionMatrix = camera->getProjectionMatrix();
 	float4x4 viewProjectionMatrix = projectionMatrix * viewMatrix;
 
 
@@ -95,9 +100,9 @@ void Renderer::drawScene(Camera camera, Scene scene, float currentTime)
 	//*************************************************************************
 	float4x4 lightMatrix = make_identity<float4x4>();
 
-	if (scene.shadowMapCamera != NULL) {
-		float4x4 lightViewMatrix = scene.shadowMapCamera->getViewMatrix();
-		float4x4 lightProjectionMatrix = scene.shadowMapCamera->getProjectionMatrix();
+	if (scene->shadowMapCamera != NULL) {
+		float4x4 lightViewMatrix = scene->shadowMapCamera->getViewMatrix();
+		float4x4 lightProjectionMatrix = scene->shadowMapCamera->getProjectionMatrix();
 		float4x4 lightViewProjectionMatrix = lightProjectionMatrix * lightViewMatrix;
 
 		lightMatrix = make_translation(make_vector( 0.5f, 0.5f, 0.5f )) * make_scale<float4x4>(make_vector(0.5f, 0.5f, 0.5f)) * lightViewProjectionMatrix * inverse(viewMatrix);
@@ -125,7 +130,7 @@ void Renderer::drawScene(Camera camera, Scene scene, float currentTime)
 	//Sets matrices
 	shaderProgram->setUniformMatrix4fv("lightMatrix", lightMatrix);
 	shaderProgram->setUniformMatrix4fv("inverseViewNormalMatrix", transpose(viewMatrix));
-	shaderProgram->setUniform3f("viewPosition", camera.getPosition());
+	shaderProgram->setUniform3f("viewPosition", camera->getPosition());
 	shaderProgram->setUniformMatrix4fv("viewMatrix", viewMatrix);
 
 	setLights(shaderProgram, scene);
@@ -133,16 +138,16 @@ void Renderer::drawScene(Camera camera, Scene scene, float currentTime)
 	setFog(shaderProgram);
 
 	//Set shadowmap
-	if (scene.shadowMapCamera != NULL) {
+	if (scene->shadowMapCamera != NULL) {
 		shaderProgram->setUniform1i("shadowMap", 1);
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, sbo.texture);
 	}
 
 	//Set cube map
-	if (scene.cubeMap != NULL) {
+	if (scene->cubeMap != NULL) {
 		shaderProgram->setUniform1i("cubeMap", 2);
-		scene.cubeMap->bind(GL_TEXTURE2);
+		scene->cubeMap->bind(GL_TEXTURE2);
 	}
 
 	drawShadowCasters(shaderProgram, scene);
@@ -155,41 +160,41 @@ void Renderer::drawScene(Camera camera, Scene scene, float currentTime)
 
 }
 
-void Renderer::setLights(Shader* shaderProgram, Scene scene) {
+void Renderer::setLights(Shader* shaderProgram, Scene *scene) {
 	//set dirlights
-	shaderProgram->setUniform3f("directionalLight.colors.ambientColor", scene.directionalLight.ambientColor);
-	shaderProgram->setUniform3f("directionalLight.colors.diffuseColor", scene.directionalLight.diffuseColor);
-	shaderProgram->setUniform3f("directionalLight.colors.specularColor", scene.directionalLight.specularColor);
-	shaderProgram->setUniform3f("directionalLight.direction", scene.directionalLight.direction);
+	shaderProgram->setUniform3f("directionalLight.colors.ambientColor", scene->directionalLight.ambientColor);
+	shaderProgram->setUniform3f("directionalLight.colors.diffuseColor", scene->directionalLight.diffuseColor);
+	shaderProgram->setUniform3f("directionalLight.colors.specularColor", scene->directionalLight.specularColor);
+	shaderProgram->setUniform3f("directionalLight.direction", scene->directionalLight.direction);
 
 	//set pointLights
 
-	shaderProgram->setUniform1i("nrPointLights", (int)scene.pointLights.size());
-	for (int i = 0; i < (int)scene.pointLights.size(); i++) {
+	shaderProgram->setUniform1i("nrPointLights", (int)scene->pointLights.size());
+	for (int i = 0; i < (int)scene->pointLights.size(); i++) {
 		string name = std::string("pointLights[") + patch::to_string(i).c_str() + "]";
-		shaderProgram->setUniform3f((name + ".position").c_str(), scene.pointLights[i].position);
-		shaderProgram->setUniform3f((name + ".colors.ambientColor").c_str(), scene.pointLights[i].ambientColor);
-		shaderProgram->setUniform3f((name + ".colors.diffuseColor").c_str(), scene.pointLights[i].diffuseColor);
-		shaderProgram->setUniform3f((name + ".colors.specularColor").c_str(), scene.pointLights[i].specularColor);
-		shaderProgram->setUniform1f((name + ".attenuation.constant").c_str(), scene.pointLights[i].attenuation.constant);
-		shaderProgram->setUniform1f((name + ".attenuation.linear").c_str(), scene.pointLights[i].attenuation.linear);
-		shaderProgram->setUniform1f((name + ".attenuation.exp").c_str(), scene.pointLights[i].attenuation.exp);
+		shaderProgram->setUniform3f((name + ".position").c_str(), scene->pointLights[i].position);
+		shaderProgram->setUniform3f((name + ".colors.ambientColor").c_str(), scene->pointLights[i].ambientColor);
+		shaderProgram->setUniform3f((name + ".colors.diffuseColor").c_str(), scene->pointLights[i].diffuseColor);
+		shaderProgram->setUniform3f((name + ".colors.specularColor").c_str(), scene->pointLights[i].specularColor);
+		shaderProgram->setUniform1f((name + ".attenuation.constant").c_str(), scene->pointLights[i].attenuation.constant);
+		shaderProgram->setUniform1f((name + ".attenuation.linear").c_str(), scene->pointLights[i].attenuation.linear);
+		shaderProgram->setUniform1f((name + ".attenuation.exp").c_str(), scene->pointLights[i].attenuation.exp);
 	}
 
 	//set spotLights
-	shaderProgram->setUniform1i("nrSpotLights", (int)scene.spotLights.size());
-	for (int i = 0; i < (int)scene.spotLights.size(); i++) {
+	shaderProgram->setUniform1i("nrSpotLights", (int)scene->spotLights.size());
+	for (int i = 0; i < (int)scene->spotLights.size(); i++) {
 		string name = std::string("spotLights[") + patch::to_string(i).c_str() + "]";
-		shaderProgram->setUniform3f((name + ".position").c_str(), scene.spotLights[i].position);
-		shaderProgram->setUniform3f((name + ".colors.ambientColor").c_str(), scene.spotLights[i].ambientColor);
-		shaderProgram->setUniform3f((name + ".colors.diffuseColor").c_str(), scene.spotLights[i].diffuseColor);
-		shaderProgram->setUniform3f((name + ".colors.specularColor").c_str(), scene.spotLights[i].specularColor);
-		shaderProgram->setUniform1f((name + ".attenuation.constant").c_str(), scene.spotLights[i].attenuation.constant);
-		shaderProgram->setUniform1f((name + ".attenuation.linear").c_str(), scene.spotLights[i].attenuation.linear);
-		shaderProgram->setUniform1f((name + ".attenuation.exp").c_str(), scene.spotLights[i].attenuation.exp);
-		shaderProgram->setUniform3f((name + ".direction").c_str(), scene.spotLights[i].direction);
-		shaderProgram->setUniform1f((name + ".cutoff").c_str(), scene.spotLights[i].cutOff);
-		shaderProgram->setUniform1f((name + ".cutoffOuter").c_str(), scene.spotLights[i].outerCutOff);
+		shaderProgram->setUniform3f((name + ".position").c_str(), scene->spotLights[i].position);
+		shaderProgram->setUniform3f((name + ".colors.ambientColor").c_str(), scene->spotLights[i].ambientColor);
+		shaderProgram->setUniform3f((name + ".colors.diffuseColor").c_str(), scene->spotLights[i].diffuseColor);
+		shaderProgram->setUniform3f((name + ".colors.specularColor").c_str(), scene->spotLights[i].specularColor);
+		shaderProgram->setUniform1f((name + ".attenuation.constant").c_str(), scene->spotLights[i].attenuation.constant);
+		shaderProgram->setUniform1f((name + ".attenuation.linear").c_str(), scene->spotLights[i].attenuation.linear);
+		shaderProgram->setUniform1f((name + ".attenuation.exp").c_str(), scene->spotLights[i].attenuation.exp);
+		shaderProgram->setUniform3f((name + ".direction").c_str(), scene->spotLights[i].direction);
+		shaderProgram->setUniform1f((name + ".cutoff").c_str(), scene->spotLights[i].cutOff);
+		shaderProgram->setUniform1f((name + ".cutoffOuter").c_str(), scene->spotLights[i].outerCutOff);
 	}
 }
 
@@ -197,23 +202,23 @@ void Renderer::setLights(Shader* shaderProgram, Scene scene) {
 * In this function, add all scene elements that should cast shadow, that way
 * there is only one draw call to each of these, as this function is called twice.
 */
-void Renderer::drawShadowCasters(Shader* shaderProgram, Scene scene)
+void Renderer::drawShadowCasters(Shader* shaderProgram, Scene *scene)
 {
-	for (unsigned int i = 0; i < scene.shadowCasters.size(); i++) {
-		shaderProgram->setUniform1f("object_reflectiveness", (*scene.shadowCasters[i]).shininess);
-		drawModel(*scene.shadowCasters[i], shaderProgram);
+	for (unsigned int i = 0; i < scene->shadowCasters.size(); i++) {
+		shaderProgram->setUniform1f("object_reflectiveness", (*scene->shadowCasters[i]).shininess);
+		drawModel(*scene->shadowCasters[i], shaderProgram);
 	}
 }
 
-void Renderer::drawTransparent(Shader* shaderProgram, Scene scene)
+void Renderer::drawTransparent(Shader* shaderProgram, Scene *scene)
 {
-	for (unsigned int i = 0; i < scene.transparentObjects.size(); i++) {
-		shaderProgram->setUniform1f("object_reflectiveness", (*scene.transparentObjects[i]).shininess);
-		drawModel(*scene.transparentObjects[i], shaderProgram);
+	for (unsigned int i = 0; i < scene->transparentObjects.size(); i++) {
+		shaderProgram->setUniform1f("object_reflectiveness", (*scene->transparentObjects[i]).shininess);
+		drawModel(*scene->transparentObjects[i], shaderProgram);
 	}
 }
 
-void Renderer::drawShadowMap(Fbo sbo, float4x4 viewProjectionMatrix, Scene scene) {
+void Renderer::drawShadowMap(Fbo sbo, float4x4 viewProjectionMatrix, Scene *scene) {
 	glBindFramebuffer(GL_FRAMEBUFFER, sbo.id);
 	glViewport(0, 0, SHADOW_MAP_RESOLUTION, SHADOW_MAP_RESOLUTION);
 
@@ -229,9 +234,9 @@ void Renderer::drawShadowMap(Fbo sbo, float4x4 viewProjectionMatrix, Scene scene
 	sbo.shaderProgram->use();
 	sbo.shaderProgram->setUniformMatrix4fv("viewProjectionMatrix", viewProjectionMatrix);
 
-	for (unsigned int i = 0; i < scene.shadowCasters.size(); i++) {
-		sbo.shaderProgram->setUniform1f("object_reflectiveness", (*scene.shadowCasters[i]).shininess);
-        (*scene.shadowCasters[i]).renderShadow(sbo.shaderProgram);
+	for (unsigned int i = 0; i < scene->shadowCasters.size(); i++) {
+		sbo.shaderProgram->setUniform1f("object_reflectiveness", (*scene->shadowCasters[i]).shininess);
+        (*scene->shadowCasters[i]).renderShadow(sbo.shaderProgram);
    	}
 
 	//CLEANUP

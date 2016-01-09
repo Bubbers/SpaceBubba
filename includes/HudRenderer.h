@@ -9,6 +9,8 @@
 #include "GL/glew.h"
 #include "Utils.h"
 
+class Texture;
+
 class HudRenderer : public IRenderComponent
 {
 public:

@@ -4,11 +4,13 @@
 #define MAX_POINT_LIGHTS 2
 
 #include "Mesh.h"
-#include "SkyBoxRenderer.h"
-#include "CubeMapTexture.h"
 #include "Utils.h"
 #include "Lights.h"
 #include "IDrawable.h"
+
+class CubeMapTexture;
+class Camera;
+class GameObject;
 
 class Scene
 {

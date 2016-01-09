@@ -2,7 +2,6 @@
 #define __Octree_h_
 
 #include <float3.h>
-#include "Triangle.h"
 #include <vector>
 #include <set>
 #include <ctime>
@@ -11,6 +10,8 @@
 
 using namespace std;
 using namespace chag;
+
+class Triangle;
 
 const int MAX_DEPTH = 8;
 const int MAX_CHILDREN = 16;
