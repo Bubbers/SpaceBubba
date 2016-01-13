@@ -165,10 +165,10 @@ void idle( int v )
 	float now = timeSinceStart.getElapsedTime().asSeconds();
 	float elapsedTime = now - timeAtLastDraw;
 
+	timeAtLastDraw = now;
+
 	sf::Joystick::update();
 	checkKeys();
-
-	timeAtLastDraw = now;
 
 	//TODO Cleanup shouldnt be here. Let scene delete?
 	std::vector<GameObject*>* toDelete = new std::vector<GameObject*>();
