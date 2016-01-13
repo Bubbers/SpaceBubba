@@ -36,11 +36,9 @@ int MousePosition::getWindowY() {
 }
 
 int MousePosition::getXMidOffset() {
-    printf("mp x: %d wx: %d ww: %d\n",x,wx,Globals::get(Globals::Key::WINDOW_WIDTH));
     return getWindowX() - Globals::get(Globals::Key::WINDOW_WIDTH)/2;
 }
 
 int MousePosition::getYMidOffset() {
-    printf("mp y: %d wy: %d wh: %d\n",y,wy,Globals::get(Globals::Key::WINDOW_HEIGHT));
     return getWindowY() - Globals::get(Globals::Key::WINDOW_HEIGHT)/2;
 }

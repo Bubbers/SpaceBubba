@@ -116,7 +116,6 @@ float3 sphericalToCartesian(float theta, float phi, float r);
 void display(void)
 {
 	renderer->drawScene(playerCamera, &scene, timeAtLastDraw);
-	printf("%f\n",timeAtLastDraw);
 }
 
 void checkKeys()
@@ -170,7 +169,6 @@ void idle( int v )
 	checkKeys();
 
 	timeAtLastDraw = now;
-	printf("idle: %f, %f\n",now, elapsedTime);
 
 	//TODO Cleanup shouldnt be here. Let scene delete?
 	std::vector<GameObject*>* toDelete = new std::vector<GameObject*>();
