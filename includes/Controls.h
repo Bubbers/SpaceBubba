@@ -5,6 +5,6 @@
 /**
  * The functions used to bind the controls in main()
  */
-enum Controls {ACCELERATE,TURN,ALTITUDE,SHOOT,QUIT};
+enum Controls {ACCELERATE,TURN,ALTITUDE,SHOOT,QUIT, CONTINUE};
 
 #endif

@@ -1,5 +1,7 @@
 #include "Renderer.h"
 #include <sstream>
+#include <SFML/Window.hpp>
+#include <Globals.h>
 #include "ResourceManager.h"
 #include "constants.h"
 #include "GameObject.h"
@@ -22,37 +24,20 @@ namespace patch
 }
 
 
-Renderer::Renderer(int argc, char *argv[], int width, int height) : width(width), height(height)
+Renderer::Renderer(int width, int height) : width(width), height(height)
 {
 #	if defined(__linux__)
   	linux_initialize_cwd();
 #	endif // ! __linux__
 
+	sf::ContextSettings settings = sf::ContextSettings(32, 8, 0, 3, 3);
+	settings.majorVersion = 3;
+	settings.minorVersion = 3;
+	settings.attributeFlags = sf::ContextSettings::Debug | sf::ContextSettings::Core;
+	window = new sf::Window(sf::VideoMode(width,height),"Super-Bubba-Awesome-Space",sf::Style::Default,settings);
+	glEnable(GL_FRAMEBUFFER_SRGB);
+	window->setFramerateLimit(60);
 
-        glutInit(&argc, argv);
-
-        
-#	if defined(GLUT_SRGB)
-        //glutInitDisplayMode(GLUT_DOUBLE | GLUT_SRGB | GLUT_DEPTH);
-        glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH );
-#	else // !GLUT_SRGB
-       	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-	printf("--\n");
-	printf("-- WARNING: your GLUT doesn't support sRGB / GLUT_SRGB\n");
-#	endif // ~ GLUT_SRGB
-        glutInitWindowSize(width, height);
-
-	glutInitContextVersion(3, 1);
-	glutInitContextProfile(GLUT_CORE_PROFILE);
-	glutInitContextFlags(GLUT_DEBUG);
-        
-	glutCreateWindow("Bubba-3D");
-	/* If sRGB is available, enable rendering in sRGB. Note: we should do
-	* this *after* initGL(), since initGL() initializes GLEW.
-	*/
-#	if defined(GLUT_SRGB)
-	     glEnable(GL_FRAMEBUFFER_SRGB_EXT); //TODO CHECK SRGB
-#endif
 }
 
 
@@ -61,19 +46,55 @@ Renderer::~Renderer()
 }
 
 void Renderer::start() {
-	glutMainLoop();
+	bool running = true;
+	while (running)
+	{
+		// handle events
+		sf::Event event;
+		while (window->pollEvent(event))
+		{
+			if (event.type == sf::Event::Closed)
+			{
+				// end the program
+				running = false;
+			}
+			else if(event.type == sf::Event::MouseMoved){
+				Globals::set(Globals::Key::MOUSE_WINDOW_X,event.mouseMove.x);
+				Globals::set(Globals::Key::MOUSE_WINDOW_Y,event.mouseMove.y);
+			}/*
+			else if (event.type == sf::Event::Resized)
+			{
+				// adjust the viewport when the window is resized
+				glViewport(0, 0, event.size.width, event.size.height);
+			}
+			*/
+		}
+
+		// clear the buffers
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		idleMethod(0);
+		displayMethod();
+
+		// end the current frame (internally swaps the front and back buffers)
+		window->display();
+	}
 }
 
 void Renderer::render() {
-	glutPostRedisplay();
 }
 
 void Renderer::setDisplayMethod(void(*display)(void)) {
-	glutDisplayFunc(display);
+	displayMethod = display;
 }
 
-void Renderer::setIdleMethod(void(*idle)(int), int delay) {
-	glutTimerFunc(delay, idle, 0);
+void Renderer::setIdleMethod(void(*idle)(int), int maxFps) {
+	idleMethod = idle;
+	this->maxFps = maxFps;
+}
+
+sf::Window* Renderer::getWindow() {
+	return window;
 }
 
 void Renderer::drawModel(IDrawable &model, Shader* shaderProgram)
@@ -117,8 +138,8 @@ void Renderer::drawScene(Camera *camera, Scene *scene, float currentTime)
 	glClearColor(0.2f, 0.2f, 0.8f, 1.0f);
 	glClearDepth(1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	int w = glutGet((GLenum)GLUT_WINDOW_WIDTH);
-	int h = glutGet((GLenum)GLUT_WINDOW_HEIGHT);
+	int w = Globals::get(Globals::Key::WINDOW_WIDTH);
+	int h = Globals::get(Globals::Key::WINDOW_HEIGHT);
 	glViewport(0, 0, w, h);
 	// Use shader and set up uniforms
 	shaderProgram->use();
@@ -392,8 +413,8 @@ Fbo Renderer::createPostProcessFbo(int width, int height) {
 }
 
 void Renderer::renderPostProcess() {
-	int w = glutGet((GLenum)GLUT_WINDOW_WIDTH);
-	int h = glutGet((GLenum)GLUT_WINDOW_HEIGHT);
+	int w = window->getSize().x;
+	int h = window->getSize().y;
 
 	blurImage();
 

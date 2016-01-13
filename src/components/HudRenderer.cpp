@@ -3,8 +3,9 @@
 //
 
 #include <ResourceManager.h>
-#include <InputManager.h>
 #include <Utils.h>
+#include <ControlsManager.h>
+#include <Controls.h>
 #include "HudRenderer.h"
 
 HudRenderer::HudRenderer(int *scoreBoard, State *state){
@@ -65,13 +66,14 @@ struct HudRenderer::HudConfig* HudRenderer::getConfig() {
 void HudRenderer::render() {
     float4x4 modelMat;
 
+    ControlsManager *cm = ControlsManager::getInstance();
+
     if (*state == Start) {
         modelMat = make_translation(make_vector(-.5f, -.5f, 0.0f));
         Texture *texture = ResourceManager::loadAndFetchTexture("../scenes/HUD/mission_box.png");
         render2DHud(texture, &modelMat);
 
-        InputManager *im = InputManager::getInstance();
-        if (im->isKeyDown(13, true)) {
+        if (cm->getStatus(CONTINUE).isActive()) {
             *state = Playing;
         }
     }
@@ -85,8 +87,7 @@ void HudRenderer::render() {
         Texture *texture = ResourceManager::loadAndFetchTexture("../scenes/HUD/win_box.png");
         render2DHud(texture, &modelMat);
 
-        InputManager *im = InputManager::getInstance();
-        if (im->isKeyDown(13, true)) {
+        if (cm->getStatus(CONTINUE).isActive()) {
             *state = Credits;
         }
 

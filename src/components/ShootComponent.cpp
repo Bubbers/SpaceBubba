@@ -12,7 +12,6 @@
 #include <DeathOnCollision.h>
 #include <chrono>
 #include "ShootComponent.h"
-#include "InputManager.h"
 #include <timer.h>
 #include <ControlsManager.h>
 #include <Controls.h>

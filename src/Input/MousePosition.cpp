@@ -5,6 +5,7 @@
 #include <MousePosition.h>
 #include <SFML/Window.hpp>
 #include <GL/freeglut_std.h>
+#include <Globals.h>
 
 MousePosition::MousePosition() {
     update();
@@ -14,6 +15,8 @@ void MousePosition::update(){
     sf::Vector2i pos = sf::Mouse::getPosition();
     x = pos.x;
     y = pos.y;
+    wx = Globals::get(Globals::Key::MOUSE_WINDOW_X);
+    wy = Globals::get(Globals::Key::MOUSE_WINDOW_Y);
 }
 
 int MousePosition::getRawX() {
@@ -25,17 +28,19 @@ int MousePosition::getRawY() {
 }
 
 int MousePosition::getWindowX() {
-    return x-glutGet(GLUT_WINDOW_X);
+    return wx;
 }
 
 int MousePosition::getWindowY() {
-    return y-glutGet(GLUT_WINDOW_Y);
+    return wy;
 }
 
 int MousePosition::getXMidOffset() {
-    return getWindowX() - glutGet(GLUT_WINDOW_WIDTH)/2;
+    printf("mp x: %d wx: %d ww: %d\n",x,wx,Globals::get(Globals::Key::WINDOW_WIDTH));
+    return getWindowX() - Globals::get(Globals::Key::WINDOW_WIDTH)/2;
 }
 
 int MousePosition::getYMidOffset() {
-    return getWindowY() - glutGet(GLUT_WINDOW_HEIGHT)/2;
+    printf("mp y: %d wy: %d wh: %d\n",y,wy,Globals::get(Globals::Key::WINDOW_HEIGHT));
+    return getWindowY() - Globals::get(Globals::Key::WINDOW_HEIGHT)/2;
 }

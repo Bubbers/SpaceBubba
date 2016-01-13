@@ -7,6 +7,7 @@
 
 #include "Utils.h"
 #include "Effects.h"
+#include <SFML/Window.hpp>
 
 #define CUBE_MAP_RESOLUTION		512
 #define SHADOW_MAP_RESOLUTION	2048
@@ -20,7 +21,7 @@ class IDrawable;
 class Renderer
 {
 public:
-	Renderer(int argc, char *argv[], int width, int height);
+	Renderer(int width, int height);
 	~Renderer();
 
 	void initGL();
@@ -32,16 +33,18 @@ public:
 	void setIdleMethod(void(*idle)(int), int delay);
 	void setDisplayMethod(void(*display)(void));
 
-	void swapBuffer() {
-		glutSwapBuffers();  // swap front and back buffer. This frame will now be displayed.
-		CHECK_GL_ERROR();
-	}
+	void swapBuffer();
+	sf::Window* getWindow();
 
 
 	Effects effects;
 private:
 	int width, height;
 	float currentTime;
+	sf::Window* window;
+	void(*idleMethod)(int);
+	int maxFps;
+	void(*displayMethod)(void);
 
 	Fbo createPostProcessFbo(int width, int height);
 	void drawShadowMap(Fbo sbo, float4x4 viewProjectionMatrix, Scene *scene);

@@ -3,7 +3,6 @@
 //
 
 #include <MoveComponent.h>
-#include <InputManager.h>
 #include <ParticleGenerator.h>
 #include <Utils.h>
 #include <ControlsManager.h>

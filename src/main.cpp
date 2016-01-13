@@ -11,7 +11,6 @@
 #include <Quaternion.h>
 #include <StandardRenderer.h>
 #include "MoveComponent.h"
-#include <InputManager.h>
 #include <SpaceShipComponent.h>
 #include <SpawnAsteroidOnDeath.h>
 #include <FireParticle.h>
@@ -33,6 +32,8 @@
 #include <Logger.h>
 #include <PerspectiveCamera.h>
 #include <Scene.h>
+#include <Globals.h>
+#include <JoystickButton.h>
 #include "CubeMapTexture.h"
 #include "Camera.h"
 
@@ -49,8 +50,8 @@ using namespace chag;
 //*****************************************************************************
 //	Global variables
 //*****************************************************************************
-float currentTime = 0.0f;			// Tells us the current time
-float timeSinceDraw = 0.0f;
+float timeAtLastDraw = 0.0f;
+sf::Clock timeSinceStart;
 
 int points = 0;
 
@@ -114,8 +115,8 @@ float3 sphericalToCartesian(float theta, float phi, float r);
 
 void display(void)
 {
-	renderer->drawScene(playerCamera, &scene, currentTime);
-	renderer->swapBuffer();
+	renderer->drawScene(playerCamera, &scene, timeAtLastDraw);
+	printf("%f\n",timeAtLastDraw);
 }
 
 void checkKeys()
@@ -124,39 +125,6 @@ void checkKeys()
 	if(cm->getStatus(QUIT).isActive())
 		exit(0);
 
-}
-
-MouseWarp motion(int x, int y, int delta_x, int delta_y)
-{
-/*
-	InputManager* im = InputManager::getInstance();
-	bool someDown = false;
-	Logger::logDebug("yo");
-
-	if (im->isMouseButtonDown(InputManager::MOUSE_MIDDLE)) {
-		camera_r -= float(delta_y) * 0.3f;
-		// make sure cameraDistance does not become too small
-		camera_r = max(0.1f, camera_r);
-		someDown = true;
-	}
-	if (im->isMouseButtonDown(InputManager::MOUSE_LEFT)) {
-		camera_phi -= float(delta_y) * 0.3f * float(M_PI) / 180.0f;
-		camera_phi = min(max(0.01f, camera_phi), float(M_PI) - 0.01f);
-		camera_theta -= float(delta_x) * 0.3f * float(M_PI) / 180.0f;
-		someDown = true;
-	}
-
-	if (im->isMouseButtonDown(InputManager::MOUSE_RIGHT)) {
-		camera_target_altitude += float(delta_y) * 0.1f;
-		someDown = true;
-	}
-	if(someDown) {
-		glutSetCursor(GLUT_CURSOR_NONE);
-		return MouseWarp(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
-	}else {
-		glutSetCursor(GLUT_CURSOR_INFO);
-		return MouseWarp::noWarp();
-	}*/
 }
 
 
@@ -195,58 +163,50 @@ float3 calculateNewCameraPosition() {
 
 void idle( int v )
 {
-	float elapsedTime = glutGet(GLUT_ELAPSED_TIME) - timeSinceDraw;
+	float now = timeSinceStart.getElapsedTime().asSeconds();
+	float elapsedTime = now - timeAtLastDraw;
 
 	sf::Joystick::update();
-	float time = (1000 / TICK_PER_SECOND) - elapsedTime;
 	checkKeys();
-	if (time < 0) {
-		glutTimerFunc(1000 / TICK_PER_SECOND, idle, 0);
-		timeSinceDraw = float(glutGet(GLUT_ELAPSED_TIME));
-		static float startTime = float(glutGet(GLUT_ELAPSED_TIME)) / 1000.0f;
 
-		currentTime = float(glutGet(GLUT_ELAPSED_TIME)) / 1000.0f - startTime;
+	timeAtLastDraw = now;
+	printf("idle: %f, %f\n",now, elapsedTime);
 
+	//TODO Cleanup shouldnt be here. Let scene delete?
+	std::vector<GameObject*>* toDelete = new std::vector<GameObject*>();
 
-		//TODO Cleanup shouldnt be here. Let scene delete?
-		std::vector<GameObject*>* toDelete = new std::vector<GameObject*>();
+	scene.update(elapsedTime*1000.0f, toDelete);
 
-        scene.update(elapsedTime, toDelete);
+	playerCamera->setPosition(calculateNewCameraPosition());
 
-		playerCamera->setPosition(calculateNewCameraPosition());
+	broadPhaseCollider.updateCollision();
 
-        broadPhaseCollider.updateCollision();
+	sf::Mouse::setPosition(sf::Vector2<int>(Globals::get(Globals::Key::WINDOW_WIDTH)/2,
+											Globals::get(Globals::Key::WINDOW_HEIGHT)/2),
+						   *renderer->getWindow());
 
-		glutWarpPointer(SCREEN_WIDTH/2,SCREEN_HEIGHT/2);
-
-		for(auto it = toDelete->begin(); it < toDelete->end(); it++){
-			delete (*it);
-		}
-
-		delete toDelete;
-
-		glutPostRedisplay();
-
+	for(auto it = toDelete->begin(); it < toDelete->end(); it++){
+		delete (*it);
 	}
-	else {
-		glutTimerFunc(int(time), idle, 0);
-	}
+
+	delete toDelete;
+
 }
 
 
 int main(int argc, char *argv[])
 {
-	Logger::debug = false;
+	Logger::debug = true;
 	int w = SCREEN_WIDTH;
 	int h = SCREEN_HEIGHT;
+	Globals::set(Globals::Key::WINDOW_HEIGHT,h);
+	Globals::set(Globals::Key::WINDOW_WIDTH,w);
 
 	srand(time(NULL));
-	renderer = new Renderer(argc, argv, w, h);
-	glutTimerFunc(50, idle, 0);
-	glutDisplayFunc(display);
+	renderer = new Renderer(w, h);
+	renderer->setIdleMethod(idle, 60);
+	renderer->setDisplayMethod(display);
 
-	InputManager* im = InputManager::getInstance();
-	//im->addMouseMoveListener(motion);
 	ControlsManager* cm = ControlsManager::getInstance();
 	try {
 		cm->addBindings(ALTITUDE, {new KeyboardButton(sf::Keyboard::L, sf::Keyboard::P),
@@ -259,6 +219,7 @@ int main(int argc, char *argv[])
 		cm->addBindings(SHOOT, {new KeyboardButton(sf::Keyboard::Space), new JoystickAxis(sf::Joystick::Axis::R, false),
 								new MouseButton(sf::Mouse::Button::Left)});
 		cm->addBindings(QUIT, {new KeyboardButton(sf::Keyboard::Escape)});
+		cm->addBindings(CONTINUE, {new KeyboardButton(sf::Keyboard::Return),new JoystickButton(0)});
 	}catch(string unmatchingDuality){
 		Logger::logSevere(unmatchingDuality);
 		return 1;
@@ -266,7 +227,7 @@ int main(int argc, char *argv[])
 
 	renderer->initGL();
 
-
+	timeSinceStart = sf::Clock();
 
 	createCubeMaps();
 	createCameras();
@@ -275,8 +236,8 @@ int main(int argc, char *argv[])
 	createEffects();
 	startAudio();
 
-	glutWarpPointer(SCREEN_WIDTH/2,SCREEN_HEIGHT/2);
-	glutSetCursor(GLUT_CURSOR_NONE);
+	//renderer->getWindow()->setMouseCursorVisible(false);
+	sf::Mouse::setPosition(sf::Vector2<int>(SCREEN_WIDTH/2,SCREEN_HEIGHT/2),*renderer->getWindow());
 	renderer->start();
 	
 	return 0;

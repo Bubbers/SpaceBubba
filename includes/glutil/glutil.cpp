@@ -379,7 +379,7 @@ void debugDrawLight(const float4x4 &viewMatrix,
 	glVertex3f(0.0f, 0.0f, 0.0f);
 	glEnd(); 
 	glTranslatef(worldSpaceLightPos.x, worldSpaceLightPos.y, worldSpaceLightPos.z);
-	glutSolidSphere(1.0, 20, 20);
+//	glutSolidSphere(1.0, 20, 20);
 	glUseProgram(temp);
 }
 

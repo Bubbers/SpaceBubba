@@ -54,7 +54,7 @@ public:
     int getYMidOffset();
 
 private:
-    int x,y;
+    int x,y,wx,wy;
 
 };
 
