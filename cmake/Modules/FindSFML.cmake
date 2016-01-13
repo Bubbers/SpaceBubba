@@ -71,7 +71,9 @@ set(FIND_SFML_PATHS
         /sw
         /opt/local
         /opt/csw
-        /opt)
+        /opt
+        ${PROJECT_SOURCE_DIR}/includes
+        ${PROJECT_SOURCE_DIR}/lib)
 
 # find the SFML include directory
 find_path(SFML_INCLUDE_DIR SFML/Config.hpp
