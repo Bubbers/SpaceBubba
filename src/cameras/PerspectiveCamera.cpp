@@ -28,10 +28,8 @@ float4x4 PerspectiveCamera::getProjectionMatrix() {
 	return perspectiveMatrix(m_fFov, m_fRatio, m_fNearPlane, m_fFarPlane);
 }
 
-float4x4 PerspectiveCamera::perspectiveMatrix(float fov, float aspectRatio, float n, float f) /* field of view, aspect ratio, near clipping plane, far clipping plane */
+float4x4 PerspectiveCamera::perspectiveMatrix(float fov, float aspectRatio, float n, float f)
 {
-    // This matrix is created identically to gluPerspective()
-    // and takes identical parameters.
     return make_perspective(fov, aspectRatio, n, f);
 }
 

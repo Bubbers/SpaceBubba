@@ -34,7 +34,7 @@
 #include <PerspectiveCamera.h>
 #include <Scene.h>
 #include "CubeMapTexture.h"
-#include "Camera.h"
+
 
 using namespace std;
 using namespace chag;

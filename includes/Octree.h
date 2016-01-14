@@ -25,32 +25,41 @@ public:
 	~Octree(void);
 
 	bool hasChildren(void);
-	void insert(Triangle* t);
+
+	void insertTriangle(Triangle* t);
 	void insertAll(std::vector<Triangle*> &triangles);
 
-	float3 origin;
-	float3 halfVector;
-	
+
 
 	void getChildren(std::vector<Octree*>* octs);
     std::vector<Triangle*> *getTriangles();
 
-	bool isFull();
 	int getOctantContainingPoint(const float3& point);
-	int getChildCount();
-	int getCount();
-	bool intersect(float3 rayOrigin, float3 rayVector);
-	void getGeometry(float3 rayOrigin, float3 rayVector, std::vector<Triangle*> *tsp);
+	int getTriangleCount();
+	int getTriangleCountRecursively();
+	bool rayCastIntersectsAABB(float3 rayOrigin, float3 rayVector);
+	void getTrianglesInsersectedByRayCast(float3 rayOrigin, float3 rayVector, std::vector<Triangle*> *tsp);
     AABB* getAABB();
 
+	void clearChildren();
+	void setupAABB();
+
 private:
+	float3 getMaxXYZFromTwoPoints(float3 p1, float3 p2);
+	float3 getMinXYZFromTwoPoints(float3 p1, float3 p2);
+
+	void createChildren();
 	
-	void addTriangle(Triangle* t);
+
 	AABB aabb;
 
 	Octree *children[8];
 	std::vector<Triangle*> ts;
 	int depth;
+
+	float3 origin;
+	float3 halfVector;
+
 };
 
 
