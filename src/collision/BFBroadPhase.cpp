@@ -96,19 +96,10 @@ CollisionPairList BFBroadPhase::computeCollisionPairs() {
 
             if(gameObject1 != gameObject2 && AabbAabbintersection(&aabb1, &aabb2)) {
                 collisionPairs.push_back(std::pair<GameObject*,GameObject*>(gameObject1, gameObject2));
-            } else {
-                if(std::find(collidingList.begin(), collidingList.end(), std::pair<int, int>(gameObject1->getId(), gameObject2->getId())) != collidingList.end() ||
-                                      std::find(collidingList.begin(), collidingList.end(), std::pair<int, int>(gameObject1->getId(), gameObject2->getId())) != collidingList.end()) {
-                    gameObject1->callEvent(EventType::AfterCollision, gameObject2->getType());
-                    gameObject2->callEvent(EventType::AfterCollision, gameObject1->getType());
-                    collidingList.erase(std::remove(collidingList.begin(), collidingList.end(),
-                                                    std::pair<int, int>(gameObject1->getId(), gameObject2->getId())));
-                    collidingList.erase(std::remove(collidingList.begin(), collidingList.end(),
-                                                    std::pair<int, int>(gameObject2->getId(), gameObject1->getId())));
-                }
             }
         }
     }
     return collisionPairs;
 }
+
 
