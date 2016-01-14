@@ -49,7 +49,8 @@ private:
 	float3 getMinXYZFromTwoPoints(float3 p1, float3 p2);
 
 	void createChildren();
-	
+
+	void putTrianglesToList(std::vector<Triangle *> *triangleList);
 
 	AABB aabb;
 

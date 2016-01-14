@@ -458,7 +458,7 @@ bool octreeOctreeIntersection(Octree *object1Octree, float4x4 *object1ModelMatri
         if(isTrianglesIntersecting(object1Octree, object1ModelMatrix, object2Octree, object2ModelMatrix)) {
             return true;
         }
-        
+
         std::vector<Octree *> object1Children;
         object1Octree->getChildren(&object1Children);
 

@@ -76,7 +76,7 @@ void Octree::insertTriangle(Triangle *t) {
             createChildren();
         }
 
-        for (std::set<int>::iterator it = octs.begin(); it != octs.end(); ++it) {
+        for (std::set<int>::iterator it = octs.begin(); it != octs.end(); it++) {
             children[*it]->insertTriangle(t);
         }
     }
@@ -179,20 +179,21 @@ bool Octree::rayCastIntersectsAABB(float3 rayOrigin, float3 rayVector) {
            || (testSlab(rayOrigin.z, rayVector.z, minCorner.z, maxCorner.z, &tNear, &tFar));
 }
 
-void Octree::getTrianglesInsersectedByRayCast(float3 rayOrigin, float3 rayVector, std::vector<Triangle *> *tsp) {
-    if (rayCastIntersectsAABB(rayOrigin, rayVector)) {
-        if (hasChildren()) {
-            for (unsigned int i = 0; i < ts.size(); i++) {
-                tsp->push_back(ts[i]);
-            }
-            for (int i = 0; i < 8; i++) {
-                children[i]->getTrianglesInsersectedByRayCast(rayOrigin, rayVector, tsp);
-            }
+void Octree::getTrianglesInsersectedByRayCast(float3 rayOrigin, float3 rayVector, std::vector<Triangle *> *triangleList) {
+    if (!rayCastIntersectsAABB(rayOrigin, rayVector)) {
+        return;
+    }
+
+    putTrianglesToList(triangleList);
+    if (hasChildren()) {
+        for (int i = 0; i < 8; i++) {
+            children[i]->getTrianglesInsersectedByRayCast(rayOrigin, rayVector, triangleList);
         }
-        else {
-            for (unsigned int i = 0; i < ts.size(); i++) {
-                tsp->push_back(ts[i]);
-            }
-        }
+    }
+}
+
+void Octree::putTrianglesToList(std::vector<Triangle *> *triangleList) {
+    for (unsigned int i = 0; i < ts.size(); i++) {
+        triangleList->push_back(ts[i]);
     }
 }
