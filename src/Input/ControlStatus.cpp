@@ -6,6 +6,8 @@
 #include <map>
 #include <cmath>
 
+const float ControlStatus::NO_MAX = -10000.0f;
+
 ControlStatus::ControlStatus() {
 }
 

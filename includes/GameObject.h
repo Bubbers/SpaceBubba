@@ -6,6 +6,7 @@
 #include "GameObjectType.h"
 #include "AABB2.h"
 #include "float4x4.h"
+#include <vector>
 
 using namespace chag;
 

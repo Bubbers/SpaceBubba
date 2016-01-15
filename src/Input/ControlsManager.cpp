@@ -6,6 +6,7 @@
 #include <map>
 #include <vector>
 #include <ControlStatus.h>
+#include <string>
 
 
 ControlsManager* ControlsManager::getInstance() {

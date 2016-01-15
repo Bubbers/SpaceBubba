@@ -6,6 +6,7 @@
 #include <ControlStatus.h>
 #include "Input.h"
 #include <MousePosition.h>
+#include <algorithm>
 
 MouseAxis::MouseAxis(Axis axis, float accelerator) : Input(true) {
     this->axis = axis;
