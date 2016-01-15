@@ -113,7 +113,7 @@ void BFBroadPhase::computeExactCollision(CollisionPairList possibleCollision) {
 }
 
 void BFBroadPhase::triggerObjectEvent(GameObject* object1, GameObject* object2, EventType eventType) {
-    object1->callEvent(eventType, object1->getType());
-    object2->callEvent(eventType, object2->getType());
+    object1->callEvent(eventType, object2->getType());
+    object2->callEvent(eventType, object1->getType());
 }
 
