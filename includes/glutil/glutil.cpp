@@ -35,13 +35,6 @@ using std::vector;
 using namespace chag; 
 
 
-float4x4 perspectiveMatrix(float fov, float aspectRatio, float n, float f) /* field of view, aspect ratio, near clipping plane, far clipping plane */
-{
-	// This matrix is created identically to gluPerspective()
-	// and takes identical parameters.
-	return make_perspective(fov, aspectRatio, n, f);
-}
-
 void checkMinMax(float x, float y, float z, chag::float3* minV, chag::float3* maxV) {
 	if (x < minV->x) { minV->x = x; };
 	if (y < minV->y) { minV->y = y; };
@@ -49,18 +42,6 @@ void checkMinMax(float x, float y, float z, chag::float3* minV, chag::float3* ma
 	if (x > maxV->x) { maxV->x = x; };
 	if (y > maxV->y) { maxV->y = y; };
 	if (z > maxV->z) { maxV->z = z; };
-}
-
-
-
-float4x4 lookAt(const float3 &eye, const float3 &center, const float3 &up)
-{
-	float3 dir = chag::normalize(eye - center);
-	float3 right = chag::normalize(cross(up, chag::normalize(dir)));
-	float3 newup = chag::normalize(cross(dir, right));
-	float3x3 R = make_matrix(right, newup, dir);
-	float4x4 invrot = make_matrix(transpose(R), make_vector(0.0f,0.0f,0.0f));
-	return invrot * make_translation(-eye); 
 }
 
 

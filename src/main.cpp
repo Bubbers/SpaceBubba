@@ -35,7 +35,7 @@
 #include <Globals.h>
 #include <JoystickButton.h>
 #include "CubeMapTexture.h"
-#include "Camera.h"
+
 
 using namespace std;
 using namespace chag;

@@ -91,7 +91,7 @@ private:
     std::map<Activator,float> buttons;
     float maxValue = NO_MAX;
     Activator maxValueActivator;
-    static constexpr float NO_MAX = -10000.0f;
+	static const float NO_MAX;
 
 };
 
