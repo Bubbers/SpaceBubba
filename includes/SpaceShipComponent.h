@@ -34,6 +34,7 @@ private:
     float totalTurn = 0.0f;
     float totalIncl = 0.0f;
 
+	const float4 originalUpVector = make_vector(0.0f, 1.0f, 0.0f, 0.0f);
 };
 
 

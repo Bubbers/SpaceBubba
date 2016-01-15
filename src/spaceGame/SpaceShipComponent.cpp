@@ -43,7 +43,6 @@ void SpaceShipComponent::update(float dt) {
 
 
 	float4x4 modelMatrix = meshObject->getModelMatrix();
-	float4 originalUpVector = make_vector(0.0f, 1.0f, 0.0f, 0.0f);
 	float4 transformedUpVector = modelMatrix * originalUpVector;
 	float3 newUpVector = make_vector(transformedUpVector.x, transformedUpVector.y, transformedUpVector.z);
 
