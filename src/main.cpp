@@ -182,7 +182,7 @@ void idle( int v )
 	sf::Mouse::setPosition(sf::Vector2<int>(Globals::get(Globals::Key::WINDOW_WIDTH)/2,
 											Globals::get(Globals::Key::WINDOW_HEIGHT)/2),
 						   *renderer->getWindow());
-
+						   
 	for(auto it = toDelete->begin(); it < toDelete->end(); it++){
 		delete (*it);
 	}
@@ -194,7 +194,7 @@ void idle( int v )
 
 int main(int argc, char *argv[])
 {
-	Logger::debug = true;
+	Logger::debug = false;
 	int w = SCREEN_WIDTH;
 	int h = SCREEN_HEIGHT;
 	Globals::set(Globals::Key::WINDOW_HEIGHT,h);
@@ -234,7 +234,7 @@ int main(int argc, char *argv[])
 	createEffects();
 	startAudio();
 
-	//renderer->getWindow()->setMouseCursorVisible(false);
+	renderer->getWindow()->setMouseCursorVisible(false);
 	sf::Mouse::setPosition(sf::Vector2<int>(SCREEN_WIDTH/2,SCREEN_HEIGHT/2),*renderer->getWindow());
 	renderer->start();
 	

@@ -24,6 +24,7 @@ add_definitions(${GLUT_DEFINITIONS})
 if(NOT GLUT_FOUND)
     message(ERROR " GLUT not found!")
 endif(NOT GLUT_FOUND)
+
 #########################################################
 # FIND OPENGL
 #########################################################

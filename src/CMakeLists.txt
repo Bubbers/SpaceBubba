@@ -45,13 +45,15 @@ source_group(Shaders    FILES
 #########################################################
 # FIND GLUT
 #########################################################
-#find_package(GLUT REQUIRED)
-#include_directories(${GLUT_INCLUDE_DIR})
-#link_directories(${GLUT_LIBRARY_DIRS})
-#add_definitions(${GLUT_DEFINITIONS})
-#if(NOT GLUT_FOUND)
-#    message(ERROR " GLUT not found!")
-#endif(NOT GLUT_FOUND)
+find_package(GLUT REQUIRED)
+include_directories(${GLUT_INCLUDE_DIR})
+link_directories(${GLUT_LIBRARY_DIRS})
+add_definitions(${GLUT_DEFINITIONS})
+if(NOT GLUT_FOUND)
+    message(ERROR " GLUT not found!")
+endif(NOT GLUT_FOUND)
+
+
 #########################################################
 # FIND OPENGL
 #########################################################
