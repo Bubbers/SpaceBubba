@@ -41,11 +41,16 @@ void SpaceShipComponent::update(float dt) {
                                     make_identity<float4x4>());
     hudConf->speed = length(getVelocity())*200;
 
+
+	float4x4 modelMatrix = meshObject->getModelMatrix();
+	float4 originalUpVector = make_vector(0.0f, 1.0f, 0.0f, 0.0f);
+	float4 transformedUpVector = modelMatrix * originalUpVector;
+	float3 newUpVector = make_vector(transformedUpVector.x, transformedUpVector.y, transformedUpVector.z);
+
     float3 normVector = normalize(frontDir);
-    float3 left = cross(normVector, make_vector(0.0f, 1.0f, 0.0f));
+    float3 left = cross(normVector, newUpVector);
     generator1->m_position = getLocation() - normVector * 4.0 + left;
     generator2->m_position = getLocation() - normVector * 4.0 - left;
-
 };
 
 float4x4 SpaceShipComponent::updateRotation(float dt) {
