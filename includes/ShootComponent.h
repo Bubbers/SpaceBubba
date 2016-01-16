@@ -7,6 +7,7 @@
 
 #include "IComponent.h"
 #include <timer.h>
+#include "AudioManager.h"
 
 class GameObject;
 

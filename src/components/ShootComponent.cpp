@@ -30,7 +30,7 @@ ShootComponent::ShootComponent(GameObject* object, SpaceShipComponent *objectMov
     this->timeToLive = timeToLive;
 	timer.start();
 
-    sound = ResourceManager::loadAndFetchSound("../scenes/laser.wav");
+    sound = AudioManager::loadAndFetchSound("../scenes/laser.wav");
 }
 
 ShootComponent::~ShootComponent() {
