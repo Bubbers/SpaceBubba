@@ -1,10 +1,12 @@
 cmake_minimum_required(VERSION 2.8)
 # Project Name
-PROJECT(Bubba-3D)
+PROJECT(Super-Bubba-Awesome-Space)
 
-set(OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/build")
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/build/")
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
+set(LIBRARY_OUTPUT_PATH "${PROJECT_SOURCE_DIR}/build")
+set(OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/build")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/build/")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGLEW_STATIC")
 if(WIN32)
 SET( CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "${OUTPUT_DIRECTORY}")
 SET( CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "${OUTPUT_DIRECTORY}")
@@ -15,45 +17,16 @@ SET( CMAKE_ARCHIVE_OUTPUT_DIRECTORY_RELEASE "${OUTPUT_DIRECTORY}")
 endif(WIN32)
 
 
-if(UNIX)
-    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
-    set(CMAKE_CXX_FLAGS "-g")
-endif(UNIX)
-
-if (CMAKE_COMPILER_IS_GNUCXX)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DGLEW_STATIC")
-endif()
-
-
 include_directories("${PROJECT_SOURCE_DIR}/includes")
-include_directories("${PROJECT_SOURCE_DIR}/src/util")
-include_directories("${PROJECT_SOURCE_DIR}/includes/linmath")
 
 file(GLOB files_SOURCE
-        "${PROJECT_SOURCE_DIR}/includes/linmath/*.cpp"
-        "${PROJECT_SOURCE_DIR}/includes/glutil/*.cpp"
-        "${PROJECT_SOURCE_DIR}/src/logging/*.cpp"
-        "${PROJECT_SOURCE_DIR}/src/util/*.cpp"
-        "${PROJECT_SOURCE_DIR}/src/Misc/*.cpp"
-        "${PROJECT_SOURCE_DIR}/src/effects/*.cpp"
-        "${PROJECT_SOURCE_DIR}/src/cameras/*.cpp"
-        "${PROJECT_SOURCE_DIR}/src/Input/*.cpp"
-        "${PROJECT_SOURCE_DIR}/src/core/*.cpp"
-        "${PROJECT_SOURCE_DIR}/src/objects/*.cpp"
-        "${PROJECT_SOURCE_DIR}/src/collision/*.cpp"
         "${PROJECT_SOURCE_DIR}/src/particle/*.cpp"
         "${PROJECT_SOURCE_DIR}/src/components/*.cpp"
-        "${PROJECT_SOURCE_DIR}/shaders/*"
-        "${PROJECT_SOURCE_DIR}/src/spaceGame/*.cpp"
-        "${PROJECT_SOURCE_DIR}/src/spaceGame/weapons*.cpp"
-        "${PROJECT_SOURCE_DIR}/src/spaceGame/projectiles*.cpp"
         )
 
 
 #########################################################
 # Testing
 #########################################################
-add_subdirectory (src)
-include(CTest)
-add_subdirectory (test)
+add_subdirectory(Bubba-3D)
+add_subdirectory(src)

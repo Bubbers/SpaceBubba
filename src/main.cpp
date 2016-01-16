@@ -37,6 +37,9 @@
 #include "CubeMapTexture.h"
 
 
+
+#define SFML_STATIC
+
 using namespace std;
 using namespace chag;
 
@@ -188,7 +191,6 @@ void idle( int v )
 	}
 
 	delete toDelete;
-
 }
 
 
