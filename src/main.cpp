@@ -199,8 +199,6 @@ int main(int argc, char *argv[])
 	Logger::debug = false;
 	int w = SCREEN_WIDTH;
 	int h = SCREEN_HEIGHT;
-	Globals::set(Globals::Key::WINDOW_HEIGHT,h);
-	Globals::set(Globals::Key::WINDOW_WIDTH,w);
 
 	srand(time(NULL));
 	renderer = new Renderer(w, h);
@@ -224,8 +222,6 @@ int main(int argc, char *argv[])
 		Logger::logSevere(unmatchingDuality);
 		return 1;
 	}
-
-	renderer->initGL();
 
 	timeSinceStart = sf::Clock();
 
