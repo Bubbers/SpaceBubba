@@ -3,12 +3,6 @@ COMPILESTRING = mkdir -p build;cd build;cmake -DCMAKE_BUILD_TYPE:STRING=Debug ..
 all:
 	$(COMPILESTRING)
 
-tests: $(all)
-	$(COMPILESTRING) make test;
-
-testsX: $(all)
-	$(COMPILESTRING) ctest -V;
-
 clean:
 	rm -rf build;
 
