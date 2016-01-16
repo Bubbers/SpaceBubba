@@ -13,12 +13,13 @@ Prerequisites:
 
 Install dependencies (Debian, Ubuntu):
 ```bash
-make install
 git submodule git@github:Bubbers/Bubba-3D.git
 git submodule init
 git submodule update
 cd Bubba-3D
 git checkout develop
+cd ..
+make install
 ```
 
 Compile:

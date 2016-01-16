@@ -10,11 +10,8 @@ run:
 	$(COMPILESTRING) ./Super-Bubba-Awesome-Space;
 
 install:
-	-sudo add-apt-repository ppa:ubuntu-toolchain-r/test
-	-sudo apt-get update
-	-sudo apt-get install gcc-4.9 g++-4.9
-	-sudo apt-get install freeglut3-dev libjpeg-dev libfreetype6-dev libxrandr-dev libglew-dev libsndfile1-dev libopenal-dev libudev-dev
-	-sudo apt-get install software-properties-common libfreeimage3 libfreeimage-dev libassimp-dev libglw1-mesa-dev libglew-dev libxmu-dev libxi-dev; sudo add-apt-repository ppa:george-edison55/cmake-3.x; sudo apt-get update; sudo apt-get install cmake;
+	cd Bubba3D;
+	make install
 
 
 release: all
