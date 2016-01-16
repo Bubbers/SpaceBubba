@@ -34,6 +34,7 @@
 #include <Scene.h>
 #include <Globals.h>
 #include <JoystickButton.h>
+#include <JoystickTranslator.h>
 #include "CubeMapTexture.h"
 
 
@@ -50,6 +51,7 @@ using namespace chag;
 #define TICK_PER_SECOND  50
 
 
+static const float3 UP_VECTOR = make_vector(0.0f, 1.0f, 0.0f);
 //*****************************************************************************
 //	Global variables
 //*****************************************************************************
@@ -91,7 +93,6 @@ float camera_phi = (float) (M_PI / 2.6f);
 float camera_r = 30.0f; 
 float camera_target_altitude = 5.2f;
 
-float camspeed = 0.0f;
 bool chase = false;
 //*****************************************************************************
 //	Camera
@@ -131,6 +132,7 @@ void checkKeys()
 
 
 float3 calculateNewCameraPosition() {
+	static float camspeed = 0.0f;
 	float4 ps = rWing->getModelMatrix().c4;
 	float3 location = make_vector(ps.x, ps.y, ps.z);
 
@@ -139,23 +141,9 @@ float3 calculateNewCameraPosition() {
 
 	float3 diff = (location - pc);
 	float dist = 20.f;
-	if (length(diff) > dist) {
-		chase = true;
-	}
 
-	if (chase) {
-		if (camspeed < 1.5f) {
-			camspeed += .0018f;
-		} else {
-			chase = false;
-		}
-	} else {
-		if(camspeed > 0.0) {
-			camspeed -= 0.0f;
-		} else {
-			camspeed = 0.0f;
-		}
-	}
+	camspeed = (length(diff) - dist)*0.01f;
+
 
 	float3 newPos = location + sphericalToCartesian(camera_theta, camera_phi, camera_r);
 	float3 cameraDiff = (camspeed) * (newPos - pc);
@@ -185,6 +173,8 @@ void idle( int v )
 	sf::Mouse::setPosition(sf::Vector2<int>(Globals::get(Globals::Key::WINDOW_WIDTH)/2,
 											Globals::get(Globals::Key::WINDOW_HEIGHT)/2),
 						   *renderer->getWindow());
+
+	playerCamera->setUpVector(normalize(spaceMover->getUpDir()));
 						   
 	for(auto it = toDelete->begin(); it < toDelete->end(); it++){
 		delete (*it);
@@ -196,7 +186,7 @@ void idle( int v )
 
 int main(int argc, char *argv[])
 {
-	Logger::debug = false;
+	Logger::debug = true;
 	int w = SCREEN_WIDTH;
 	int h = SCREEN_HEIGHT;
 
@@ -205,19 +195,21 @@ int main(int argc, char *argv[])
 	renderer->setIdleMethod(idle, 60);
 	renderer->setDisplayMethod(display);
 
+	JoystickTranslator::getInstance()->init("../config/controls.json");
+
 	ControlsManager* cm = ControlsManager::getInstance();
 	try {
 		cm->addBindings(ALTITUDE, {new KeyboardButton(sf::Keyboard::L, sf::Keyboard::P),
-								   new JoystickAxis(sf::Joystick::Axis::V, true),
+								   new JoystickAxis(IJoystickTranslation::RIGHT_THUMBSTICK_Y, true),
 								   new MouseAxis(MouseAxis::Axis::Y, 2.0f)});
 		cm->addBindings(ACCELERATE, {new KeyboardButton(sf::Keyboard::S, sf::Keyboard::W),
-									 new JoystickAxis(sf::Joystick::Axis::Y, true)});
+									 new JoystickAxis(IJoystickTranslation::LEFT_THUMBSTICK_Y, true)});
 		cm->addBindings(TURN, {new KeyboardButton(sf::Keyboard::D, sf::Keyboard::A),
-							   new JoystickAxis(sf::Joystick::Axis::U, true), new MouseAxis(MouseAxis::Axis::X, 3.0f)});
-		cm->addBindings(SHOOT, {new KeyboardButton(sf::Keyboard::Space), new JoystickAxis(sf::Joystick::Axis::R, false),
+							   new JoystickAxis(IJoystickTranslation::RIGHT_THUMBSTICK_X, true), new MouseAxis(MouseAxis::Axis::X, 3.0f)});
+		cm->addBindings(SHOOT, {new KeyboardButton(sf::Keyboard::Space), new JoystickAxis(IJoystickTranslation::RT, false),
 								new MouseButton(sf::Mouse::Button::Left)});
 		cm->addBindings(QUIT, {new KeyboardButton(sf::Keyboard::Escape)});
-		cm->addBindings(CONTINUE, {new KeyboardButton(sf::Keyboard::Return),new JoystickButton(0)});
+		cm->addBindings(CONTINUE, {new KeyboardButton(sf::Keyboard::Return),new JoystickButton(IJoystickTranslation::A)});
 	}catch(string unmatchingDuality){
 		Logger::logSevere(unmatchingDuality);
 		return 1;
@@ -326,7 +318,7 @@ void createMeshes() {
 	dstar.addRenderComponent(dstarRenderer);
 
 	MoveComponent *dstarMover = new MoveComponent(&dstar);
-	dstarMover->setRotationAxis(make_vector(0.0f, 1.0f, 0.0f));
+	dstarMover->setRotationAxis(UP_VECTOR);
 	dstarMover->setRotationSpeed(0.0001f);
 	dstarMover->setLocation(make_vector(-10.0f, 0.0f, 16000.0f));
 	dstarMover->setScale(make_vector(2000.0f, 2000.0f, 2000.0f));
@@ -344,7 +336,7 @@ void createMeshes() {
 	planetMover->setLocation(make_vector(-25000.0f, 0.0f, 0.0f));
 	planetMover->setScale(make_vector(2000.0f, 2000.0f, 2000.0f));
 	planetMover->setRotationSpeed(0.00005f);
-	planetMover->setRotationAxis(make_vector(0.0f,1.0f,0.0f));
+	planetMover->setRotationAxis(UP_VECTOR);
 	planet.addComponent(planetMover);
 
 	scene.shadowCasters.push_back(&planet);
@@ -356,7 +348,7 @@ void createMeshes() {
 	sunMover->setLocation(make_vector(20000.0f, 0.0f, 0.0f));
 	sunMover->setScale(make_vector(2000.0f, 2000.0f, 2000.0f));
 	sunMover->setRotationSpeed(0.0001f);
-	sunMover->setRotationAxis(make_vector(0.0f, 1.0f, 0.0f));
+	sunMover->setRotationAxis(UP_VECTOR);
 	sun.addComponent(sunMover);
 	StandardRenderer *sunRenderer = new StandardRenderer(sunM, &sun, standardShader);
 	sun.addRenderComponent(sunRenderer);
@@ -405,13 +397,13 @@ void createCameras() {
 	int w = SCREEN_WIDTH;
 	int h = SCREEN_HEIGHT;
 
-	sunCamera = new PerspectiveCamera( make_vector(20000.0f, 0.0f, 0.0f), make_vector(0.0f, 0.0f, 0.0f), make_vector(0.0f, 1.0f, 0.0f), 45, 1.0f, 10.0f, 30000.0f);
+	sunCamera = new PerspectiveCamera(make_vector(20000.0f, 0.0f, 0.0f), make_vector(0.0f, 0.0f, 0.0f), UP_VECTOR, 45, 1.0f, 10.0f, 30000.0f);
 	scene.shadowMapCamera = sunCamera;
 
 	playerCamera = new PerspectiveCamera(
 		sphericalToCartesian(camera_theta, camera_phi, camera_r),
 		make_vector(0.0f, camera_target_altitude, 0.0f),
-		make_vector(0.0f, 1.0f, 0.0f),
+		UP_VECTOR,
 		45, float(w) / float(h), 0.1f, 50000.0f
 		);
 }
