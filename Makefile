@@ -9,11 +9,11 @@ tests: $(all)
 testsX: $(all)
 	$(COMPILESTRING) ctest -V;
 
-run:
-	$(COMPILESTRING) ./Bubba3D;
-
 clean:
 	rm -rf build;
+
+run:
+	$(COMPILESTRING) ./Super-Bubba-Awesome-Space;
 
 install:
 	-sudo add-apt-repository ppa:ubuntu-toolchain-r/test
