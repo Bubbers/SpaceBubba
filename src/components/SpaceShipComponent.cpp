@@ -44,13 +44,17 @@ void SpaceShipComponent::update(float dt) {
 
 	float4x4 modelMatrix = meshObject->getModelMatrix();
 	float4 transformedUpVector = modelMatrix * originalUpVector;
-	float3 newUpVector = make_vector(transformedUpVector.x, transformedUpVector.y, transformedUpVector.z);
+	upDir = make_vector(transformedUpVector.x, transformedUpVector.y, transformedUpVector.z);
 
     float3 normVector = normalize(frontDir);
-    float3 left = cross(normVector, newUpVector);
+    float3 left = cross(normVector, upDir);
     generator1->m_position = getLocation() - normVector * 4.0 + left;
     generator2->m_position = getLocation() - normVector * 4.0 - left;
 };
+
+float3 SpaceShipComponent::getUpDir() {
+    return upDir;
+}
 
 float4x4 SpaceShipComponent::updateRotation(float dt) {
     float4x4 roty = make_rotation_y<float4x4>(totalTurn); //to rotate the modelmatrix
@@ -75,10 +79,13 @@ void SpaceShipComponent::checkKeyPresses(float dt) {
         setAcceleration(normalize(frontDir)*accelerationSpeed * -(cs.getValue() / 100.0f));
     }else{
         setAcceleration(make_vector(0.0f,0.0f,0.0f));
+        accelerationSpeed = 0.0f;
     }
 
-    if(length(getVelocity()) > maxSpeed)
-        setVelocity(getVelocity()*maxSpeed/length(getVelocity()));
+    if(length(getVelocity()) > maxSpeed) {
+        printf("yolo\n");
+        setVelocity(normalize(getVelocity()) * maxSpeed);
+    }
 
     cs = cm->getStatus(ALTITUDE);
     float speedDif = turnSpeed*-(cs.getValue() /150.0f);
