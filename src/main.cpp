@@ -14,7 +14,7 @@
 #include <SpaceShipComponent.h>
 #include <SpawnAsteroidOnDeath.h>
 #include <FireParticle.h>
-
+#include "AudioManager.h"
 #include "DeathOnCollision.h"
 #include "Renderer.h"
 #include "ResourceManager.h"
@@ -36,7 +36,9 @@
 #include <JoystickButton.h>
 #include <JoystickTranslator.h>
 #include "CubeMapTexture.h"
-#include "AudioManager.h"
+#include <FileLogHandler.h>
+#include "CubeMapTexture.h"
+#include "StdOutLogHandler.h"
 
 
 #define SFML_STATIC
@@ -186,7 +188,7 @@ void idle( int v )
 
 int main(int argc, char *argv[])
 {
-	Logger::debug = true;
+	Logger::addLogHandler(new FileLogHandler("logggg.log"));
 	int w = SCREEN_WIDTH;
 	int h = SCREEN_HEIGHT;
 
@@ -211,7 +213,7 @@ int main(int argc, char *argv[])
 		cm->addBindings(QUIT, {new KeyboardButton(sf::Keyboard::Escape)});
 		cm->addBindings(CONTINUE, {new KeyboardButton(sf::Keyboard::Return),new JoystickButton(IJoystickTranslation::A)});
 	}catch(string unmatchingDuality){
-		Logger::logSevere(unmatchingDuality);
+		Logger::logError(unmatchingDuality);
 		return 1;
 	}
 
