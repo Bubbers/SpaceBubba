@@ -10,8 +10,7 @@ run:
 	$(COMPILESTRING) ./Super-Bubba-Awesome-Space;
 
 install:
-	cd Bubba3D;
-	make install
+	cd Bubba-3D; make install
 
 
 release: all
