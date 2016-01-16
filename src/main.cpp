@@ -35,7 +35,7 @@
 #include <Globals.h>
 #include <JoystickButton.h>
 #include "CubeMapTexture.h"
-
+#include "AudioManager.h"
 
 
 #define SFML_STATIC
@@ -417,7 +417,7 @@ void createCameras() {
 }
 
 void startAudio() {
-	sf::Music* music =ResourceManager::loadAndFetchMusic("../scenes/ambient.ogg");
+	sf::Music* music = AudioManager::loadAndFetchMusic("../scenes/ambient.ogg");
 	music->setLoop(true);
 	music->play();
 }
