@@ -19,7 +19,6 @@ SpaceShipComponent::SpaceShipComponent(struct HudRenderer::HudConfig* hudConf, f
         : MoveComponent(ship){
     this->hudConf = hudConf;
     this->cameraThetaLocation = cameraThetaLocation;
-    maxSpeed = 0.5f;
     this->generator1 = generator1;
     this->generator2 = generator2;
     this->state = state;

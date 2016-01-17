@@ -18,6 +18,7 @@ public:
     float3 getFrontDir();
 	float3 getUpDir();
     void onDeath();
+	const float maxSpeed = 0.5f;
 
 private:
     struct HudRenderer::HudConfig* hudConf;
@@ -35,7 +36,6 @@ private:
     float3 frontDir = originalFrontVector;
 	float3 upDir = originalUpVector;
 	float3 rightDir = originalRightVector;
-    float maxSpeed;
     ParticleGenerator *generator1;
     ParticleGenerator *generator2;
     float totalTurn = 0.0f;

@@ -135,8 +135,7 @@ void checkKeys()
 
 float3 calculateNewCameraPosition() {
 	static float camspeed = 0.0f;
-	float4 ps = rWing->getModelMatrix().c4;
-	float3 location = make_vector(ps.x, ps.y, ps.z);
+	float3 location = spaceMover->getLocation();
 
 	playerCamera->setLookAt(location + make_vector(0.0f, camera_target_altitude, 0.0f));
 	float3 pc = playerCamera->getPosition();
@@ -150,7 +149,9 @@ float3 calculateNewCameraPosition() {
 	float3 newPos = location + sphericalToCartesian(camera_theta, camera_phi, camera_r);
 	float3 cameraDiff = (camspeed) * (newPos - pc);
 
-	return pc + cameraDiff;
+	float x2 = length(spaceMover->getVelocity())-0.5f;
+	float distanceDiff = -2*x2*x2+1.5f;
+	return location - spaceMover->getFrontDir()*30.0f*distanceDiff + spaceMover->getUpDir()*10.0f*distanceDiff;
 }
 
 void idle( int v )
