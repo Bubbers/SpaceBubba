@@ -37,6 +37,7 @@
 #include <JoystickTranslator.h>
 #include "CubeMapTexture.h"
 #include <FileLogHandler.h>
+#include <StdOutLogHandler.h>
 #include "CubeMapTexture.h"
 #include "StdOutLogHandler.h"
 
@@ -134,20 +135,9 @@ void checkKeys()
 
 
 float3 calculateNewCameraPosition() {
-	static float camspeed = 0.0f;
 	float3 location = spaceMover->getLocation();
 
-	playerCamera->setLookAt(location + make_vector(0.0f, camera_target_altitude, 0.0f));
-	float3 pc = playerCamera->getPosition();
-
-	float3 diff = (location - pc);
-	float dist = 20.f;
-
-	camspeed = (length(diff) - dist)*0.01f;
-
-
-	float3 newPos = location + sphericalToCartesian(camera_theta, camera_phi, camera_r);
-	float3 cameraDiff = (camspeed) * (newPos - pc);
+	playerCamera->setLookAt(location + spaceMover->getUpDir()*camera_target_altitude);
 
 	float x2 = length(spaceMover->getVelocity())-0.5f;
 	float distanceDiff = -2*x2*x2+1.5f;
@@ -321,7 +311,7 @@ void createMeshes() {
 	dstar.addRenderComponent(dstarRenderer);
 
 	MoveComponent *dstarMover = new MoveComponent(&dstar);
-	dstarMover->setRotation(make_quaternion_axis_angle(UP_VECTOR,0.0f));
+	dstarMover->setRotation(make_quaternion_axis_angle(UP_VECTOR,1.0f));
 	dstarMover->setRotationSpeed(0.0001f);
 	dstarMover->setLocation(make_vector(-10.0f, 0.0f, 16000.0f));
 	dstarMover->setScale(make_vector(2000.0f, 2000.0f, 2000.0f));
@@ -339,7 +329,7 @@ void createMeshes() {
 	planetMover->setLocation(make_vector(-25000.0f, 0.0f, 0.0f));
 	planetMover->setScale(make_vector(2000.0f, 2000.0f, 2000.0f));
 	planetMover->setRotationSpeed(0.00005f);
-	planetMover->setRotation(make_quaternion_axis_angle(UP_VECTOR,0.0f));
+	planetMover->setRotation(make_quaternion_axis_angle(UP_VECTOR,1.0f));
 	planet.addComponent(planetMover);
 
 	scene.shadowCasters.push_back(&planet);
@@ -351,7 +341,7 @@ void createMeshes() {
 	sunMover->setLocation(make_vector(20000.0f, 0.0f, 0.0f));
 	sunMover->setScale(make_vector(2000.0f, 2000.0f, 2000.0f));
 	sunMover->setRotationSpeed(0.0001f);
-	sunMover->setRotation(make_quaternion_axis_angle(UP_VECTOR,0.0f));
+	sunMover->setRotation(make_quaternion_axis_angle(UP_VECTOR,1.0f));
 	sun.addComponent(sunMover);
 	StandardRenderer *sunRenderer = new StandardRenderer(sunM, &sun, standardShader);
 	sun.addRenderComponent(sunRenderer);
@@ -377,7 +367,7 @@ void createMeshes() {
         MoveComponent *asteroidMover = new MoveComponent(asteroid);
         asteroidMover->setVelocity(velocity);
         asteroidMover->setRotationSpeed(10000.0f);
-		asteroidMover->setRotation(make_quaternion_axis_angle(rotation,0.0f));
+		asteroidMover->setRotation(make_quaternion_axis_angle(rotation,1.0f));
         asteroidMover->setLocation(location);
         //asteroidMover->setAcceleration(make_vector(-0.0000005f, 0.0f, 0.0f));
         asteroidMover->setScaleSpeed(make_vector(0.0005f,0.0005f,0.0005f));

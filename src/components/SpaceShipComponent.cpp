@@ -59,7 +59,7 @@ void SpaceShipComponent::checkKeyPresses(float dt) {
 
     ControlsManager* cm = ControlsManager::getInstance();
     ControlStatus cs = cm->getStatus(ACCELERATE);
-    if (cs.isActive()) {
+    if (cs.isActive() && (length(getVelocity()) < maxSpeed || cs.getValue() > 0)) {
         if(abs(accelerationSpeed) >= 0.00007f) {
             float ratio = 0.00007f/abs(accelerationSpeed);
             accelerationSpeed *= ratio;
@@ -69,11 +69,6 @@ void SpaceShipComponent::checkKeyPresses(float dt) {
     }else{
         setAcceleration(make_vector(0.0f,0.0f,0.0f));
         accelerationSpeed = 0.0f;
-    }
-
-    if(length(getVelocity()) > maxSpeed) {
-        printf("yolo\n");
-        setVelocity(normalize(getVelocity()) * maxSpeed);
     }
 
     cs = cm->getStatus(ALTITUDE);
