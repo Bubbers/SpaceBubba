@@ -84,11 +84,8 @@ void ShootComponent::spawnBullet() {
     shot->setDynamic(true);
 
     MoveComponent *shotMover = new MoveComponent(shot);
-    float3 shipFront = objectMover->getFrontDir();
-    float3 z = make_vector(0.0f,0.0f,1.0f);
-    float3 rotationAxis = z == shipFront ? make_vector(0.0f,0.0f,0.0f) : cross(shipFront,make_vector(0.0f,0.0f,1.0f));
-    shotMover->setRotation(-acos(dot(shipFront,z))); //Works because they are normalized. No idea wher the '-' comes from
-    shotMover->setRotationAxis(rotationAxis);
+    Quaternion rot = objectMover->getRotation();
+    shotMover->setRotation(rot);
     shotMover->setVelocity(shipVelocity + normalize(objectMover->getFrontDir()) / 1.8f);
     shotMover->setLocation(location + normalize(objectMover->getFrontDir())*6);
     TimedLife *tl = new TimedLife(shot, timeToLive);

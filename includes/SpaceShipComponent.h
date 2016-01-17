@@ -24,19 +24,22 @@ private:
     State* state;
     float* cameraThetaLocation, *cameraPhiLocation;
     void checkKeyPresses(float dt);
-    float4x4 updateRotation(float dt);
+    void updateRot();
+
+	const float3 originalUpVector = make_vector(0.0f, 1.0f, 0.0f);
+	const float3 originalFrontVector = make_vector(0.0f,0.0f,1.0f);
+	const float3 originalRightVector = make_vector(1.0f,0.0f,0.0f);
 
     float turnSpeed = (float) (2 * M_PI / (180*20));
     float accelerationSpeed = 0.0f;
-    float3 frontDir = make_vector(0.0f, 0.0f, 1.0f);
-	float3 upDir = make_vector(0.0f,1.0f,0.0f);
+    float3 frontDir = originalFrontVector;
+	float3 upDir = originalUpVector;
+	float3 rightDir = originalRightVector;
     float maxSpeed;
     ParticleGenerator *generator1;
     ParticleGenerator *generator2;
     float totalTurn = 0.0f;
     float totalIncl = 0.0f;
-
-	const float4 originalUpVector = make_vector(0.0f, 1.0f, 0.0f, 0.0f);
 };
 
 

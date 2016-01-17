@@ -320,7 +320,7 @@ void createMeshes() {
 	dstar.addRenderComponent(dstarRenderer);
 
 	MoveComponent *dstarMover = new MoveComponent(&dstar);
-	dstarMover->setRotationAxis(UP_VECTOR);
+	dstarMover->setRotation(make_quaternion_axis_angle(UP_VECTOR,0.0f));
 	dstarMover->setRotationSpeed(0.0001f);
 	dstarMover->setLocation(make_vector(-10.0f, 0.0f, 16000.0f));
 	dstarMover->setScale(make_vector(2000.0f, 2000.0f, 2000.0f));
@@ -338,7 +338,7 @@ void createMeshes() {
 	planetMover->setLocation(make_vector(-25000.0f, 0.0f, 0.0f));
 	planetMover->setScale(make_vector(2000.0f, 2000.0f, 2000.0f));
 	planetMover->setRotationSpeed(0.00005f);
-	planetMover->setRotationAxis(UP_VECTOR);
+	planetMover->setRotation(make_quaternion_axis_angle(UP_VECTOR,0.0f));
 	planet.addComponent(planetMover);
 
 	scene.shadowCasters.push_back(&planet);
@@ -350,7 +350,7 @@ void createMeshes() {
 	sunMover->setLocation(make_vector(20000.0f, 0.0f, 0.0f));
 	sunMover->setScale(make_vector(2000.0f, 2000.0f, 2000.0f));
 	sunMover->setRotationSpeed(0.0001f);
-	sunMover->setRotationAxis(UP_VECTOR);
+	sunMover->setRotation(make_quaternion_axis_angle(UP_VECTOR,0.0f));
 	sun.addComponent(sunMover);
 	StandardRenderer *sunRenderer = new StandardRenderer(sunM, &sun, standardShader);
 	sun.addRenderComponent(sunRenderer);
@@ -375,8 +375,8 @@ void createMeshes() {
 
         MoveComponent *asteroidMover = new MoveComponent(asteroid);
         asteroidMover->setVelocity(velocity);
-        asteroidMover->setRotationSpeed(length(rotation));
-		asteroidMover->setRotationAxis(rotation);
+        asteroidMover->setRotationSpeed(10000.0f);
+		asteroidMover->setRotation(make_quaternion_axis_angle(rotation,0.0f));
         asteroidMover->setLocation(location);
         //asteroidMover->setAcceleration(make_vector(-0.0000005f, 0.0f, 0.0f));
         asteroidMover->setScaleSpeed(make_vector(0.0005f,0.0005f,0.0005f));

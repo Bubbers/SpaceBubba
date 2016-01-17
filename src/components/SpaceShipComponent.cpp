@@ -37,33 +37,23 @@ void SpaceShipComponent::onDeath() {
 void SpaceShipComponent::update(float dt) {
 
     checkKeyPresses(dt);
-    MoveComponent::updateWithExtras(dt,make_identity<float4x4>(),make_identity<float4x4>(),updateRotation(dt),
-                                    make_identity<float4x4>());
+    setVelocity(normalize(frontDir)*length(getVelocity()));
+    MoveComponent::update(dt);
     hudConf->speed = length(getVelocity())*200;
 
-
-	float4x4 modelMatrix = meshObject->getModelMatrix();
-	float4 transformedUpVector = modelMatrix * originalUpVector;
-	upDir = make_vector(transformedUpVector.x, transformedUpVector.y, transformedUpVector.z);
-
-    float3 normVector = normalize(frontDir);
-    float3 left = cross(normVector, upDir);
-    generator1->m_position = getLocation() - normVector * 4.0 + left;
-    generator2->m_position = getLocation() - normVector * 4.0 - left;
+    generator1->m_position = getLocation() - frontDir * 4.0 + rightDir;
+    generator2->m_position = getLocation() - frontDir * 4.0 - rightDir;
 };
 
 float3 SpaceShipComponent::getUpDir() {
     return upDir;
 }
 
-float4x4 SpaceShipComponent::updateRotation(float dt) {
-    float4x4 roty = make_rotation_y<float4x4>(totalTurn); //to rotate the modelmatrix
-    float3x3 rotvy = make_rotation_y<float3x3>(totalTurn); //to rotate frontDir
-    float3 axisOriginalX = normalize(rotvy*make_vector(-1.0f,0.0f,0.0f)); //The axis that was to the right from the beginning
-                                                                          //But should now be at the rotated position
-    frontDir = make_rotation<float3x3>(axisOriginalX,totalIncl) * rotvy * make_vector(0.0f,0.0f,1.0f);
-    setVelocity(frontDir*length(getVelocity()));
-    return make_rotation<float4x4>(axisOriginalX,totalIncl)*roty;
+void SpaceShipComponent::updateRot() {
+    float3x3 mat3 = toMatrix3x3(getRotation());
+    upDir = mat3*originalUpVector;
+    rightDir = mat3*originalRightVector;
+    frontDir = mat3*originalFrontVector;
 }
 
 void SpaceShipComponent::checkKeyPresses(float dt) {
@@ -88,16 +78,18 @@ void SpaceShipComponent::checkKeyPresses(float dt) {
     }
 
     cs = cm->getStatus(ALTITUDE);
-    float speedDif = turnSpeed*-(cs.getValue() /150.0f);
+    float speedDif = turnSpeed*(cs.getValue() /150.0f);
     if(cs.isActive()){
-        totalIncl += speedDif*dt;
-        *cameraPhiLocation += speedDif*dt;
+        updateRotation(make_quaternion_axis_angle(rightDir,speedDif*dt));
+        updateRot();
+        *cameraPhiLocation -= speedDif*dt;
     }
 
-    cs = cm->getStatus(TURN);
-    speedDif = turnSpeed*-(cs.getValue() / 150.0f);
-    if (cs.isActive()) {
-        totalTurn += speedDif*dt;
+    ControlStatus cs2 = cm->getStatus(TURN);
+    speedDif = turnSpeed*-(cs2.getValue() / 150.0f);
+    if (cs2.isActive()) {
+        updateRotation(make_quaternion_axis_angle(upDir,speedDif*dt));
+        updateRot();
         *cameraThetaLocation += speedDif*dt;
     }
 }
