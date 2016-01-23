@@ -135,7 +135,10 @@ void checkKeys()
 
 
 float3 calculateNewCameraPosition() {
-	float3 location = spaceMover->getLocation();
+	if(state == Died)
+		return playerCamera->getPosition();
+
+	float3 location = rWing->getLocation();
 
 	playerCamera->setLookAt(location + spaceMover->getUpDir()*camera_target_altitude);
 
@@ -312,8 +315,8 @@ void createMeshes() {
 
 	MoveComponent *dstarMover = new MoveComponent(&dstar);
 	dstarMover->setRotationSpeed(make_quaternion_axis_angle(UP_VECTOR,0.001f));
-	dstarMover->setLocation(make_vector(-10.0f, 0.0f, 16000.0f));
-	dstarMover->setScale(make_vector(2000.0f, 2000.0f, 2000.0f));
+	dstar.setLocation(make_vector(-10.0f, 0.0f, 16000.0f));
+	dstar.setScale(make_vector(2000.0f, 2000.0f, 2000.0f));
 	dstar.setDynamic(true);
 
 	dstar.addComponent(dstarMover);
@@ -325,8 +328,8 @@ void createMeshes() {
 	StandardRenderer *planetRenderer = new StandardRenderer(planetM, &planet, standardShader);
 	planet.addRenderComponent(planetRenderer);
 	MoveComponent *planetMover = new MoveComponent(&planet);
-	planetMover->setLocation(make_vector(-25000.0f, 0.0f, 0.0f));
-	planetMover->setScale(make_vector(2000.0f, 2000.0f, 2000.0f));
+	planet.setLocation(make_vector(-25000.0f, 0.0f, 0.0f));
+	planet.setScale(make_vector(2000.0f, 2000.0f, 2000.0f));
 	planetMover->setRotationSpeed(make_quaternion_axis_angle(UP_VECTOR,0.0005f));
 	planet.addComponent(planetMover);
 
@@ -336,8 +339,8 @@ void createMeshes() {
 	Mesh* sunM = ResourceManager::loadAndFetchMesh("../scenes/sun.obj");
 	sun = GameObject(sunM, SpaceEntity);
 	MoveComponent *sunMover = new MoveComponent(&sun);
-	sunMover->setLocation(make_vector(20000.0f, 0.0f, 0.0f));
-	sunMover->setScale(make_vector(2000.0f, 2000.0f, 2000.0f));
+	sun.setLocation(make_vector(20000.0f, 0.0f, 0.0f));
+	sun.setScale(make_vector(2000.0f, 2000.0f, 2000.0f));
 	sunMover->setRotationSpeed(make_quaternion_axis_angle(UP_VECTOR,0.001f));
 	sun.addComponent(sunMover);
 	StandardRenderer *sunRenderer = new StandardRenderer(sunM, &sun, standardShader);
@@ -359,12 +362,12 @@ void createMeshes() {
         float3 velocity = createRandomVector(-0.015f, 0.015f);
         float3 rotation = createRandomVector(-1.0f, 1.0f);
 
-        location += spaceMover->getLocation();
+        location += rWing->getLocation();
 
         MoveComponent *asteroidMover = new MoveComponent(asteroid);
         asteroidMover->setVelocity(velocity);
         asteroidMover->setRotationSpeed(make_quaternion_axis_angle(rotation,0.0025f));
-        asteroidMover->setLocation(location);
+        asteroid->setLocation(location);
         //asteroidMover->setAcceleration(make_vector(-0.0000005f, 0.0f, 0.0f));
         asteroidMover->setScaleSpeed(make_vector(0.0005f,0.0005f,0.0005f));
         asteroid->addComponent(asteroidMover);

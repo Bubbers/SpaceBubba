@@ -84,10 +84,10 @@ void ShootComponent::spawnBullet() {
     shot->setDynamic(true);
 
     MoveComponent *shotMover = new MoveComponent(shot);
-    Quaternion rot = objectMover->getRotation();
-    shotMover->setRotation(rot);
+    Quaternion rot = object->getRotation();
+    shot->setRotation(rot);
     shotMover->setVelocity(shipVelocity + normalize(objectMover->getFrontDir()) / 1.8f);
-    shotMover->setLocation(location + normalize(objectMover->getFrontDir())*6);
+    shot->setLocation(location + normalize(objectMover->getFrontDir())*6);
     TimedLife *tl = new TimedLife(shot, timeToLive);
     shot->addComponent(tl);
     shot->addComponent(shotMover);

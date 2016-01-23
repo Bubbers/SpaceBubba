@@ -51,8 +51,8 @@ void SpawnAsteroidOnDeath::onDeath(){
         float3 rotAxis = createRandomVector(-1.0f, 1.0f);
         asteroidMover->setRotationSpeed(make_quaternion_axis_angle(rotAxis,getRand(0.001f,0.005f)));
         asteroidMover->setVelocity(createRandomVector(-0.01f, 0.01f));
-        asteroidMover->setScale(scale*4.0f);
-        asteroidMover->setLocation(location + createRandomVector(1.0f,2.0f));
+        asteroid->setScale(scale*4.0f);
+        asteroid->setLocation(location + createRandomVector(1.0f,2.0f));
         asteroid->addComponent(asteroidMover);
 
         DeathOnCollision* dc = new DeathOnCollision(asteroid, Laser, 1, points);

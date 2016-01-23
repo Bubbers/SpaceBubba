@@ -40,8 +40,8 @@ void SpaceShipComponent::update(float dt) {
     MoveComponent::update(dt);
     hudConf->speed = length(getVelocity())*200;
 
-    generator1->m_position = getLocation() - frontDir * 4.0 + rightDir;
-    generator2->m_position = getLocation() - frontDir * 4.0 - rightDir;
+    generator1->m_position = meshObject->getLocation() - frontDir * 4.0 + rightDir;
+    generator2->m_position = meshObject->getLocation() - frontDir * 4.0 - rightDir;
 };
 
 float3 SpaceShipComponent::getUpDir() {
@@ -49,7 +49,7 @@ float3 SpaceShipComponent::getUpDir() {
 }
 
 void SpaceShipComponent::updateRot() {
-    float3x3 mat3 = toMatrix3x3(getRotation());
+    float3x3 mat3 = toMatrix3x3(meshObject->getRotation());
     upDir = mat3*originalUpVector;
     rightDir = mat3*originalRightVector;
     frontDir = mat3*originalFrontVector;
@@ -74,7 +74,7 @@ void SpaceShipComponent::checkKeyPresses(float dt) {
     cs = cm->getStatus(ALTITUDE);
     float speedDif = turnSpeed*(cs.getValue() /150.0f);
     if(cs.isActive()){
-        updateRotation(make_quaternion_axis_angle(rightDir,speedDif*dt));
+        meshObject->updateRotation(make_quaternion_axis_angle(rightDir,speedDif*dt));
         updateRot();
         *cameraPhiLocation -= speedDif*dt;
     }
@@ -82,7 +82,7 @@ void SpaceShipComponent::checkKeyPresses(float dt) {
     ControlStatus cs2 = cm->getStatus(TURN);
     speedDif = turnSpeed*-(cs2.getValue() / 150.0f);
     if (cs2.isActive()) {
-        updateRotation(make_quaternion_axis_angle(upDir,speedDif*dt));
+        meshObject->updateRotation(make_quaternion_axis_angle(upDir,speedDif*dt));
         updateRot();
         *cameraThetaLocation += speedDif*dt;
     }
