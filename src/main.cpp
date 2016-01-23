@@ -311,8 +311,7 @@ void createMeshes() {
 	dstar.addRenderComponent(dstarRenderer);
 
 	MoveComponent *dstarMover = new MoveComponent(&dstar);
-	dstarMover->setRotation(make_quaternion_axis_angle(UP_VECTOR,1.0f));
-	dstarMover->setRotationSpeed(0.0001f);
+	dstarMover->setRotationSpeed(make_quaternion_axis_angle(UP_VECTOR,0.001f));
 	dstarMover->setLocation(make_vector(-10.0f, 0.0f, 16000.0f));
 	dstarMover->setScale(make_vector(2000.0f, 2000.0f, 2000.0f));
 	dstar.setDynamic(true);
@@ -328,8 +327,7 @@ void createMeshes() {
 	MoveComponent *planetMover = new MoveComponent(&planet);
 	planetMover->setLocation(make_vector(-25000.0f, 0.0f, 0.0f));
 	planetMover->setScale(make_vector(2000.0f, 2000.0f, 2000.0f));
-	planetMover->setRotationSpeed(0.00005f);
-	planetMover->setRotation(make_quaternion_axis_angle(UP_VECTOR,1.0f));
+	planetMover->setRotationSpeed(make_quaternion_axis_angle(UP_VECTOR,0.0005f));
 	planet.addComponent(planetMover);
 
 	scene.shadowCasters.push_back(&planet);
@@ -340,8 +338,7 @@ void createMeshes() {
 	MoveComponent *sunMover = new MoveComponent(&sun);
 	sunMover->setLocation(make_vector(20000.0f, 0.0f, 0.0f));
 	sunMover->setScale(make_vector(2000.0f, 2000.0f, 2000.0f));
-	sunMover->setRotationSpeed(0.0001f);
-	sunMover->setRotation(make_quaternion_axis_angle(UP_VECTOR,1.0f));
+	sunMover->setRotationSpeed(make_quaternion_axis_angle(UP_VECTOR,0.001f));
 	sun.addComponent(sunMover);
 	StandardRenderer *sunRenderer = new StandardRenderer(sunM, &sun, standardShader);
 	sun.addRenderComponent(sunRenderer);
@@ -360,14 +357,13 @@ void createMeshes() {
 
         float3 location = createRandomVector(-200.0f, 200.0f) + make_vector(150.0f,100.0f, 600.0f);
         float3 velocity = createRandomVector(-0.015f, 0.015f);
-        float3 rotation = createRandomVector(-0.0025f, 0.0025f);
+        float3 rotation = createRandomVector(-1.0f, 1.0f);
 
         location += spaceMover->getLocation();
 
         MoveComponent *asteroidMover = new MoveComponent(asteroid);
         asteroidMover->setVelocity(velocity);
-        asteroidMover->setRotationSpeed(10000.0f);
-		asteroidMover->setRotation(make_quaternion_axis_angle(rotation,1.0f));
+        asteroidMover->setRotationSpeed(make_quaternion_axis_angle(rotation,0.0025f));
         asteroidMover->setLocation(location);
         //asteroidMover->setAcceleration(make_vector(-0.0000005f, 0.0f, 0.0f));
         asteroidMover->setScaleSpeed(make_vector(0.0005f,0.0005f,0.0005f));
