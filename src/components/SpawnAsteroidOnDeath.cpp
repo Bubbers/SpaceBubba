@@ -38,10 +38,10 @@ void SpawnAsteroidOnDeath::onDeath(){
 
     for(int i = 0 ; i < 4 ; i++) {
 
-        std::string strings[] = {"../scenes/rock1.obj", "../scenes/rock2.obj", "../scenes/rock3.obj" };
-        std::string mesh = getRandomElem(strings);
-        Mesh* asteroidM = ResourceManager::loadAndFetchMesh(mesh);
-        GameObject *asteroid = new GameObject(asteroidM, Asteroid);
+        int rock = (int)ceil(getRand(0.01f,3.0f));
+        Mesh* asteroidM = ResourceManager::loadAndFetchMesh("../scenes/rock" + std::to_string(rock) + ".obj");
+        Mesh* asteroidCollision = ResourceManager::loadAndFetchMesh("../scenes/rock" + std::to_string(rock) + " collision.obj");
+        GameObject *asteroid = new GameObject(asteroidM, Asteroid, asteroidCollision);
 
         StandardRenderer *asteroidRenderer = new StandardRenderer(asteroidM, asteroid, standardShader);
         asteroid->addRenderComponent(asteroidRenderer);

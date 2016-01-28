@@ -183,6 +183,8 @@ void idle( int v )
 int main(int argc, char *argv[])
 {
 	Logger::addLogHandler(new FileLogHandler("logggg.log"));
+	Logger::addLogHandler(new StdOutLogHandler());
+	Logger::setLogLevel(Logger::DEBUG);
 	int w = SCREEN_WIDTH;
 	int h = SCREEN_HEIGHT;
 
@@ -270,7 +272,8 @@ void createMeshes() {
 	standardShader->setUniformBufferObjectBinding(UNIFORM_BUFFER_OBJECT_MATRICES_NAME, UNIFORM_BUFFER_OBJECT_MATRICES_INDEX);
 
 	Mesh* rWingM = ResourceManager::loadAndFetchMesh("../scenes/R_wing.obj");
-	rWing = new GameObject(rWingM, Player);
+	Mesh* rWingCollision = ResourceManager::loadAndFetchMesh("../scenes/Rwing collision.obj");
+	rWing = new GameObject(rWingM, Player, rWingCollision);
 	rWing->move(make_translation(make_vector(0.0f, 0.0f, 0.0f)));
 	StandardRenderer *carRenderer = new StandardRenderer(rWingM, rWing, standardShader);
 	rWing->addRenderComponent(carRenderer);
@@ -352,8 +355,10 @@ void createMeshes() {
 
 
     for( int i = 0; i < 50; i++) {
-        Mesh* asteroidM = ResourceManager::loadAndFetchMesh("../scenes/asteroid.obj");
-        GameObject *asteroid = new GameObject(asteroidM, Asteroid);
+		int rock = (int)ceil(getRand(0.01f,3.0f));
+        Mesh* asteroidM = ResourceManager::loadAndFetchMesh("../scenes/rock" + to_string(rock) + ".obj");
+		Mesh* astCollission = ResourceManager::loadAndFetchMesh("../scenes/rock" + to_string(rock) + " collision.obj");
+        GameObject *asteroid = new GameObject(asteroidM, Asteroid, astCollission);
         StandardRenderer *asteroidRenderer = new StandardRenderer(asteroidM, asteroid, standardShader);
         asteroid->addRenderComponent(asteroidRenderer);
         asteroid->setDynamic(true);
@@ -366,7 +371,7 @@ void createMeshes() {
 
         MoveComponent *asteroidMover = new MoveComponent(asteroid);
         asteroidMover->setVelocity(velocity);
-        asteroidMover->setRotationSpeed(make_quaternion_axis_angle(rotation,0.0025f));
+        asteroidMover->setRotationSpeed(make_quaternion_axis_angle(rotation,getRand(0.0009,0.0025)));
         asteroid->setLocation(location);
         //asteroidMover->setAcceleration(make_vector(-0.0000005f, 0.0f, 0.0f));
         asteroidMover->setScaleSpeed(make_vector(0.0005f,0.0005f,0.0005f));
