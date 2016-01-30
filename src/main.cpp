@@ -184,7 +184,7 @@ int main(int argc, char *argv[])
 {
 	Logger::addLogHandler(new FileLogHandler("logggg.log"));
 	Logger::addLogHandler(new StdOutLogHandler());
-	Logger::setLogLevel(Logger::DEBUG);
+	Logger::setLogLevel(LogLevel::DEBUG);
 	int w = SCREEN_WIDTH;
 	int h = SCREEN_HEIGHT;
 
