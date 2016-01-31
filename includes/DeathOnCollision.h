@@ -5,18 +5,19 @@
 #include "GameObject.h"
 #include "GameObjectType.h"
 #include "IComponent.h"
+#include <SpaceBubbaObject.h>
 
 class DeathOnCollision : public IComponent {
 public:
-    DeathOnCollision(GameObject *parent, GameObjectType relevantType);
-    DeathOnCollision(GameObject *parent, GameObjectType relevantType, int pointsWorth, int *scoreBoard);
+    DeathOnCollision(SpaceBubbaObject *parent, GameObjectType relevantType);
+    DeathOnCollision(SpaceBubbaObject *parent, GameObjectType relevantType, int pointsWorth, int *scoreBoard);
 
     void update(float dt);
-    void beforeCollision(GameObjectType collider);
+    void beforeCollision(GameObject* collider);
 
 private:
     GameObjectType relevantType;
-    GameObject *parent;
+    SpaceBubbaObject *parent;
     int pointsWorth = 0;
     int *scoreBoard = nullptr;
 

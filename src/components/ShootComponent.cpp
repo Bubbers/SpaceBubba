@@ -15,6 +15,7 @@
 #include <timer.h>
 #include <ControlsManager.h>
 #include <Controls.h>
+#include <SpaceBubbaObject.h>
 
 
 #ifdef WIN32
@@ -75,7 +76,7 @@ void ShootComponent::spawnBullet() {
 
 
     Mesh* shotM = ResourceManager::loadAndFetchMesh("../scenes/shot.obj");
-    GameObject *shot = new GameObject(shotM, Laser);
+    SpaceBubbaObject *shot = new SpaceBubbaObject(shotM, Laser);
     //shot->move(make_translation(location));
     //shot->update(make_rotation_y<float4x4>(degreeToRad(90)));
 

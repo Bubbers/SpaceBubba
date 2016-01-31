@@ -38,6 +38,9 @@
 #include <FileLogHandler.h>
 #include <StdOutLogHandler.h>
 #include <string>
+#include <SpaceBubbaObject.h>
+#include "CubeMapTexture.h"
+#include "StdOutLogHandler.h"
 
 #ifdef WIN32
 #define SFML_STATIC
@@ -66,13 +69,13 @@ int points = 0;
 //*****************************************************************************
 
 
-GameObject *rWing;
-GameObject skyBox;
-GameObject *hud;
-GameObject dstar;
+SpaceBubbaObject *rWing;
+SpaceBubbaObject skyBox;
+SpaceBubbaObject *hud;
+SpaceBubbaObject dstar;
 SpaceShipComponent *spaceMover;
-GameObject planet;
-GameObject sun;
+SpaceBubbaObject planet;
+SpaceBubbaObject sun;
 
 State state = Start;
 
@@ -176,68 +179,67 @@ void idle(int v) {
     delete toDelete;
 }
 
-
 int main(int argc, char *argv[]) {
-    Logger::addLogHandler(new FileLogHandler("logggg.log"));
-    Logger::addLogHandler(new StdOutLogHandler());
-    Logger::setLogLevel(LogLevel::DEBUG);
-    int w = SCREEN_WIDTH;
-    int h = SCREEN_HEIGHT;
+	Logger::addLogHandler(new FileLogHandler("logggg.log"));
+	Logger::addLogHandler(new StdOutLogHandler());
+	Logger::setLogLevel(LogLevel::DEBUG);
+	int w = SCREEN_WIDTH;
+	int h = SCREEN_HEIGHT;
 
-    srand(time(NULL));
-    renderer = new Renderer(w, h);
-    renderer->setIdleMethod(idle, 60);
-    renderer->setDisplayMethod(display);
+	srand(time(NULL));
+	renderer = new Renderer(w, h);
+	renderer->setIdleMethod(idle, 60);
+	renderer->setDisplayMethod(display);
 
-    JoystickTranslator::getInstance()->init("../config/controls.json");
+	JoystickTranslator::getInstance()->init("../config/controls.json");
 
-    ControlsManager* cm = ControlsManager::getInstance();
-    try {
-        cm->addBindings(ALTITUDE, {
-                new KeyboardButton( sf::Keyboard::L, sf::Keyboard::P),
-                new JoystickAxis(IJoystickTranslation::RIGHT_THUMBSTICK_Y,
-                                 true),
-                new MouseAxis(MouseAxis::Axis::Y, 2.0f)});
+	ControlsManager *cm = ControlsManager::getInstance();
+	try {
+		cm->addBindings(ALTITUDE, {
+				new KeyboardButton(sf::Keyboard::L, sf::Keyboard::P),
+				new JoystickAxis(IJoystickTranslation::RIGHT_THUMBSTICK_Y,
+								 true),
+				new MouseAxis(MouseAxis::Axis::Y, 2.0f)});
 
-        cm->addBindings(ACCELERATE, {
-                new KeyboardButton(sf::Keyboard::S, sf::Keyboard::W),
-                new JoystickAxis(IJoystickTranslation::LEFT_THUMBSTICK_Y,
-                                 true)});
+		cm->addBindings(ACCELERATE, {
+				new KeyboardButton(sf::Keyboard::S, sf::Keyboard::W),
+				new JoystickAxis(IJoystickTranslation::LEFT_THUMBSTICK_Y,
+								 true)});
 
-        cm->addBindings(TURN, {
-                new KeyboardButton(sf::Keyboard::D, sf::Keyboard::A),
-                new JoystickAxis(IJoystickTranslation::RIGHT_THUMBSTICK_X,
-                                 true),
-                new MouseAxis(MouseAxis::Axis::X, 3.0f)});
+		cm->addBindings(TURN, {
+				new KeyboardButton(sf::Keyboard::D, sf::Keyboard::A),
+				new JoystickAxis(IJoystickTranslation::RIGHT_THUMBSTICK_X,
+								 true),
+				new MouseAxis(MouseAxis::Axis::X, 3.0f)});
 
-        cm->addBindings(SHOOT, {
-                new KeyboardButton(sf::Keyboard::Space),
-                new JoystickAxis(IJoystickTranslation::RT, false),
-                new MouseButton(sf::Mouse::Button::Left)});
+		cm->addBindings(SHOOT, {
+				new KeyboardButton(sf::Keyboard::Space),
+				new JoystickAxis(IJoystickTranslation::RT, false),
+				new MouseButton(sf::Mouse::Button::Left)});
 
-        cm->addBindings(QUIT, {new KeyboardButton(sf::Keyboard::Escape)});
-        cm->addBindings(CONTINUE, {new KeyboardButton(sf::Keyboard::Return),
-                                   new JoystickButton(IJoystickTranslation::A)});
-    } catch (string unmatchingDuality) {
-        Logger::logError(unmatchingDuality);
-        return 1;
-    }
+		cm->addBindings(QUIT, {new KeyboardButton(sf::Keyboard::Escape)});
+		cm->addBindings(CONTINUE, {new KeyboardButton(sf::Keyboard::Return),
+								   new JoystickButton(IJoystickTranslation::A)});
+	} catch (string unmatchingDuality) {
+		Logger::logError(unmatchingDuality);
+		return 1;
+	}
 
-    timeSinceStart = sf::Clock();
+	timeSinceStart = sf::Clock();
 
-    createCubeMaps();
-    createCameras();
-    createMeshes();
-    createLights();
-    createEffects();
-    startAudio();
+	createCubeMaps();
+	createCameras();
+	createMeshes();
+	createLights();
+	createEffects();
+	startAudio();
 
-    renderer->getWindow()->setMouseCursorVisible(false);
-    sf::Mouse::setPosition(sf::Vector2<int>(SCREEN_WIDTH/2, SCREEN_HEIGHT/2),
-                           *renderer->getWindow());
-    renderer->start();
+	renderer->getWindow()->setMouseCursorVisible(false);
+	sf::Mouse::setPosition(sf::Vector2<int>(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2),
+						   *renderer->getWindow());
+	renderer->start();
 
-    return 0;
+	return 0;
 }
 
 void createEffects() {
@@ -270,10 +272,9 @@ void createMeshes() {
     Logger::logInfo("Started loading meshes");
 
 
-
     // SKYBOX
     Mesh *skyBoxM = ResourceManager::loadAndFetchMesh("../scenes/sphere.obj");
-    skyBox = GameObject(skyBoxM, Environment);
+    skyBox = SpaceBubbaObject(skyBoxM, Environment);
     SkyBoxRenderer *skyboxRenderer = new SkyBoxRenderer(playerCamera,
                                                         skyBoxM, &skyBox);
     skyboxRenderer->init("../scenes/x.png", "../scenes/fancyx.png",
@@ -291,7 +292,7 @@ void createMeshes() {
     Mesh* rWingM = ResourceManager::loadAndFetchMesh("../scenes/R_wing.obj");
     Mesh* rWingCollision = ResourceManager::loadAndFetchMesh(
             "../scenes/Rwing collision.obj");
-    rWing = new GameObject(rWingM, Player, rWingCollision);
+    rWing = new SpaceBubbaObject(rWingM, rWingCollision, Player);
     rWing->move(make_translation(make_vector(0.0f, 0.0f, 0.0f)));
     StandardRenderer *carRenderer = new StandardRenderer(rWingM, rWing,
                                                          standardShader);
@@ -307,7 +308,7 @@ void createMeshes() {
     ParticleGenerator *gen = new ParticleGenerator(
             particleTexture, 500, playerCamera,
             make_vector(0.0f, 0.0f, 0.0f), fireConf);
-    GameObject *particleGenerator = new GameObject();
+    SpaceBubbaObject *particleGenerator = new SpaceBubbaObject();
     particleGenerator->addRenderComponent(gen);
     scene.transparentObjects.push_back(particleGenerator);
 
@@ -315,13 +316,13 @@ void createMeshes() {
     ParticleGenerator *gen2 = new ParticleGenerator(
             particleTexture, 500, playerCamera,
             make_vector(0.0f, 0.0f, 0.0f), fireConf2);
-    GameObject *particleGenerator2 = new GameObject();
+    SpaceBubbaObject *particleGenerator2 = new SpaceBubbaObject();
     particleGenerator2->addRenderComponent(gen2);
     scene.transparentObjects.push_back(particleGenerator2);
 
 
     // HUD
-    hud = new GameObject();
+    hud = new SpaceBubbaObject();
     HudRenderer *hudRenderer = new HudRenderer(&points, &state);
     hud->addRenderComponent(hudRenderer);
     scene.transparentObjects.push_back(hud);
@@ -339,7 +340,7 @@ void createMeshes() {
     broadPhaseCollider.addGameObject(rWing);
 
     Mesh* dstarM = ResourceManager::loadAndFetchMesh("../scenes/dstar.obj");
-    dstar = GameObject(dstarM, SpaceEntity);
+    dstar = SpaceBubbaObject(dstarM, SpaceEntity);
     StandardRenderer *dstarRenderer = new StandardRenderer(dstarM, &dstar,
                                                            standardShader);
     dstar.addRenderComponent(dstarRenderer);
@@ -355,7 +356,7 @@ void createMeshes() {
     broadPhaseCollider.addGameObject(&dstar);
 
     Mesh* planetM = ResourceManager::loadAndFetchMesh("../scenes/planet.obj");
-    planet = GameObject(planetM, SpaceEntity);
+    planet = SpaceBubbaObject(planetM, SpaceEntity);
     StandardRenderer *planetRenderer = new StandardRenderer(planetM, &planet,
                                                             standardShader);
     planet.addRenderComponent(planetRenderer);
@@ -370,7 +371,7 @@ void createMeshes() {
     broadPhaseCollider.addGameObject(&planet);
 
     Mesh* sunM = ResourceManager::loadAndFetchMesh("../scenes/sun.obj");
-    sun = GameObject(sunM, SpaceEntity);
+    sun = SpaceBubbaObject(sunM, SpaceEntity);
     MoveComponent *sunMover = new MoveComponent(&sun);
     sun.setLocation(make_vector(20000.0f, 0.0f, 0.0f));
     sun.setScale(make_vector(2000.0f, 2000.0f, 2000.0f));
@@ -390,8 +391,8 @@ void createMeshes() {
                 "../scenes/rock" + to_string(rock) + ".obj");
         Mesh* astCollission = ResourceManager::loadAndFetchMesh(
                 "../scenes/rock" + to_string(rock) + " collision.obj");
-        GameObject *asteroid = new GameObject(asteroidM, Asteroid,
-                                              astCollission);
+        SpaceBubbaObject *asteroid = new SpaceBubbaObject(asteroidM,
+                                              astCollission, Asteroid);
         StandardRenderer *asteroidRenderer = new StandardRenderer(
                 asteroidM, asteroid, standardShader);
         asteroid->addRenderComponent(asteroidRenderer);

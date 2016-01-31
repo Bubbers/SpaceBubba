@@ -22,6 +22,7 @@ include_directories("${PROJECT_SOURCE_DIR}/includes")
 file(GLOB files_SOURCE
         "${PROJECT_SOURCE_DIR}/src/particle/*.cpp"
         "${PROJECT_SOURCE_DIR}/src/components/*.cpp"
+        "${PROJECT_SOURCE_DIR}/src/objects/*.cpp"
         )
 
 

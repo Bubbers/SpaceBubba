@@ -10,6 +10,7 @@
 #include <SmokeParticle.h>
 #include <ParticleGenerator.h>
 #include <DeathOnCollision.h>
+#include <SpaceBubbaObject.h>
 #include "Scene.h"
 #include "BFBroadPhase.h"
 #include "Camera.h"
@@ -41,7 +42,7 @@ void SpawnAsteroidOnDeath::onDeath(){
         int rock = (int)ceil(getRand(0.01f,3.0f));
         Mesh* asteroidM = ResourceManager::loadAndFetchMesh("../scenes/rock" + std::to_string(rock) + ".obj");
         Mesh* asteroidCollision = ResourceManager::loadAndFetchMesh("../scenes/rock" + std::to_string(rock) + " collision.obj");
-        GameObject *asteroid = new GameObject(asteroidM, Asteroid, asteroidCollision);
+        SpaceBubbaObject *asteroid = new SpaceBubbaObject(asteroidM, asteroidCollision, Asteroid);
 
         StandardRenderer *asteroidRenderer = new StandardRenderer(asteroidM, asteroid, standardShader);
         asteroid->addRenderComponent(asteroidRenderer);
