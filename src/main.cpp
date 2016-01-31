@@ -293,6 +293,7 @@ void createMeshes() {
     Mesh* rWingCollision = ResourceManager::loadAndFetchMesh(
             "../scenes/Rwing collision.obj");
     rWing = new SpaceBubbaObject(rWingM, rWingCollision, Player);
+    rWing->addCollidesWith(Asteroid);
     rWing->move(make_translation(make_vector(0.0f, 0.0f, 0.0f)));
     StandardRenderer *carRenderer = new StandardRenderer(rWingM, rWing,
                                                          standardShader);
@@ -393,6 +394,7 @@ void createMeshes() {
                 "../scenes/rock" + to_string(rock) + " collision.obj");
         SpaceBubbaObject *asteroid = new SpaceBubbaObject(asteroidM,
                                               astCollission, Asteroid);
+        asteroid->addCollidesWith(Laser);
         StandardRenderer *asteroidRenderer = new StandardRenderer(
                 asteroidM, asteroid, standardShader);
         asteroid->addRenderComponent(asteroidRenderer);

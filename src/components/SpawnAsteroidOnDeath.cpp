@@ -43,6 +43,7 @@ void SpawnAsteroidOnDeath::onDeath(){
         Mesh* asteroidM = ResourceManager::loadAndFetchMesh("../scenes/rock" + std::to_string(rock) + ".obj");
         Mesh* asteroidCollision = ResourceManager::loadAndFetchMesh("../scenes/rock" + std::to_string(rock) + " collision.obj");
         SpaceBubbaObject *asteroid = new SpaceBubbaObject(asteroidM, asteroidCollision, Asteroid);
+        asteroid->addCollidesWith(Laser);
 
         StandardRenderer *asteroidRenderer = new StandardRenderer(asteroidM, asteroid, standardShader);
         asteroid->addRenderComponent(asteroidRenderer);

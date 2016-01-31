@@ -87,6 +87,7 @@ void ShootComponent::spawnBullet() {
     MoveComponent *shotMover = new MoveComponent(shot);
     Quaternion rot = object->getRotation();
     shot->setRotation(rot);
+    shot->addCollidesWith(Asteroid);
     shotMover->setVelocity(shipVelocity + normalize(objectMover->getFrontDir()) / 1.8f);
     shot->setLocation(location + normalize(objectMover->getFrontDir())*6);
     TimedLife *tl = new TimedLife(shot, timeToLive);
