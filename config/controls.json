@@ -1,6 +1,6 @@
 //This file contains comments which are not standard for JSON. However rapidjson supports it.
 [
-  {
+  { //xbox 360 controller for linux
     "deviceID": 654,
     "vendorID": 1118,
     "default":true,
@@ -81,7 +81,7 @@
       "xbox":"RT", // negative=not pressed. positive = pressed
       "generic":{"type":"axis","name":"R","inverted":false}
     }]
-  },{
+  },{ //Logitech dual action
     "deviceID": 49686,
     "vendorID": 1133,
     "mappings":[{

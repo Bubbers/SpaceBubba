@@ -59,8 +59,6 @@ static const float3 UP_VECTOR = make_vector(0.0f, 1.0f, 0.0f);
 //*****************************************************************************
 // Global variables
 //*****************************************************************************
-float timeAtLastDraw = 0.0f;
-sf::Clock timeSinceStart;
 
 int points = 0;
 
@@ -121,8 +119,8 @@ void startAudio();
 float3 sphericalToCartesian(float theta, float phi, float r);
 
 
-void display(void) {
-    renderer->drawScene(playerCamera, &scene, timeAtLastDraw);
+void display(float timeSinceStart,float timeSinceLastCall) {
+    renderer->drawScene(playerCamera, &scene, timeSinceStart);
 }
 
 void checkKeys() {
@@ -147,11 +145,7 @@ float3 calculateNewCameraPosition() {
                       spaceMover->getUpDir()    * 10.0f * distanceDiff;
 }
 
-void idle(int v) {
-    float now = timeSinceStart.getElapsedTime().asSeconds();
-    float elapsedTime = now - timeAtLastDraw;
-
-    timeAtLastDraw = now;
+void idle(float timeSinceStart,float timeSinceLastCall) {
 
     sf::Joystick::update();
     checkKeys();
@@ -159,7 +153,7 @@ void idle(int v) {
     // TODO(Any) Cleanup shouldnt be here. Let scene delete?
     std::vector<GameObject*>* toDelete = new std::vector<GameObject*>();
 
-    scene.update(elapsedTime*1000.0f, toDelete);
+    scene.update(timeSinceLastCall*1000.0f, toDelete);
 
     playerCamera->setPosition(calculateNewCameraPosition());
 
@@ -188,7 +182,7 @@ int main(int argc, char *argv[]) {
 
 	srand(time(NULL));
 	renderer = new Renderer(w, h);
-	renderer->setIdleMethod(idle, 60);
+	renderer->setIdleMethod(idle);
 	renderer->setDisplayMethod(display);
 
 	JoystickTranslator::getInstance()->init("../config/controls.json");
@@ -225,8 +219,6 @@ int main(int argc, char *argv[]) {
 		return 1;
 	}
 
-	timeSinceStart = sf::Clock();
-
 	createCubeMaps();
 	createCameras();
 	createMeshes();
@@ -237,7 +229,7 @@ int main(int argc, char *argv[]) {
 	renderer->getWindow()->setMouseCursorVisible(false);
 	sf::Mouse::setPosition(sf::Vector2<int>(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2),
 						   *renderer->getWindow());
-	renderer->start();
+	renderer->start(60);
 
 	return 0;
 }
