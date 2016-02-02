@@ -115,6 +115,7 @@ void createCameras();
 void createLights();
 void createEffects();
 void startAudio();
+void mapKeyBindings();
 
 float3 sphericalToCartesian(float theta, float phi, float r);
 
@@ -185,35 +186,8 @@ int main(int argc, char *argv[]) {
 	renderer->setIdleMethod(idle);
 	renderer->setDisplayMethod(display);
 
-	JoystickTranslator::getInstance()->init("../config/controls.json");
-
-	ControlsManager *cm = ControlsManager::getInstance();
 	try {
-		cm->addBindings(ALTITUDE, {
-				new KeyboardButton(sf::Keyboard::L, sf::Keyboard::P),
-				new JoystickAxis(IJoystickTranslation::RIGHT_THUMBSTICK_Y,
-								 true),
-				new MouseAxis(MouseAxis::Axis::Y, 2.0f)});
-
-		cm->addBindings(ACCELERATE, {
-				new KeyboardButton(sf::Keyboard::S, sf::Keyboard::W),
-				new JoystickAxis(IJoystickTranslation::LEFT_THUMBSTICK_Y,
-								 true)});
-
-		cm->addBindings(TURN, {
-				new KeyboardButton(sf::Keyboard::D, sf::Keyboard::A),
-				new JoystickAxis(IJoystickTranslation::RIGHT_THUMBSTICK_X,
-								 true),
-				new MouseAxis(MouseAxis::Axis::X, 3.0f)});
-
-		cm->addBindings(SHOOT, {
-				new KeyboardButton(sf::Keyboard::Space),
-				new JoystickAxis(IJoystickTranslation::RT, false),
-				new MouseButton(sf::Mouse::Button::Left)});
-
-		cm->addBindings(QUIT, {new KeyboardButton(sf::Keyboard::Escape)});
-		cm->addBindings(CONTINUE, {new KeyboardButton(sf::Keyboard::Return),
-								   new JoystickButton(IJoystickTranslation::A)});
+		mapKeyBindings();
 	} catch (string unmatchingDuality) {
 		Logger::logError(unmatchingDuality);
 		return 1;
@@ -232,6 +206,38 @@ int main(int argc, char *argv[]) {
 	renderer->start(60);
 
 	return 0;
+}
+
+void mapKeyBindings(){
+
+    JoystickTranslator::getInstance()->init("../config/controls.json");
+
+    ControlsManager *cm = ControlsManager::getInstance();
+    cm->addBindings(ALTITUDE, {
+            new KeyboardButton(sf::Keyboard::L, sf::Keyboard::P),
+            new JoystickAxis(IJoystickTranslation::RIGHT_THUMBSTICK_Y,
+                             true),
+            new MouseAxis(MouseAxis::Axis::Y, 2.0f)});
+
+    cm->addBindings(ACCELERATE, {
+            new KeyboardButton(sf::Keyboard::S, sf::Keyboard::W),
+            new JoystickAxis(IJoystickTranslation::LEFT_THUMBSTICK_Y,
+                             true)});
+
+    cm->addBindings(TURN, {
+            new KeyboardButton(sf::Keyboard::D, sf::Keyboard::A),
+            new JoystickAxis(IJoystickTranslation::RIGHT_THUMBSTICK_X,
+                             true),
+            new MouseAxis(MouseAxis::Axis::X, 3.0f)});
+
+    cm->addBindings(SHOOT, {
+            new KeyboardButton(sf::Keyboard::Space),
+            new JoystickAxis(IJoystickTranslation::RT, false),
+            new MouseButton(sf::Mouse::Button::Left)});
+
+    cm->addBindings(QUIT, {new KeyboardButton(sf::Keyboard::Escape)});
+    cm->addBindings(CONTINUE, {new KeyboardButton(sf::Keyboard::Return),
+                               new JoystickButton(IJoystickTranslation::A)});
 }
 
 void createEffects() {
