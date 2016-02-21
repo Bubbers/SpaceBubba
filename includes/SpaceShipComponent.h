@@ -11,7 +11,7 @@
 class SpaceShipComponent : public MoveComponent{
 public:
 
-    SpaceShipComponent(struct HudRenderer::HudConfig* hudConf, float* cameraThetaLocation, float* cameraPhiLocation,
+    SpaceShipComponent(float* speed, float* cameraThetaLocation, float* cameraPhiLocation,
                        GameObject* ship, ParticleGenerator* generator1, ParticleGenerator* generator2, State* state);
 
     void update(float dt) ;
@@ -21,7 +21,6 @@ public:
 	const float maxSpeed = 0.5f;
 
 private:
-    struct HudRenderer::HudConfig* hudConf;
     State* state;
     float* cameraThetaLocation, *cameraPhiLocation;
     void checkKeyPresses(float dt);
@@ -40,6 +39,7 @@ private:
     ParticleGenerator *generator2;
     float totalTurn = 0.0f;
     float totalIncl = 0.0f;
+	float* speed;
 };
 
 

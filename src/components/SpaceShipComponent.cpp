@@ -13,17 +13,16 @@
 #include <MousePosition.h>
 
 
-SpaceShipComponent::SpaceShipComponent(struct HudRenderer::HudConfig* hudConf, float* cameraThetaLocation,
+SpaceShipComponent::SpaceShipComponent(float* speed,float* cameraThetaLocation,
                                        float* cameraPhiLocation, GameObject* ship, ParticleGenerator* generator1,
                                        ParticleGenerator* generator2, State* state)
         : MoveComponent(ship){
-    this->hudConf = hudConf;
     this->cameraThetaLocation = cameraThetaLocation;
     this->generator1 = generator1;
     this->generator2 = generator2;
     this->state = state;
     this->cameraPhiLocation = cameraPhiLocation;
-
+    this->speed = speed;
 
 }
 
@@ -38,7 +37,7 @@ void SpaceShipComponent::update(float dt) {
     checkKeyPresses(dt);
     setVelocity(normalize(frontDir)*length(getVelocity()));
     MoveComponent::update(dt);
-    hudConf->speed = length(getVelocity())*200;
+    *speed = length(getVelocity())/maxSpeed;
 
     generator1->m_position = meshObject->getLocation() - frontDir * 4.0 + rightDir;
     generator2->m_position = meshObject->getLocation() - frontDir * 4.0 - rightDir;

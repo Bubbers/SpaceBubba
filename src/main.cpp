@@ -39,6 +39,12 @@
 #include <StdOutLogHandler.h>
 #include <string>
 #include <SpaceBubbaObject.h>
+#include <Layout.h>
+#include <ListLayout.h>
+#include <Dimension.h>
+#include <PositioningLayout.h>
+#include <HUDGraphic.h>
+#include <SpaceBubbaHudRenderer.h>
 #include "CubeMapTexture.h"
 #include "StdOutLogHandler.h"
 
@@ -66,7 +72,7 @@ int points = 0;
 // OBJ Model declarations
 //*****************************************************************************
 
-
+float* rWingSpeed;
 SpaceBubbaObject *rWing;
 SpaceBubbaObject skyBox;
 SpaceBubbaObject *hud;
@@ -175,6 +181,10 @@ void idle(float timeSinceStart,float timeSinceLastCall) {
 }
 
 int main(int argc, char *argv[]) {
+
+    rWingSpeed = (float*)calloc(1,sizeof(float));
+    *rWingSpeed = 0.0f;
+
 	Logger::addLogHandler(new FileLogHandler("logggg.log"));
 	Logger::addLogHandler(new StdOutLogHandler());
 	Logger::setLogLevel(LogLevel::DEBUG);
@@ -265,6 +275,26 @@ void createCubeMaps() {
     scene.cubeMap = reflectionCubeMap;
 }
 
+Layout* createLayout(){
+    Texture* meter = ResourceManager::loadAndFetchTexture("../scenes/HUD/meter2.0.png");
+    Texture* arrow = ResourceManager::loadAndFetchTexture("../scenes/HUD/arrow.png");
+
+    Layout* rootLayout = new ListLayout(ListLayout::VERTICAL,Dimension::fromPercentage(100),Dimension::fromPercentage(100));
+    rootLayout->addChild(new ListLayout(ListLayout::VERTICAL,Dimension::fill(),Dimension::fill()));
+    Layout* bottomBar = new ListLayout(ListLayout::HORIZONTAL,Dimension::fill(),Dimension::wrap());
+    bottomBar->addChild(new ListLayout(ListLayout::VERTICAL,Dimension::fill(),Dimension::fromPixels(200)));
+
+    PositioningLayout* meterL = new PositioningLayout(Dimension::fromPixels(200),Dimension::fromPixels(200));
+    meterL->setBackground(new HUDGraphic(meter));
+    PositioningLayout* arrowL = new PositioningLayout(Dimension::fromPixels(20),Dimension::fromPixels(120));
+    arrowL->setBackground(new HUDGraphic(arrow,Dimension::fromPercentage(0),Dimension::fromPercentage(-33.0f)));
+    arrowL->setId("speedArrow");
+    meterL->addChild(arrowL,Dimension::fromPixels(90),Dimension::fromPixels(80));
+
+    bottomBar->addChild(meterL);
+    rootLayout->addChild(bottomBar);
+    return rootLayout;
+}
 
 void createMeshes() {
     Logger::logInfo("Started loading meshes");
@@ -322,13 +352,13 @@ void createMeshes() {
 
     // HUD
     hud = new SpaceBubbaObject();
-    HudRenderer *hudRenderer = new HudRenderer(&points, &state);
+    HudRenderer *hudRenderer = new SpaceBubbaHudRenderer(rWingSpeed);
+    hudRenderer->setLayout(createLayout());
     hud->addRenderComponent(hudRenderer);
     scene.transparentObjects.push_back(hud);
 
 
-    spaceMover = new SpaceShipComponent(hudRenderer->getConfig(),
-                                        &camera_theta, &camera_phi,
+    spaceMover = new SpaceShipComponent(rWingSpeed, &camera_theta, &camera_phi,
                                         rWing, gen, gen2, &state);
     ShootComponent *shooter = new ShootComponent(rWing, spaceMover, &scene,
                                                  &broadPhaseCollider, 1000);
@@ -443,7 +473,7 @@ void createCameras() {
             sphericalToCartesian(camera_theta, camera_phi, camera_r),
             make_vector(0.0f, camera_target_altitude, 0.0f),
             UP_VECTOR,
-            45, static_cast<float>(w) / static_cast<float>(h), 0.1f, 50000.0f);
+            45, (float)w/(float)h, 0.1f, 50000.0f);
 }
 
 void startAudio() {
