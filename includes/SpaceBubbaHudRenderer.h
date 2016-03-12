@@ -7,19 +7,20 @@
 
 #include <HudRenderer.h>
 
-class GLSquare;
+class IHudDrawable;
 
 class SpaceBubbaHudRenderer : public HudRenderer {
 
 public:
 
     virtual void render();
-    SpaceBubbaHudRenderer(float* spaceShipSpeed);
+    SpaceBubbaHudRenderer(float* spaceShipSpeed, int* points);
     virtual void setLayout(Layout* layout);
 
 private:
     float* spaceShipSpeed;
-    GLSquare* arrow;
+    IHudDrawable* arrow;
+    int prevScore = 0, *points;
 
 };
 

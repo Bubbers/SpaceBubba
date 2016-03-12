@@ -45,6 +45,8 @@
 #include <PositioningLayout.h>
 #include <HUDGraphic.h>
 #include <SpaceBubbaHudRenderer.h>
+#include <FontManager.h>
+#include <TextLayout.h>
 #include "CubeMapTexture.h"
 #include "StdOutLogHandler.h"
 
@@ -279,15 +281,21 @@ Layout* createLayout(){
     Texture* meter = ResourceManager::loadAndFetchTexture("../scenes/HUD/meter2.0.png");
     Texture* arrow = ResourceManager::loadAndFetchTexture("../scenes/HUD/arrow.png");
 
+    Font* font = FontManager().loadAndFetchFont("../fonts/Ubuntu-M.ttf",30);
+
     Layout* rootLayout = new ListLayout(ListLayout::VERTICAL,Dimension::fromPercentage(100),Dimension::fromPercentage(100));
     rootLayout->addChild(new ListLayout(ListLayout::VERTICAL,Dimension::fill(),Dimension::fill()));
     Layout* bottomBar = new ListLayout(ListLayout::HORIZONTAL,Dimension::fill(),Dimension::wrap());
-    bottomBar->addChild(new ListLayout(ListLayout::VERTICAL,Dimension::fill(),Dimension::fromPixels(200)));
+    PositioningLayout* pointContainer = new PositioningLayout(Dimension::fill(),Dimension::fromPixels(200));
+    pointContainer->addChild((new TextLayout("0",font,Dimension::fromPixels(100),Dimension::fromPixels(30)))->setId("num"),
+                             Dimension::fromPixels(50),Dimension::fromPixels(90));
+    bottomBar->addChild(pointContainer);
 
     PositioningLayout* meterL = new PositioningLayout(Dimension::fromPixels(200),Dimension::fromPixels(200));
     meterL->setBackground(new HUDGraphic(meter));
     PositioningLayout* arrowL = new PositioningLayout(Dimension::fromPixels(20),Dimension::fromPixels(120));
-    arrowL->setBackground(new HUDGraphic(arrow,Dimension::fromPercentage(0),Dimension::fromPercentage(-33.0f)));
+    arrowL->setBackground((new HUDGraphic(arrow))
+                                  ->setCenterOffset(Dimension::fromPercentage(0),Dimension::fromPercentage(-33.0f)));
     arrowL->setId("speedArrow");
     meterL->addChild(arrowL,Dimension::fromPixels(90),Dimension::fromPixels(80));
 
@@ -298,6 +306,7 @@ Layout* createLayout(){
 
 void createMeshes() {
     Logger::logInfo("Started loading meshes");
+
 
 
     // SKYBOX
@@ -352,7 +361,7 @@ void createMeshes() {
 
     // HUD
     hud = new SpaceBubbaObject();
-    HudRenderer *hudRenderer = new SpaceBubbaHudRenderer(rWingSpeed);
+    HudRenderer *hudRenderer = new SpaceBubbaHudRenderer(rWingSpeed, &points);
     hudRenderer->setLayout(createLayout());
     hud->addRenderComponent(hudRenderer);
     scene.transparentObjects.push_back(hud);
