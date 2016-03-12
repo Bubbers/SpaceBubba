@@ -71,7 +71,7 @@ void ShootComponent::spawnBullet() {
     float3 shipVelocity = objectMover->getVelocity();
 
 
-    Shader* standardShader = ResourceManager::getShader(SIMPLE_SHADER_NAME);
+    ShaderProgram* standardShader = ResourceManager::getShader(SIMPLE_SHADER_NAME);
     standardShader->setUniformBufferObjectBinding(UNIFORM_BUFFER_OBJECT_MATRICES_NAME, UNIFORM_BUFFER_OBJECT_MATRICES_INDEX);
 
 

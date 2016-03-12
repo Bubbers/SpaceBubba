@@ -7,7 +7,7 @@
 #include <Utils.h>
 #include <ControlsManager.h>
 #include "SpaceShipComponent.h"
-#include "float3x3.h"
+#include "linmath/float3x3.h"
 #include <Controls.h>
 #include <linmath/Quaternion.h>
 #include <MousePosition.h>

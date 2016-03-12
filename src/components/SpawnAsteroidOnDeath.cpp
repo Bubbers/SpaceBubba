@@ -34,7 +34,7 @@ void SpawnAsteroidOnDeath::onDeath(){
     float4 ps = gameObject->getModelMatrix().c4;
     float3 location = make_vector(ps.x, ps.y, ps.z);
 
-    Shader* standardShader = ResourceManager::getShader(SIMPLE_SHADER_NAME);
+    ShaderProgram* standardShader = ResourceManager::getShader(SIMPLE_SHADER_NAME);
     standardShader->setUniformBufferObjectBinding(UNIFORM_BUFFER_OBJECT_MATRICES_NAME, UNIFORM_BUFFER_OBJECT_MATRICES_INDEX);
 
     for(int i = 0 ; i < 4 ; i++) {
