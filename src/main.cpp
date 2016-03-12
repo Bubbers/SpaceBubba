@@ -427,6 +427,23 @@ void createMeshes() {
         broadPhaseCollider.addGameObject(asteroid);
     }
 
+	Mesh* child = ResourceManager::loadAndFetchMesh("../scenes/sun.obj");
+	GameObject* wrapper = new GameObject(child);
+	rWing->addChild(std::pair<GameObject*, float4x4>(wrapper, make_translation(make_vector(3.0f, 0.0f, 0.0f))));
+	StandardRenderer *testRenderer = new StandardRenderer(child, wrapper, standardShader);
+	wrapper->addRenderComponent(testRenderer);
+	
+	Mesh* childChild = ResourceManager::loadAndFetchMesh("../scenes/planet.obj");
+	GameObject* childWrapper = new GameObject(childChild);
+	wrapper->addChild(std::pair<GameObject*, float4x4>(childWrapper, make_translation(make_vector(-6.0f, 0.0f, 0.0f))));
+	MoveComponent* testComponent = new MoveComponent(childWrapper);
+	testComponent->setVelocity(make_vector(0.0f, 0.001f, 0.0f));
+	childWrapper->addComponent(testComponent);
+	StandardRenderer *testRenderer2 = new StandardRenderer(childChild, childWrapper, standardShader);
+	childWrapper->addRenderComponent(testRenderer2);
+	
+	//wrapper->move(make_translation(make_vector(0.0f, 3.75f, 2.3f)));
+
     Logger::logInfo("Finished loading meshes.");
 }
 
