@@ -8,7 +8,7 @@
 #include <vector>
 #include <sstream>
 
-#include <Quaternion.h>
+#include <linmath/Quaternion.h>
 #include <StandardRenderer.h>
 #include "MoveComponent.h"
 #include <SpaceShipComponent.h>

@@ -6,7 +6,7 @@
 #define BUBBA_3D_SPAWNONDEATH_H
 
 #include "IComponent.h"
-#include "float3.h"
+#include "linmath/float3.h"
 
 using namespace chag;
 
