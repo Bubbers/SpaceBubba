@@ -17,6 +17,7 @@
 #include "AudioManager.h"
 #include "DeathOnCollision.h"
 #include "Renderer.h"
+#include "Window.h"
 #include "ResourceManager.h"
 #include "constants.h"
 #include "ShootComponent.h"
@@ -105,6 +106,7 @@ Camera *playerCamera;
 int camera = 6;
 
 Renderer *renderer;
+Window* window;
 
 //*****************************************************************************
 // Function declarations
@@ -122,6 +124,10 @@ float3 sphericalToCartesian(float theta, float phi, float r);
 
 void display(float timeSinceStart,float timeSinceLastCall) {
     renderer->drawScene(playerCamera, &scene, timeSinceStart);
+}
+
+void resize(int width, int height) {
+	renderer->resize(width, height);
 }
 
 void checkKeys() {
@@ -163,7 +169,7 @@ void idle(float timeSinceStart,float timeSinceLastCall) {
     sf::Mouse::setPosition(sf::Vector2<int>(
                                    Globals::get(Globals::Key::WINDOW_WIDTH)/2,
                                    Globals::get(Globals::Key::WINDOW_HEIGHT)/2),
-                                   *renderer->getWindow());
+                                   *window->getWindow());
 
     playerCamera->setUpVector(normalize(spaceMover->getUpDir()));
 
@@ -182,9 +188,14 @@ int main(int argc, char *argv[]) {
 	int h = SCREEN_HEIGHT;
 
 	srand(time(NULL));
-	renderer = new Renderer(w, h);
-	renderer->setIdleMethod(idle);
-	renderer->setDisplayMethod(display);
+
+	window = new Window(w, h, "Super-Bubba-Awesome-Space");
+	window->setIdleMethod(idle);
+	window->setDisplayMethod(display);
+	window->setResizeMethod(resize);
+
+	renderer = new Renderer();
+	renderer->initRenderer(w, h);
 
 	try {
 		mapKeyBindings();
@@ -200,10 +211,10 @@ int main(int argc, char *argv[]) {
 	createEffects();
 	startAudio();
 
-	renderer->getWindow()->setMouseCursorVisible(false);
+	window->getWindow()->setMouseCursorVisible(false);
 	sf::Mouse::setPosition(sf::Vector2<int>(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2),
-						   *renderer->getWindow());
-	renderer->start(60);
+						   *window->getWindow());
+	window->start(60);
 
 	return 0;
 }
