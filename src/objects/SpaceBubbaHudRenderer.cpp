@@ -44,6 +44,7 @@ void SpaceBubbaHudRenderer::render() {
     }
     HudRenderer::render();
 
+
 }
 
 Layout* SpaceBubbaHudRenderer::createMessageLayout(string message, Font* font) {

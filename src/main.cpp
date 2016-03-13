@@ -200,7 +200,7 @@ void idle(float timeSinceStart,float timeSinceLastCall) {
 }
 
 int main(int argc, char *argv[]) {
-
+	
     rWingSpeed = (float*)calloc(1,sizeof(float));
     *rWingSpeed = 0.0f;
 
@@ -433,7 +433,7 @@ void createMeshes() {
 
         float3 location = createRandomVector(-200.0f, 200.0f) +
                 make_vector(150.0f, 100.0f, 600.0f);
-        float3 velocity = createRandomVector(-0.015f, 0.015f);
+		float3 velocity = createRandomVector(-0.015f, 0.015f);
         float3 rotation = createRandomVector(-1.0f, 1.0f);
 
         location += rWing->getLocation();
@@ -443,7 +443,7 @@ void createMeshes() {
         asteroidMover->setRotationSpeed(make_quaternion_axis_angle(
                                         rotation, getRand(0.0009, 0.0025)));
         asteroid->setLocation(location);
-        // asteroidMover->setAcceleration(make_vector(-0.0000005f, 0.0f, 0.0f));
+        //asteroidMover->setAcceleration(make_vector(-0.0000005f, 0.0f, 0.0f));
         asteroidMover->setScaleSpeed(make_vector(0.0005f, 0.0005f, 0.0005f));
         asteroid->addComponent(asteroidMover);
 
