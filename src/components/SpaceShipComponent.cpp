@@ -3,7 +3,6 @@
 //
 
 #include <MoveComponent.h>
-#include <ParticleGenerator.h>
 #include <Utils.h>
 #include <ControlsManager.h>
 #include "SpaceShipComponent.h"
@@ -14,13 +13,10 @@
 
 
 SpaceShipComponent::SpaceShipComponent(struct HudRenderer::HudConfig* hudConf, float* cameraThetaLocation,
-                                       float* cameraPhiLocation, GameObject* ship, ParticleGenerator* generator1,
-                                       ParticleGenerator* generator2, State* state)
+                                       float* cameraPhiLocation, GameObject* ship, State* state)
         : MoveComponent(ship){
     this->hudConf = hudConf;
     this->cameraThetaLocation = cameraThetaLocation;
-    this->generator1 = generator1;
-    this->generator2 = generator2;
     this->state = state;
     this->cameraPhiLocation = cameraPhiLocation;
 
@@ -28,8 +24,6 @@ SpaceShipComponent::SpaceShipComponent(struct HudRenderer::HudConfig* hudConf, f
 }
 
 void SpaceShipComponent::onDeath() {
-        generator1->setLooping(false);
-        generator2->setLooping(false);
     *state = Died;
 }
 
@@ -39,10 +33,7 @@ void SpaceShipComponent::update(float dt) {
     setVelocity(normalize(frontDir)*length(getVelocity()));
     MoveComponent::update(dt);
     hudConf->speed = length(getVelocity())*200;
-
-    generator1->m_position = meshObject->getLocation() - frontDir * 4.0 + rightDir;
-    generator2->m_position = meshObject->getLocation() - frontDir * 4.0 - rightDir;
-};
+}
 
 float3 SpaceShipComponent::getUpDir() {
     return upDir;
