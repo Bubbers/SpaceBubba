@@ -3,7 +3,6 @@
 //
 
 #include <MoveComponent.h>
-#include <ParticleGenerator.h>
 #include <Utils.h>
 #include <ControlsManager.h>
 #include "SpaceShipComponent.h"
@@ -15,11 +14,8 @@
 
 SpaceShipComponent::SpaceShipComponent(float* speed,float* cameraThetaLocation,
                                        float* cameraPhiLocation, GameObject* ship, ParticleGenerator* generator1,
-                                       ParticleGenerator* generator2, State* state)
-        : MoveComponent(ship){
+                                       ParticleGenerator* generator2, State* state) : MoveComponent(ship){
     this->cameraThetaLocation = cameraThetaLocation;
-    this->generator1 = generator1;
-    this->generator2 = generator2;
     this->state = state;
     this->cameraPhiLocation = cameraPhiLocation;
     this->speed = speed;
@@ -27,8 +23,6 @@ SpaceShipComponent::SpaceShipComponent(float* speed,float* cameraThetaLocation,
 }
 
 void SpaceShipComponent::onDeath() {
-        generator1->setLooping(false);
-        generator2->setLooping(false);
     *state = Died;
 }
 
@@ -37,6 +31,7 @@ void SpaceShipComponent::update(float dt) {
     checkKeyPresses(dt);
     setVelocity(normalize(frontDir)*length(getVelocity()));
     MoveComponent::update(dt);
+
     *speed = length(getVelocity())/maxSpeed;
 
     generator1->m_position = meshObject->getLocation() - frontDir * 4.0 + rightDir;

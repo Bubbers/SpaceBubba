@@ -11,6 +11,7 @@
 #include <linmath/Quaternion.h>
 #include <StandardRenderer.h>
 #include "MoveComponent.h"
+#include "ParticleGenerator.h"
 #include <SpaceShipComponent.h>
 #include <SpawnAsteroidOnDeath.h>
 #include <FireParticle.h>
@@ -340,18 +341,19 @@ void createMeshes() {
     FireParticle *fireConf = new FireParticle();
     ParticleGenerator *gen = new ParticleGenerator(
             particleTexture, 500, playerCamera,
-            make_vector(0.0f, 0.0f, 0.0f), fireConf);
-    SpaceBubbaObject *particleGenerator = new SpaceBubbaObject();
+            rWing->getLocation(), fireConf);
+    GameObject *particleGenerator = new GameObject(rWing);
     particleGenerator->addRenderComponent(gen);
-    scene.transparentObjects.push_back(particleGenerator);
 
     FireParticle *fireConf2 = new FireParticle();
     ParticleGenerator *gen2 = new ParticleGenerator(
             particleTexture, 500, playerCamera,
-            make_vector(0.0f, 0.0f, 0.0f), fireConf2);
-    SpaceBubbaObject *particleGenerator2 = new SpaceBubbaObject();
-    particleGenerator2->addRenderComponent(gen2);
-    scene.transparentObjects.push_back(particleGenerator2);
+			rWing->getLocation(), fireConf2);
+    GameObject *particleGenerator2 = new GameObject(rWing);
+    particleGenerator2->addRenderComponent(gen2);   
+
+	rWing->addChild(particleGenerator);
+	rWing->addChild(particleGenerator2);
 
 
     // HUD
@@ -360,15 +362,15 @@ void createMeshes() {
     hud->addRenderComponent(hudRenderer);
     scene.transparentObjects.push_back(hud);
 
-
     spaceMover = new SpaceShipComponent(rWingSpeed, &camera_theta, &camera_phi,
                                         rWing, gen, gen2, &state);
+
     ShootComponent *shooter = new ShootComponent(rWing, spaceMover, &scene,
                                                  &broadPhaseCollider, 1000);
     rWing->addComponent(shooter);
     rWing->addComponent(spaceMover);
     rWing->setDynamic(true);
-    scene.shadowCasters.push_back(rWing);
+    scene.transparentObjects.push_back(rWing);
     broadPhaseCollider.addGameObject(rWing);
 
     Mesh* dstarM = ResourceManager::loadAndFetchMesh("../scenes/dstar.obj");
@@ -461,17 +463,18 @@ void createMeshes() {
     }
 
 	Mesh* child = ResourceManager::loadAndFetchMesh("../scenes/sun.obj");
-	GameObject* wrapper = new GameObject(child);
-	rWing->addChild(std::pair<GameObject*, float4x4>(wrapper, make_translation(make_vector(3.0f, 0.0f, 0.0f))));
+	GameObject* wrapper = new GameObject(child, rWing);
+	wrapper->setLocation(make_vector(3.0f, 0.0f, 0.0f));
+	rWing->addChild(wrapper);
 	StandardRenderer *testRenderer = new StandardRenderer(child, wrapper, standardShader);
 	wrapper->addRenderComponent(testRenderer);
 	
 	Mesh* childChild = ResourceManager::loadAndFetchMesh("../scenes/planet.obj");
-	GameObject* childWrapper = new GameObject(childChild);
-	wrapper->addChild(std::pair<GameObject*, float4x4>(childWrapper, make_translation(make_vector(-6.0f, 0.0f, 0.0f))));
+	GameObject* childWrapper = new GameObject(childChild, rWing);
+	childWrapper->setLocation(make_vector(-6.0f, 0.0f, 0.0f));
+	wrapper->addChild(childWrapper);
 	MoveComponent* testComponent = new MoveComponent(childWrapper);
-	testComponent->setVelocity(make_vector(0.0f, 0.001f, 0.0f));
-	childWrapper->addComponent(testComponent);
+	//childWrapper->addComponent(testComponent);
 	StandardRenderer *testRenderer2 = new StandardRenderer(childChild, childWrapper, standardShader);
 	childWrapper->addRenderComponent(testRenderer2);
 	

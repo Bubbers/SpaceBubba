@@ -15,6 +15,7 @@ public:
     SpaceShipComponent(float* speed, float* cameraThetaLocation, float* cameraPhiLocation,
                        GameObject* ship, ParticleGenerator* generator1, ParticleGenerator* generator2, State* state);
 
+
     void update(float dt) ;
     float3 getFrontDir();
 	float3 getUpDir();
@@ -36,8 +37,6 @@ private:
     float3 frontDir = originalFrontVector;
 	float3 upDir = originalUpVector;
 	float3 rightDir = originalRightVector;
-    ParticleGenerator *generator1;
-    ParticleGenerator *generator2;
     float totalTurn = 0.0f;
     float totalIncl = 0.0f;
 	float* speed;
