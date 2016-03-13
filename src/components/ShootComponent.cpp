@@ -85,7 +85,7 @@ void ShootComponent::spawnBullet() {
     shot->setDynamic(true);
 
     MoveComponent *shotMover = new MoveComponent(shot);
-    Quaternion rot = object->getRotation();
+    Quaternion rot = object->getRelativeRotation();
     shot->setRotation(rot);
     shot->addCollidesWith(Asteroid);
     shotMover->setVelocity(shipVelocity + normalize(objectMover->getFrontDir()) / 1.8f);

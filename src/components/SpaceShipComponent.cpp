@@ -43,7 +43,7 @@ float3 SpaceShipComponent::getUpDir() {
 }
 
 void SpaceShipComponent::updateRot() {
-    float3x3 mat3 = toMatrix3x3(meshObject->getRotation());
+    float3x3 mat3 = toMatrix3x3(meshObject->getRelativeRotation());
     upDir = mat3*originalUpVector;
     rightDir = mat3*originalRightVector;
     frontDir = mat3*originalFrontVector;

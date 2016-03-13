@@ -158,7 +158,7 @@ float3 calculateNewCameraPosition() {
     if (state == Died || state == Credits)
         return playerCamera->getPosition();
 
-    float3 location = rWing->getLocation();
+    float3 location = rWing->getAbsoluteLocation();
 
     playerCamera->setLookAt(location + spaceMover->getUpDir()
                                        * camera_target_altitude);
@@ -341,14 +341,14 @@ void createMeshes() {
     FireParticle *fireConf = new FireParticle();
     ParticleGenerator *gen = new ParticleGenerator(
             particleTexture, 500, playerCamera,
-            rWing->getLocation(), fireConf);
+            rWing->getAbsoluteLocation(), fireConf);
     GameObject *particleGenerator = new GameObject(rWing);
     particleGenerator->addRenderComponent(gen);
 
     FireParticle *fireConf2 = new FireParticle();
     ParticleGenerator *gen2 = new ParticleGenerator(
             particleTexture, 500, playerCamera,
-			rWing->getLocation(), fireConf2);
+			rWing->getAbsoluteLocation(), fireConf2);
     GameObject *particleGenerator2 = new GameObject(rWing);
     particleGenerator2->addRenderComponent(gen2);   
 
@@ -438,7 +438,7 @@ void createMeshes() {
 		float3 velocity = createRandomVector(-0.015f, 0.015f);
         float3 rotation = createRandomVector(-1.0f, 1.0f);
 
-        location += rWing->getLocation();
+        location += rWing->getAbsoluteLocation();
 
         MoveComponent *asteroidMover = new MoveComponent(asteroid);
         asteroidMover->setVelocity(velocity);
@@ -470,11 +470,12 @@ void createMeshes() {
 	wrapper->addRenderComponent(testRenderer);
 	
 	Mesh* childChild = ResourceManager::loadAndFetchMesh("../scenes/planet.obj");
-	GameObject* childWrapper = new GameObject(childChild, rWing);
-	childWrapper->setLocation(make_vector(-6.0f, 0.0f, 0.0f));
+	GameObject* childWrapper = new GameObject(childChild, wrapper);
+	childWrapper->setLocation(make_vector(-3.0f, 0.0f, 0.0f));
 	wrapper->addChild(childWrapper);
 	MoveComponent* testComponent = new MoveComponent(childWrapper);
-	//childWrapper->addComponent(testComponent);
+	testComponent->setRotationSpeed(make_quaternion_axis_angle(make_vector(0.0f, 1.0f, 0.0f), 0.01f));
+	childWrapper->addComponent(testComponent);
 	StandardRenderer *testRenderer2 = new StandardRenderer(childChild, childWrapper, standardShader);
 	childWrapper->addRenderComponent(testRenderer2);
 	
