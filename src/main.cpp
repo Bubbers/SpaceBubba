@@ -54,21 +54,18 @@ using namespace chag;
 #define SCREEN_WIDTH   1028
 #define SCREEN_HEIGHT  800
 
-#define TICK_PER_SECOND  50
-
-
-static const float3 UP_VECTOR = make_vector(0.0f, 1.0f, 0.0f);
 //*****************************************************************************
 // Global variables
 //*****************************************************************************
+static const float3 UP_VECTOR = make_vector(0.0f, 1.0f, 0.0f);
 
 int points = 0;
+
+State state = Start;
 
 //*****************************************************************************
 // OBJ Model declarations
 //*****************************************************************************
-
-
 SpaceBubbaObject *rWing;
 SpaceBubbaObject skyBox;
 SpaceBubbaObject *hud;
@@ -77,37 +74,35 @@ SpaceShipComponent *spaceMover;
 SpaceBubbaObject planet;
 SpaceBubbaObject sun;
 
-State state = Start;
-
 Scene scene;
 
+//*****************************************************************************
+// Collision
+//*****************************************************************************
 BFBroadPhase broadPhaseCollider;
 
 
 //*****************************************************************************
 // Cube Maps
 //*****************************************************************************
-CubeMapTexture* reflectionCubeMap;
+CubeMapTexture *reflectionCubeMap;
 
 //*****************************************************************************
 // Camera state variables (updated in motion())
 //*****************************************************************************
 float camera_theta = static_cast<float> (M_PI / 1.0f);
-float camera_phi   = static_cast<float> (M_PI / 2.6f);
+float camera_phi = static_cast<float> (M_PI / 2.6f);
 float camera_r = 30.0f;
 float camera_target_altitude = 5.2f;
 
-bool chase = false;
 //*****************************************************************************
 // Camera
 //*****************************************************************************
-
 Camera *sunCamera;
 Camera *playerCamera;
-int camera = 6;
 
 Renderer *renderer;
-Window* window;
+Window *window;
 
 //*****************************************************************************
 // Function declarations
@@ -117,22 +112,24 @@ void createMeshes();
 void createCameras();
 void createLights();
 void createEffects();
+
 void startAudio();
+
 void mapKeyBindings();
 
 float3 sphericalToCartesian(float theta, float phi, float r);
 
 
-void display(float timeSinceStart,float timeSinceLastCall) {
+void display(float timeSinceStart, float timeSinceLastCall) {
     renderer->drawScene(playerCamera, &scene, timeSinceStart);
 }
 
 void resize(int width, int height) {
-	renderer->resize(width, height);
+    renderer->resize(width, height);
 }
 
 void checkKeys() {
-    ControlsManager* cm = ControlsManager::getInstance();
+    ControlsManager *cm = ControlsManager::getInstance();
     if (cm->getStatus(QUIT).isActive())
         exit(0);
 }
@@ -147,30 +144,30 @@ float3 calculateNewCameraPosition() {
     playerCamera->setLookAt(location + spaceMover->getUpDir()
                                        * camera_target_altitude);
 
-    float x2 = length(spaceMover->getVelocity())-0.5f;
-    float distanceDiff = -2*x2*x2+1.5f;
+    float x2 = length(spaceMover->getVelocity()) - 0.5f;
+    float distanceDiff = -2 * x2 * x2 + 1.5f;
     return location - spaceMover->getFrontDir() * 30.0f * distanceDiff +
-                      spaceMover->getUpDir()    * 10.0f * distanceDiff;
+           spaceMover->getUpDir() * 10.0f * distanceDiff;
 }
 
-void idle(float timeSinceStart,float timeSinceLastCall) {
+void idle(float timeSinceStart, float timeSinceLastCall) {
 
     sf::Joystick::update();
     checkKeys();
 
     // TODO(Any) Cleanup shouldnt be here. Let scene delete?
-    std::vector<GameObject*>* toDelete = new std::vector<GameObject*>();
+    std::vector<GameObject *> *toDelete = new std::vector<GameObject *>();
 
-    scene.update(timeSinceLastCall*1000.0f, toDelete);
+    scene.update(timeSinceLastCall * 1000.0f, toDelete);
 
     playerCamera->setPosition(calculateNewCameraPosition());
 
     broadPhaseCollider.updateCollision();
 
     sf::Mouse::setPosition(sf::Vector2<int>(
-                                   Globals::get(Globals::Key::WINDOW_WIDTH)/2,
-                                   Globals::get(Globals::Key::WINDOW_HEIGHT)/2),
-                                   *window->getWindow());
+                                   Globals::get(Globals::Key::WINDOW_WIDTH) / 2,
+                                   Globals::get(Globals::Key::WINDOW_HEIGHT) / 2),
+                           *window->getWindow());
 
     playerCamera->setUpVector(normalize(spaceMover->getUpDir()));
 
@@ -182,45 +179,45 @@ void idle(float timeSinceStart,float timeSinceLastCall) {
 }
 
 int main(int argc, char *argv[]) {
-	Logger::addLogHandler(new FileLogHandler("logggg.log"));
-	Logger::addLogHandler(new StdOutLogHandler());
-	Logger::setLogLevel(LogLevel::DEBUG);
-	int w = SCREEN_WIDTH;
-	int h = SCREEN_HEIGHT;
+    Logger::addLogHandler(new FileLogHandler("logggg.log"));
+    Logger::addLogHandler(new StdOutLogHandler());
+    Logger::setLogLevel(LogLevel::DEBUG);
+    int w = SCREEN_WIDTH;
+    int h = SCREEN_HEIGHT;
 
-	srand(time(NULL));
+    srand(time(NULL));
 
-	window = new Window(w, h, "Super-Bubba-Awesome-Space");
-	window->setIdleMethod(idle);
-	window->setDisplayMethod(display);
-	window->setResizeMethod(resize);
+    window = new Window(w, h, "Super-Bubba-Awesome-Space");
+    window->setIdleMethod(idle);
+    window->setDisplayMethod(display);
+    window->setResizeMethod(resize);
 
-	renderer = new Renderer();
-	renderer->initRenderer(w, h);
+    renderer = new Renderer();
+    renderer->initRenderer(w, h);
 
-	try {
-		mapKeyBindings();
-	} catch (string unmatchingDuality) {
-		Logger::logError(unmatchingDuality);
-		return 1;
-	}
+    try {
+        mapKeyBindings();
+    } catch (string unmatchingDuality) {
+        Logger::logError(unmatchingDuality);
+        return 1;
+    }
 
-	createCubeMaps();
-	createCameras();
-	createMeshes();
-	createLights();
-	createEffects();
-	startAudio();
+    createCubeMaps();
+    createCameras();
+    createMeshes();
+    createLights();
+    createEffects();
+    startAudio();
 
-	window->getWindow()->setMouseCursorVisible(false);
-	sf::Mouse::setPosition(sf::Vector2<int>(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2),
-						   *window->getWindow());
-	window->start(60);
+    window->getWindow()->setMouseCursorVisible(false);
+    sf::Mouse::setPosition(sf::Vector2<int>(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2),
+                           *window->getWindow());
+    window->start(60);
 
-	return 0;
+    return 0;
 }
 
-void mapKeyBindings(){
+void mapKeyBindings() {
 
     JoystickTranslator::getInstance()->init("../config/controls.json");
 
@@ -256,16 +253,16 @@ void createEffects() {
     Fog f;
     f.fEquation = FOG_EQ::LINEAR;
     f.fStart = 5000.0f;
-    f.fEnd   = 1000000.0f;
+    f.fEnd = 1000000.0f;
     renderer->effects.fog = f;
 }
 
 void createLights() {
     DirectionalLight sun;
-    sun.diffuseColor  = make_vector(0.6f, 0.6f, 0.6f);
+    sun.diffuseColor = make_vector(0.6f, 0.6f, 0.6f);
     sun.specularColor = make_vector(0.6f, 0.6f, 0.6f);
-    sun.ambientColor  = make_vector(0.15f, 0.15f, 0.15f);
-    sun.direction     = -make_vector(15000.0f, 0.0f, 0.0f);
+    sun.ambientColor = make_vector(0.15f, 0.15f, 0.15f);
+    sun.direction = -make_vector(15000.0f, 0.0f, 0.0f);
     scene.directionalLight = sun;
 }
 
@@ -281,7 +278,6 @@ void createCubeMaps() {
 void createMeshes() {
     Logger::logInfo("Started loading meshes");
 
-
     // SKYBOX
     Mesh *skyBoxM = ResourceManager::loadAndFetchMesh("../scenes/sphere.obj");
     skyBox = SpaceBubbaObject(skyBoxM, Environment);
@@ -294,13 +290,13 @@ void createMeshes() {
     scene.shadowCasters.push_back(&skyBox);
 
     // OBJECTS
-    ShaderProgram* standardShader = ResourceManager::getShader(SIMPLE_SHADER_NAME);
+    ShaderProgram *standardShader = ResourceManager::getShader(SIMPLE_SHADER_NAME);
     standardShader->setUniformBufferObjectBinding(
             UNIFORM_BUFFER_OBJECT_MATRICES_NAME,
             UNIFORM_BUFFER_OBJECT_MATRICES_INDEX);
 
-    Mesh* rWingM = ResourceManager::loadAndFetchMesh("../scenes/R_wing.obj");
-    Mesh* rWingCollision = ResourceManager::loadAndFetchMesh(
+    Mesh *rWingM = ResourceManager::loadAndFetchMesh("../scenes/R_wing.obj");
+    Mesh *rWingCollision = ResourceManager::loadAndFetchMesh(
             "../scenes/Rwing collision.obj");
     rWing = new SpaceBubbaObject(rWingM, rWingCollision, Player);
     rWing->addCollidesWith(Asteroid);
@@ -309,7 +305,7 @@ void createMeshes() {
                                                          standardShader);
     rWing->addRenderComponent(carRenderer);
 
-    DeathOnCollision* wingD = new DeathOnCollision(rWing, Asteroid, 0, &points);
+    DeathOnCollision *wingD = new DeathOnCollision(rWing, Asteroid, 0, &points);
     rWing->addComponent(wingD);
 
     Texture *particleTexture = ResourceManager::loadAndFetchTexture(
@@ -321,18 +317,18 @@ void createMeshes() {
             rWing->getModelMatrix(), fireConf);
     GameObject *particleGenerator = new GameObject(rWing);
     particleGenerator->addRenderComponent(gen);
-	particleGenerator->setLocation(make_vector(1.0f, 0.0f, -4.0f));
+    particleGenerator->setLocation(make_vector(1.0f, 0.0f, -4.0f));
 
-	FireParticle *fireConf2 = new FireParticle();
+    FireParticle *fireConf2 = new FireParticle();
     ParticleGenerator *gen2 = new ParticleGenerator(
             particleTexture, 500, playerCamera,
-			rWing->getModelMatrix(), fireConf2);
+            rWing->getModelMatrix(), fireConf2);
     GameObject *particleGenerator2 = new GameObject(rWing);
     particleGenerator2->addRenderComponent(gen2);
-	particleGenerator2->setLocation(make_vector(-1.0f, 0.0f, -4.0f));
+    particleGenerator2->setLocation(make_vector(-1.0f, 0.0f, -4.0f));
 
-	rWing->addChild(particleGenerator);
-	rWing->addChild(particleGenerator2);
+    rWing->addChild(particleGenerator);
+    rWing->addChild(particleGenerator2);
 
 
     // HUD
@@ -350,10 +346,10 @@ void createMeshes() {
     rWing->addComponent(shooter);
     rWing->addComponent(spaceMover);
     rWing->setDynamic(true);
-    scene.transparentObjects.push_back(rWing);
+    scene.shadowCasters.push_back(rWing);
     broadPhaseCollider.addGameObject(rWing);
 
-    Mesh* dstarM = ResourceManager::loadAndFetchMesh("../scenes/dstar.obj");
+    Mesh *dstarM = ResourceManager::loadAndFetchMesh("../scenes/dstar.obj");
     dstar = SpaceBubbaObject(dstarM, SpaceEntity);
     StandardRenderer *dstarRenderer = new StandardRenderer(dstarM, &dstar,
                                                            standardShader);
@@ -369,7 +365,7 @@ void createMeshes() {
     scene.shadowCasters.push_back(&dstar);
     broadPhaseCollider.addGameObject(&dstar);
 
-    Mesh* planetM = ResourceManager::loadAndFetchMesh("../scenes/planet.obj");
+    Mesh *planetM = ResourceManager::loadAndFetchMesh("../scenes/planet.obj");
     planet = SpaceBubbaObject(planetM, SpaceEntity);
     StandardRenderer *planetRenderer = new StandardRenderer(planetM, &planet,
                                                             standardShader);
@@ -384,7 +380,7 @@ void createMeshes() {
     scene.shadowCasters.push_back(&planet);
     broadPhaseCollider.addGameObject(&planet);
 
-    Mesh* sunM = ResourceManager::loadAndFetchMesh("../scenes/sun.obj");
+    Mesh *sunM = ResourceManager::loadAndFetchMesh("../scenes/sun.obj");
     sun = SpaceBubbaObject(sunM, SpaceEntity);
     MoveComponent *sunMover = new MoveComponent(&sun);
     sun.setLocation(make_vector(20000.0f, 0.0f, 0.0f));
@@ -401,12 +397,12 @@ void createMeshes() {
 
     for (int i = 0; i < 50; i++) {
         int rock = static_cast<int> (ceil(getRand(0.01f, 3.0f)));
-        Mesh* asteroidM = ResourceManager::loadAndFetchMesh(
+        Mesh *asteroidM = ResourceManager::loadAndFetchMesh(
                 "../scenes/rock" + to_string(rock) + ".obj");
-        Mesh* astCollission = ResourceManager::loadAndFetchMesh(
+        Mesh *astCollission = ResourceManager::loadAndFetchMesh(
                 "../scenes/rock" + to_string(rock) + " collision.obj");
         SpaceBubbaObject *asteroid = new SpaceBubbaObject(asteroidM,
-                                              astCollission, Asteroid);
+                                                          astCollission, Asteroid);
         asteroid->addCollidesWith(Laser);
         StandardRenderer *asteroidRenderer = new StandardRenderer(
                 asteroidM, asteroid, standardShader);
@@ -414,7 +410,7 @@ void createMeshes() {
         asteroid->setDynamic(true);
 
         float3 location = createRandomVector(-200.0f, 200.0f) +
-                make_vector(150.0f, 100.0f, 600.0f);
+                          make_vector(150.0f, 100.0f, 600.0f);
         float3 velocity = createRandomVector(-0.015f, 0.015f);
         float3 rotation = createRandomVector(-1.0f, 1.0f);
 
@@ -423,13 +419,12 @@ void createMeshes() {
         MoveComponent *asteroidMover = new MoveComponent(asteroid);
         asteroidMover->setVelocity(velocity);
         asteroidMover->setRotationSpeed(make_quaternion_axis_angle(
-                                        rotation, getRand(0.0009, 0.0025)));
+                rotation, getRand(0.0009, 0.0025)));
         asteroid->setLocation(location);
-        // asteroidMover->setAcceleration(make_vector(-0.0000005f, 0.0f, 0.0f));
         asteroidMover->setScaleSpeed(make_vector(0.0005f, 0.0005f, 0.0005f));
         asteroid->addComponent(asteroidMover);
 
-        DeathOnCollision* dca = new DeathOnCollision(asteroid, Laser,
+        DeathOnCollision *dca = new DeathOnCollision(asteroid, Laser,
                                                      1, &points);
         asteroid->addComponent(dca);
 
@@ -441,25 +436,6 @@ void createMeshes() {
         scene.shadowCasters.push_back(asteroid);
         broadPhaseCollider.addGameObject(asteroid);
     }
-
-	Mesh* child = ResourceManager::loadAndFetchMesh("../scenes/sun.obj");
-	GameObject* wrapper = new GameObject(child, rWing);
-	wrapper->setLocation(make_vector(3.0f, 0.0f, 0.0f));
-	rWing->addChild(wrapper);
-	StandardRenderer *testRenderer = new StandardRenderer(child, wrapper, standardShader);
-	wrapper->addRenderComponent(testRenderer);
-	
-	Mesh* childChild = ResourceManager::loadAndFetchMesh("../scenes/planet.obj");
-	GameObject* childWrapper = new GameObject(childChild, wrapper);
-	childWrapper->setLocation(make_vector(-6.0f, 0.0f, 0.0f));
-	wrapper->addChild(childWrapper);
-	MoveComponent* testComponent = new MoveComponent(childWrapper);
-	testComponent->setRotationSpeed(make_quaternion_axis_angle(make_vector(0.0f, 1.0f, 0.0f), 0.01f));
-	childWrapper->addComponent(testComponent);
-	StandardRenderer *testRenderer2 = new StandardRenderer(childChild, childWrapper, standardShader);
-	childWrapper->addRenderComponent(testRenderer2);
-	
-	//wrapper->move(make_translation(make_vector(0.0f, 3.75f, 2.3f)));
 
     Logger::logInfo("Finished loading meshes.");
 }
@@ -481,14 +457,14 @@ void createCameras() {
 }
 
 void startAudio() {
-    sf::Music* music = AudioManager::loadAndFetchMusic("../scenes/ambient.ogg");
+    sf::Music *music = AudioManager::loadAndFetchMusic("../scenes/ambient.ogg");
     music->setLoop(true);
     music->play();
 }
 
 // Helper function to turn spherical coordinates into cartesian (x,y,z)
 float3 sphericalToCartesian(float theta, float phi, float r) {
-    return make_vector(r * sinf(theta)*sinf(phi),
+    return make_vector(r * sinf(theta) * sinf(phi),
                        r * cosf(phi),
-                       r * cosf(theta)*sinf(phi));
+                       r * cosf(theta) * sinf(phi));
 }
