@@ -10,11 +10,11 @@ public:
     SmokeParticle() {}
     ~SmokeParticle() {}
 
-    float3 calcPosition(float3 genPos);
-    float3 getVelocity();
+    float3 initialPosition(float3 genPos);
+    float3 initialVelocity();
     float3 accelerate(float3 velocity);
-    float3 getScale();
-    float getLife();
+    float3 calcParticleScale();
+    float calcLifetime();
     bool loop(float dt);
 };
 

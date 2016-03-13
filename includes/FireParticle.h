@@ -10,11 +10,11 @@ public:
     FireParticle() {}
     ~FireParticle() {}
 
-    float3 calcPosition(float3 genPos);
-    float3 getVelocity();
+    float3 initialPosition(float3 genPos);
+    float3 initialVelocity();
     float3 accelerate(float3 velocity);
-    float getLife();
-    float3 getScale();
+    float calcLifetime();
+    float3 calcParticleScale();
     bool loop(float dt);
 
     GLuint blendFunc = GL_ONE;
