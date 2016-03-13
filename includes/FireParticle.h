@@ -10,8 +10,9 @@ public:
     FireParticle() {}
     ~FireParticle() {}
 
-    float3 initialPosition(float3 genPos);
+    float3 initialPosition();
     float3 initialVelocity();
+
     float3 accelerate(float3 velocity);
     float calcLifetime();
     float3 calcParticleScale();

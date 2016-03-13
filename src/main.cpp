@@ -341,16 +341,18 @@ void createMeshes() {
     FireParticle *fireConf = new FireParticle();
     ParticleGenerator *gen = new ParticleGenerator(
             particleTexture, 500, playerCamera,
-            rWing->getAbsoluteLocation(), fireConf);
+            rWing->getModelMatrix(), fireConf);
     GameObject *particleGenerator = new GameObject(rWing);
     particleGenerator->addRenderComponent(gen);
+	particleGenerator->setLocation(make_vector(1.0f, 0.0f, -4.0f));
 
-    FireParticle *fireConf2 = new FireParticle();
+	FireParticle *fireConf2 = new FireParticle();
     ParticleGenerator *gen2 = new ParticleGenerator(
             particleTexture, 500, playerCamera,
-			rWing->getAbsoluteLocation(), fireConf2);
+			rWing->getModelMatrix(), fireConf2);
     GameObject *particleGenerator2 = new GameObject(rWing);
-    particleGenerator2->addRenderComponent(gen2);   
+    particleGenerator2->addRenderComponent(gen2);
+	particleGenerator2->setLocation(make_vector(-1.0f, 0.0f, -4.0f));
 
 	rWing->addChild(particleGenerator);
 	rWing->addChild(particleGenerator2);
@@ -471,7 +473,7 @@ void createMeshes() {
 	
 	Mesh* childChild = ResourceManager::loadAndFetchMesh("../scenes/planet.obj");
 	GameObject* childWrapper = new GameObject(childChild, wrapper);
-	childWrapper->setLocation(make_vector(-3.0f, 0.0f, 0.0f));
+	childWrapper->setLocation(make_vector(-6.0f, 0.0f, 0.0f));
 	wrapper->addChild(childWrapper);
 	MoveComponent* testComponent = new MoveComponent(childWrapper);
 	testComponent->setRotationSpeed(make_quaternion_axis_angle(make_vector(0.0f, 1.0f, 0.0f), 0.01f));
