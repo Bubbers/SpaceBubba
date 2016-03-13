@@ -7,6 +7,7 @@
 
 
 #include "ParticleGenerator.h"
+#include <State.h>
 
 class SpaceShipComponent : public MoveComponent{
 public:

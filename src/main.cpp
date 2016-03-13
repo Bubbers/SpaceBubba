@@ -48,6 +48,7 @@
 #include <SpaceBubbaHudRenderer.h>
 #include <FontManager.h>
 #include <TextLayout.h>
+#include <State.h>
 #include "CubeMapTexture.h"
 #include "StdOutLogHandler.h"
 
@@ -142,11 +143,18 @@ void checkKeys() {
     ControlsManager* cm = ControlsManager::getInstance();
     if (cm->getStatus(QUIT).isActive())
         exit(0);
+
+    if(cm->getStatus(CONTINUE).isActive()){
+        if(state == Start)
+            state = Playing;
+        if(state == Won || state == Died)
+            state = Credits;
+    }
 }
 
 
 float3 calculateNewCameraPosition() {
-    if (state == Died)
+    if (state == Died || state == Credits)
         return playerCamera->getPosition();
 
     float3 location = rWing->getLocation();
@@ -164,6 +172,9 @@ void idle(float timeSinceStart,float timeSinceLastCall) {
 
     sf::Joystick::update();
     checkKeys();
+
+    if(state == Playing && points >= 50)
+        state = Won;
 
     // TODO(Any) Cleanup shouldnt be here. Let scene delete?
     std::vector<GameObject*>* toDelete = new std::vector<GameObject*>();
@@ -288,33 +299,6 @@ void createCubeMaps() {
     scene.cubeMap = reflectionCubeMap;
 }
 
-Layout* createLayout(){
-    Texture* meter = ResourceManager::loadAndFetchTexture("../scenes/HUD/meter2.0.png");
-    Texture* arrow = ResourceManager::loadAndFetchTexture("../scenes/HUD/arrow.png");
-
-    Font* font = FontManager().loadAndFetchFont("../fonts/Ubuntu-M.ttf",30);
-
-    Layout* rootLayout = new ListLayout(ListLayout::VERTICAL,Dimension::fromPercentage(100),Dimension::fromPercentage(100));
-    rootLayout->addChild(new ListLayout(ListLayout::VERTICAL,Dimension::fill(),Dimension::fill()));
-    Layout* bottomBar = new ListLayout(ListLayout::HORIZONTAL,Dimension::fill(),Dimension::wrap());
-    PositioningLayout* pointContainer = new PositioningLayout(Dimension::fill(),Dimension::fromPixels(200));
-    pointContainer->addChild((new TextLayout("0",font,Dimension::fromPixels(100),Dimension::fromPixels(30)))->setId("num"),
-                             Dimension::fromPixels(50),Dimension::fromPixels(90));
-    bottomBar->addChild(pointContainer);
-
-    PositioningLayout* meterL = new PositioningLayout(Dimension::fromPixels(200),Dimension::fromPixels(200));
-    meterL->setBackground(new HUDGraphic(meter));
-    PositioningLayout* arrowL = new PositioningLayout(Dimension::fromPixels(20),Dimension::fromPixels(120));
-    arrowL->setBackground((new HUDGraphic(arrow))
-                                  ->setCenterOffset(Dimension::fromPercentage(0),Dimension::fromPercentage(-33.0f)));
-    arrowL->setId("speedArrow");
-    meterL->addChild(arrowL,Dimension::fromPixels(90),Dimension::fromPixels(80));
-
-    bottomBar->addChild(meterL);
-    rootLayout->addChild(bottomBar);
-    return rootLayout;
-}
-
 void createMeshes() {
     Logger::logInfo("Started loading meshes");
 
@@ -372,8 +356,7 @@ void createMeshes() {
 
     // HUD
     hud = new SpaceBubbaObject();
-    HudRenderer *hudRenderer = new SpaceBubbaHudRenderer(rWingSpeed, &points);
-    hudRenderer->setLayout(createLayout());
+    HudRenderer *hudRenderer = new SpaceBubbaHudRenderer(rWingSpeed, &points, &state);
     hud->addRenderComponent(hudRenderer);
     scene.transparentObjects.push_back(hud);
 

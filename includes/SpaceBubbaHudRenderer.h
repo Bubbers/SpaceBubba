@@ -6,21 +6,30 @@
 #define SUPER_BUBBA_AWESOME_SPACE_SPACEBUBBAHUDRENDERER_H
 
 #include <HudRenderer.h>
+#include <State.h>
 
 class IHudDrawable;
+class Font;
 
 class SpaceBubbaHudRenderer : public HudRenderer {
 
 public:
 
     virtual void render();
-    SpaceBubbaHudRenderer(float* spaceShipSpeed, int* points);
-    virtual void setLayout(Layout* layout);
+    SpaceBubbaHudRenderer(float* spaceShipSpeed, int* points, State* state);
 
 private:
     float* spaceShipSpeed;
+    State* state, prevState;
     IHudDrawable* arrow;
     int prevScore = 0, *points;
+
+    Layout* createPlayingLayout();
+    Layout* createStartLayout();
+    Layout* createCreditsLayout();
+    Layout* createFailedLayout();
+    Layout* createSuccessLayout();
+    Layout* createMessageLayout(string message, Font* font);
 
 };
 
