@@ -2,12 +2,12 @@
 #include "SmokeParticle.h"
 
 
-float3 SmokeParticle::initialPosition(float3 genPos) {
+float3 SmokeParticle::initialPosition() {
     float rand = getRand(0.0f, 360.0f);
     float rand2  = getRand(0.0f, 1.0f);
-    return make_vector(genPos.x + (float)cos(rand) * rand2,
-                       genPos.y + (float)sin(rand) * rand2,
-                       genPos.z + (float)sin(rand) * rand2);
+    return make_vector((float)cos(rand) * rand2,
+                       (float)sin(rand) * rand2,
+                       (float)sin(rand) * rand2);
 }
 
 float3 SmokeParticle::initialVelocity() {

@@ -1,10 +1,10 @@
 #include "Utils.h"
 #include "FireParticle.h"
 
-float3 FireParticle::initialPosition(float3 genPos) {
+float3 FireParticle::initialPosition() {
     float rand = getRand(0.0f, 360.0f);
     float rand2  = getRand(0.0f, 0.3f);
-    return make_vector(genPos.x + (float)cos(rand) * rand2, genPos.y, genPos.z + (float)sin(rand) * rand2);
+	return make_vector((float)cos(rand) * rand2, (float)sin(rand) * rand2, 0.0f);
 }
 
 float3 FireParticle::initialVelocity() {

@@ -10,8 +10,9 @@ public:
     SmokeParticle() {}
     ~SmokeParticle() {}
 
-    float3 initialPosition(float3 genPos);
+    float3 initialPosition();
     float3 initialVelocity();
+
     float3 accelerate(float3 velocity);
     float3 calcParticleScale();
     float calcLifetime();
