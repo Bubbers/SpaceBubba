@@ -21,4 +21,5 @@ void main() {
 	}else if(isFont){
 	    fragmentColor = vec4(1,1,1,texture(sprite,texCoord).x);
 	}
+	
 }
