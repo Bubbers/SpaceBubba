@@ -13,21 +13,24 @@
 #include <HUDGraphic.h>
 #include <HudStrings.h>
 #include <SFML/Window/Keyboard.hpp>
+#include <TextObject.h>
 
-void SpaceBubbaHudRenderer::render() {
-    if (!(*state != Playing && *state == prevState)) {
+void SpaceBubbaHudRenderer::update(float dt) {
+
+    if (*state == Playing || *state != prevState) {
 
         if (*state == Playing) {
             if (prevState != Playing) {
+
                 setLayout(createPlayingLayout());
-                arrow = getSquareByID("speedArrow");
-            }
-            if (*points != prevScore) {
-                TextLayout *score = (TextLayout *) getLayoutById("num");
-                score->setText(to_string(*points));
-                updateLayout();
-                arrow = getSquareByID("speedArrow");
+                arrow = getHudDrawableById("speedArrow");
+                scoreObject = (TextObject*)getHudDrawableById("num");
+
+            }else if (*points != prevScore) {
+
+                scoreObject->setText(to_string(*points));
                 prevScore = *points;
+
             }
             float rot = (220.0f * *spaceShipSpeed + 70.0f) * (float) M_PI / 180.0f;
             arrow->setRotation(rot);
@@ -42,8 +45,6 @@ void SpaceBubbaHudRenderer::render() {
         }
         prevState = *state;
     }
-    HudRenderer::render();
-
 
 }
 
@@ -59,44 +60,46 @@ Layout* SpaceBubbaHudRenderer::createMessageLayout(string message, Font* font) {
 }
 
 SpaceBubbaHudRenderer::SpaceBubbaHudRenderer(float *spaceShipSpeed, int* points, State* state)
-        : spaceShipSpeed(spaceShipSpeed), points(points), state(state), prevState(Won), HudRenderer(){}
+        : spaceShipSpeed(spaceShipSpeed), points(points), state(state), prevState(Won), HudRenderer(){
+
+    FontManager* fm = FontManager::getInstance();
+    ubuntu30 = fm->loadAndFetchFont("../fonts/Ubuntu-M.ttf",30);
+    ubuntu100 = fm->loadAndFetchFont("../fonts/Ubuntu-M.ttf",100);
+
+    setLayout(createStartLayout());
+
+}
 
 Layout* SpaceBubbaHudRenderer::createStartLayout() {
 
-    Font* font = FontManager().loadAndFetchFont("../fonts/Ubuntu-M.ttf",30);
-    return createMessageLayout(hudStringWelcome,font);
+    return createMessageLayout(hudStringWelcome,ubuntu30);
 
 }
 
 Layout* SpaceBubbaHudRenderer::createCreditsLayout() {
-    Font* font = FontManager().loadAndFetchFont("../fonts/Ubuntu-M.ttf",30);
 
-    return createMessageLayout(hudStringCredits,font);
+    return createMessageLayout(hudStringCredits,ubuntu30);
 }
 
 Layout* SpaceBubbaHudRenderer::createFailedLayout() {
 
-    Font* font = FontManager().loadAndFetchFont("../fonts/Ubuntu-M.ttf",100);
-    return createMessageLayout(hudStringFailure,font);
+    return createMessageLayout(hudStringFailure,ubuntu100);
 }
 
 Layout* SpaceBubbaHudRenderer::createSuccessLayout() {
 
-    Font* font = FontManager().loadAndFetchFont("../fonts/Ubuntu-M.ttf",100);
-    return createMessageLayout(hudStringSuccess,font);
+    return createMessageLayout(hudStringSuccess,ubuntu100);
 }
 
 Layout* SpaceBubbaHudRenderer::createPlayingLayout(){
     Texture* meter = ResourceManager::loadAndFetchTexture("../scenes/HUD/meter2.0.png");
     Texture* arrow = ResourceManager::loadAndFetchTexture("../scenes/HUD/arrow.png");
 
-    Font* font = FontManager().loadAndFetchFont("../fonts/Ubuntu-M.ttf",30);
-
     Layout* rootLayout = new ListLayout(ListLayout::VERTICAL,Dimension::fromPercentage(100),Dimension::fromPercentage(100));
     rootLayout->addChild(new ListLayout(ListLayout::VERTICAL,Dimension::fill(),Dimension::fill()));
     Layout* bottomBar = new ListLayout(ListLayout::HORIZONTAL,Dimension::fill(),Dimension::wrap());
     PositioningLayout* pointContainer = new PositioningLayout(Dimension::fill(),Dimension::fromPixels(200));
-    pointContainer->addChild((new TextLayout("0",font,Dimension::fromPixels(100),Dimension::fromPixels(30)))->setId("num"),
+    pointContainer->addChild((new TextLayout("0",ubuntu30,Dimension::fromPixels(100),Dimension::fromPixels(30)))->setTextId("num"),
                              Dimension::fromPixels(50),Dimension::fromPixels(90));
     bottomBar->addChild(pointContainer);
 
@@ -105,7 +108,7 @@ Layout* SpaceBubbaHudRenderer::createPlayingLayout(){
     PositioningLayout* arrowL = new PositioningLayout(Dimension::fromPixels(20),Dimension::fromPixels(120));
     arrowL->setBackground((new HUDGraphic(arrow))
                                   ->setCenterOffset(Dimension::fromPercentage(0),Dimension::fromPercentage(-33.0f)));
-    arrowL->setId("speedArrow");
+    arrowL->setLayoutId("speedArrow");
     meterL->addChild(arrowL,Dimension::fromPixels(90),Dimension::fromPixels(80));
 
     bottomBar->addChild(meterL);

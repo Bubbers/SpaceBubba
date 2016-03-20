@@ -10,19 +10,22 @@
 
 class IHudDrawable;
 class Font;
+class TextObject;
 
 class SpaceBubbaHudRenderer : public HudRenderer {
 
 public:
 
-    virtual void render();
+    virtual void update(float dt);
     SpaceBubbaHudRenderer(float* spaceShipSpeed, int* points, State* state);
 
 private:
     float* spaceShipSpeed;
     State* state, prevState;
-    IHudDrawable* arrow;
+    IHudDrawable *arrow;
+    TextObject *scoreObject;
     int prevScore = 0, *points;
+    Font* ubuntu30, *ubuntu100;
 
     Layout* createPlayingLayout();
     Layout* createStartLayout();
