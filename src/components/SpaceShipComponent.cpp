@@ -3,18 +3,15 @@
 //
 
 #include <MoveComponent.h>
-#include <Utils.h>
 #include <ControlsManager.h>
 #include "SpaceShipComponent.h"
 #include "linmath/float3x3.h"
 #include <Controls.h>
-#include <linmath/Quaternion.h>
-#include <MousePosition.h>
 
 
 SpaceShipComponent::SpaceShipComponent(float* speed,float* cameraThetaLocation,
-                                       float* cameraPhiLocation, GameObject* ship, ParticleGenerator* generator1,
-                                       ParticleGenerator* generator2, State* state) : MoveComponent(ship){
+                                       float* cameraPhiLocation, GameObject* ship, State* state) : MoveComponent(ship){
+
     this->cameraThetaLocation = cameraThetaLocation;
     this->state = state;
     this->cameraPhiLocation = cameraPhiLocation;
@@ -33,9 +30,6 @@ void SpaceShipComponent::update(float dt) {
     MoveComponent::update(dt);
 
     *speed = length(getVelocity())/maxSpeed;
-
-    generator1->m_position = meshObject->getLocation() - frontDir * 4.0 + rightDir;
-    generator2->m_position = meshObject->getLocation() - frontDir * 4.0 - rightDir;
 };
 
 float3 SpaceShipComponent::getUpDir() {

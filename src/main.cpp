@@ -76,6 +76,7 @@ State state = Start;
 // OBJ Model declarations
 //*****************************************************************************
 
+
 float* rWingSpeed;
 
 SpaceBubbaObject *rWing;
@@ -363,7 +364,8 @@ void createMeshes() {
     scene.transparentObjects.push_back(hud);
 
     spaceMover = new SpaceShipComponent(rWingSpeed, &camera_theta, &camera_phi,
-                                        rWing, gen, gen2, &state);
+                                        rWing, &state);
+
 
     ShootComponent *shooter = new ShootComponent(rWing, spaceMover, &scene,
                                                  &broadPhaseCollider, 1000);

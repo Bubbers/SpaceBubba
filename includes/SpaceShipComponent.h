@@ -5,7 +5,6 @@
 #ifndef BUBBA_3D_SPACESHIPCOMPONENT_H
 #define BUBBA_3D_SPACESHIPCOMPONENT_H
 
-
 #include "ParticleGenerator.h"
 #include <State.h>
 
@@ -13,7 +12,8 @@ class SpaceShipComponent : public MoveComponent{
 public:
 
     SpaceShipComponent(float* speed, float* cameraThetaLocation, float* cameraPhiLocation,
-                       GameObject* ship, ParticleGenerator* generator1, ParticleGenerator* generator2, State* state);
+                       GameObject* ship, State* state);
+
 
 
     void update(float dt) ;
