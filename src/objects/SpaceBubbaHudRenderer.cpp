@@ -48,17 +48,6 @@ void SpaceBubbaHudRenderer::update(float dt) {
 
 }
 
-Layout* SpaceBubbaHudRenderer::createMessageLayout(string message, Font* font) {
-
-    PositioningLayout* root = new PositioningLayout(Dimension::fromPercentage(100),Dimension::fromPercentage(100));
-    root->addChild((new TextLayout(message,font,Dimension::fromPercentage(60), Dimension::fromPercentage(50)))
-                           ->setBackground(new HUDGraphic(HUDGraphic::Color(new string("#0f3b0c"),0.522f)))
-            ,Dimension::fromPercentage(20),Dimension::fromPercentage(25));
-    setLayout(root);
-    return root;
-
-}
-
 SpaceBubbaHudRenderer::SpaceBubbaHudRenderer(float *spaceShipSpeed, int* points, State* state)
         : spaceShipSpeed(spaceShipSpeed), points(points), state(state), prevState(Won), HudRenderer(){
 
@@ -67,6 +56,17 @@ SpaceBubbaHudRenderer::SpaceBubbaHudRenderer(float *spaceShipSpeed, int* points,
     ubuntu100 = fm->loadAndFetchFont("../fonts/Ubuntu-M.ttf",100);
 
     setLayout(createStartLayout());
+
+}
+
+Layout* SpaceBubbaHudRenderer::createMessageLayout(string message, Font* font) {
+
+    PositioningLayout* root = new PositioningLayout(Dimension::fromPercentage(100),Dimension::fromPercentage(100));
+    root->addChild((new TextLayout(message,font,Dimension::fromPercentage(60), Dimension::fromPercentage(50)))
+                           ->setBackground((new HUDGraphic(HUDGraphic::Color(new string("#0f3b0c"),0.522f)))->setRoundedCorners(10))
+            ,Dimension::fromPercentage(20),Dimension::fromPercentage(25));
+    setLayout(root);
+    return root;
 
 }
 

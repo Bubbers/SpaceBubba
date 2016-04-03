@@ -209,10 +209,10 @@ int main(int argc, char *argv[]) {
 	Logger::addLogHandler(new FileLogHandler("logggg.log"));
 	Logger::addLogHandler(new StdOutLogHandler());
 	Logger::setLogLevel(LogLevel::DEBUG);
-	int w = SCREEN_WIDTH;
-	int h = SCREEN_HEIGHT;
 
 	srand(time(NULL));
+	int w = SCREEN_WIDTH;
+	int h = SCREEN_HEIGHT;
 
 	window = new Window(w, h, "Super-Bubba-Awesome-Space");
 	window->setIdleMethod(idle);
@@ -221,6 +221,7 @@ int main(int argc, char *argv[]) {
 
 	renderer = new Renderer();
 	renderer->initRenderer(w, h);
+
 
 	try {
 		mapKeyBindings();
