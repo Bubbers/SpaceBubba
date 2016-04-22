@@ -62,6 +62,7 @@ using namespace chag;
 
 #define SCREEN_WIDTH   1028
 #define SCREEN_HEIGHT  800
+#define WINNING_SCORE  5
 
 //*****************************************************************************
 // Global variables
@@ -175,7 +176,7 @@ void idle(float timeSinceStart, float timeSinceLastCall) {
     sf::Joystick::update();
     checkKeys();
 
-    if(state == Playing && points >= 50)
+    if(state == Playing && points >= WINNING_SCORE)
         state = Won;
 
     // TODO(Any) Cleanup shouldnt be here. Let scene delete?
@@ -221,7 +222,6 @@ int main(int argc, char *argv[]) {
 
 	renderer = new Renderer();
 	renderer->initRenderer(w, h);
-
 
 	try {
 		mapKeyBindings();
@@ -373,6 +373,7 @@ void createMeshes() {
     rWing->addComponent(shooter);
     rWing->addComponent(spaceMover);
     rWing->setDynamic(true);
+
     scene.shadowCasters.push_back(rWing);
     broadPhaseCollider.addGameObject(rWing);
 

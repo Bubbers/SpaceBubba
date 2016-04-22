@@ -8,7 +8,7 @@
 using namespace std;
 
 string hudStringWelcome = string("Welcome pilot")+
-        "\r\n-----------\r\n"+
+        "\r\n\r\n"+
         "Your mission is to destroy 50 of " +
         "the asteroids in this system. Be " +
         "aware that you do not have any "+
@@ -18,7 +18,7 @@ string hudStringWelcome = string("Welcome pilot")+
         "mouse button to fire the laser.\r\n\r\n" +
         "Press ENTER to proceed.";
 
-string hudStringCredits = string("Credits\r\n-------\r\n") +
+string hudStringCredits = string("Credits\r\n\r\n") +
                           "This game has been made by \r\n" +
                           "* Viktor Sjolind\r\n" +
                           "* Johan Nilsson Hansen\r\n" +

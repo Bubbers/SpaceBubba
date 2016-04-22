@@ -32,7 +32,7 @@ private:
     Layout* createCreditsLayout();
     Layout* createFailedLayout();
     Layout* createSuccessLayout();
-    Layout* createMessageLayout(string message, Font* font);
+    Layout* createMessageLayout(string message, Font* font, bool bigHeader);
 
 };
 

@@ -59,12 +59,14 @@ SpaceBubbaHudRenderer::SpaceBubbaHudRenderer(float *spaceShipSpeed, int* points,
 
 }
 
-Layout* SpaceBubbaHudRenderer::createMessageLayout(string message, Font* font) {
+Layout* SpaceBubbaHudRenderer::createMessageLayout(string message, Font* font, bool bigHeader) {
 
     PositioningLayout* root = new PositioningLayout(Dimension::fromPercentage(100),Dimension::fromPercentage(100));
+    HUDGraphic* boxGraphic = new HUDGraphic(HUDGraphic::Color(string("#0f3b0c"),0.522f));
+    boxGraphic->setRoundedCorners(40)->setBorder(bigHeader ? 43 : 3,3,3,3,HUDGraphic::Color(string("#0f3b0c")));
     root->addChild((new TextLayout(message,font,Dimension::fromPercentage(60), Dimension::fromPercentage(50)))
-                           ->setBackground((new HUDGraphic(HUDGraphic::Color(new string("#0f3b0c"),0.522f)))->setRoundedCorners(10))
-            ,Dimension::fromPercentage(20),Dimension::fromPercentage(25));
+                           ->setPadding(0,5)
+                           ->setBackground(boxGraphic),Dimension::fromPercentage(20),Dimension::fromPercentage(25));
     setLayout(root);
     return root;
 
@@ -72,23 +74,23 @@ Layout* SpaceBubbaHudRenderer::createMessageLayout(string message, Font* font) {
 
 Layout* SpaceBubbaHudRenderer::createStartLayout() {
 
-    return createMessageLayout(hudStringWelcome,ubuntu30);
+    return createMessageLayout(hudStringWelcome,ubuntu30,true);
 
 }
 
 Layout* SpaceBubbaHudRenderer::createCreditsLayout() {
 
-    return createMessageLayout(hudStringCredits,ubuntu30);
+    return createMessageLayout(hudStringCredits,ubuntu30, true);
 }
 
 Layout* SpaceBubbaHudRenderer::createFailedLayout() {
 
-    return createMessageLayout(hudStringFailure,ubuntu100);
+    return createMessageLayout(hudStringFailure,ubuntu100, false);
 }
 
 Layout* SpaceBubbaHudRenderer::createSuccessLayout() {
 
-    return createMessageLayout(hudStringSuccess,ubuntu100);
+    return createMessageLayout(hudStringSuccess,ubuntu100, false);
 }
 
 Layout* SpaceBubbaHudRenderer::createPlayingLayout(){
