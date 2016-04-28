@@ -13,7 +13,7 @@ class GameObject;
 
 class ShootComponent : public IComponent {
 public:
-    ShootComponent(GameObject* object, SpaceShipComponent *objectMover, Scene *scene, BFBroadPhase *collisionHandler, float timeToLive);
+    ShootComponent(GameObject* object, SpaceShipComponent *objectMover, Scene *scene, float timeToLive);
     ~ShootComponent();
     virtual void update(float dt);
 
@@ -21,7 +21,6 @@ private:
     GameObject* object;
     SpaceShipComponent *objectMover;
     Scene *scene;
-    BFBroadPhase *collisionHandler;
     float timeToLive = 0;
     long canShootAfter = 0;
 	utils::Timer timer;

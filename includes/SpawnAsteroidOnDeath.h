@@ -18,7 +18,7 @@ class GameObject;
 class SpawnAsteroidOnDeath : public IComponent{
 
 public:
-    SpawnAsteroidOnDeath(GameObject* object, Scene *scene, BFBroadPhase *collisionHandler, float3 scale, Camera* camera, int* points);
+    SpawnAsteroidOnDeath(GameObject* object, Scene *scene, float3 scale, Camera* camera, int* points);
 
     void onDeath() ;
     void update(float dt) {};
@@ -26,7 +26,6 @@ public:
 private:
     GameObject* gameObject;
     Scene* scene;
-    BFBroadPhase* collisionHandler;
     float3 scale;
     Camera* camera;
     int* points;
