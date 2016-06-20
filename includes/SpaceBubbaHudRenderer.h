@@ -17,6 +17,7 @@ class SpaceBubbaHudRenderer : public HudRenderer {
 public:
 
     virtual void update(float dt);
+    virtual void updateLayout();
     SpaceBubbaHudRenderer(float* spaceShipSpeed, int* points, State* state);
 
 private:

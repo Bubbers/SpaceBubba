@@ -90,6 +90,7 @@ SpaceBubbaObject dstar;
 SpaceShipComponent *spaceMover;
 SpaceBubbaObject planet;
 SpaceBubbaObject sun;
+HudRenderer* hudRenderer;
 
 Scene scene;
 
@@ -142,6 +143,7 @@ void display(float timeSinceStart, float timeSinceLastCall) {
 
 void resize(int width, int height) {
     renderer->resize(width, height);
+    hudRenderer->updateLayout();
 }
 
 void checkKeys() {
@@ -361,7 +363,7 @@ void createMeshes() {
 
     // HUD
     hud = new SpaceBubbaObject();
-    HudRenderer *hudRenderer = new SpaceBubbaHudRenderer(rWingSpeed, &points, &state);
+    hudRenderer = new SpaceBubbaHudRenderer(rWingSpeed, &points, &state);
     hud->addRenderComponent(hudRenderer);
     scene.addTransparentObject(hud);
 

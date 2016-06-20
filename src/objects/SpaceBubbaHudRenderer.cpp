@@ -48,6 +48,14 @@ void SpaceBubbaHudRenderer::update(float dt) {
 
 }
 
+void SpaceBubbaHudRenderer::updateLayout() {
+    HudRenderer::updateLayout();
+    if(*state == Playing){
+        arrow = getHudDrawableById("speedArrow");
+        scoreObject = (TextObject*)getHudDrawableById("num");
+    }
+}
+
 SpaceBubbaHudRenderer::SpaceBubbaHudRenderer(float *spaceShipSpeed, int* points, State* state)
         : spaceShipSpeed(spaceShipSpeed), points(points), state(state), prevState(Won), HudRenderer(){
 
