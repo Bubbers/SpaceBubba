@@ -29,7 +29,6 @@
 #include <MouseButton.h>
 #include <MouseAxis.h>
 #include <SkyBoxRenderer.h>
-#include <BFBroadPhase.h>
 #include <Logger.h>
 #include <PerspectiveCamera.h>
 #include <Scene.h>
@@ -50,8 +49,12 @@
 #include <FontManager.h>
 #include <TextLayout.h>
 #include <State.h>
+#include <Collider.h>
+#include <ExactPhaseCollider.h>
+#include <ColliderFactory.h>
 #include "CubeMapTexture.h"
 #include "StdOutLogHandler.h"
+#include "../Bubba-3D/src/collision/TwoPhaseCollider.h"
 
 #ifdef WIN32
 #define SFML_STATIC
@@ -93,8 +96,7 @@ Scene scene;
 //*****************************************************************************
 // Collision
 //*****************************************************************************
-BFBroadPhase broadPhaseCollider;
-
+Collider *collider;
 
 //*****************************************************************************
 // Cube Maps
@@ -186,7 +188,7 @@ void idle(float timeSinceStart, float timeSinceLastCall) {
 
     playerCamera->setPosition(calculateNewCameraPosition());
 
-    broadPhaseCollider.updateCollision();
+    collider->updateCollision(&scene);
 
     sf::Mouse::setPosition(sf::Vector2<int>(
                                    Globals::get(Globals::Key::WINDOW_WIDTH) / 2,
@@ -194,10 +196,6 @@ void idle(float timeSinceStart, float timeSinceLastCall) {
                            *window->getWindow());
 
     playerCamera->setUpVector(normalize(spaceMover->getUpDir()));
-
-    for (auto it = toDelete->begin(); it < toDelete->end(); it++) {
-        delete (*it);
-    }
 
     delete toDelete;
 }
@@ -303,6 +301,9 @@ void createCubeMaps() {
 }
 
 void createMeshes() {
+
+    collider = ColliderFactory::getTwoPhaseCollider();
+
     Logger::logInfo("Started loading meshes");
 
     // SKYBOX
@@ -314,7 +315,7 @@ void createMeshes() {
                          "../scenes/fancyy.png", "../scenes/y.png",
                          "../scenes/fancyz.png", "../scenes/z.png");
     skyBox.addRenderComponent(skyboxRenderer);
-    scene.shadowCasters.push_back(&skyBox);
+    scene.addShadowCaster(&skyBox);
 
     // OBJECTS
     ShaderProgram *standardShader = ResourceManager::getShader(SIMPLE_SHADER_NAME);
@@ -362,20 +363,17 @@ void createMeshes() {
     hud = new SpaceBubbaObject();
     HudRenderer *hudRenderer = new SpaceBubbaHudRenderer(rWingSpeed, &points, &state);
     hud->addRenderComponent(hudRenderer);
-    scene.transparentObjects.push_back(hud);
+    scene.addTransparentObject(hud);
 
     spaceMover = new SpaceShipComponent(rWingSpeed, &camera_theta, &camera_phi,
                                         rWing, &state);
 
 
-    ShootComponent *shooter = new ShootComponent(rWing, spaceMover, &scene,
-                                                 &broadPhaseCollider, 1000);
+    ShootComponent *shooter = new ShootComponent(rWing, spaceMover, &scene, 1000);
     rWing->addComponent(shooter);
     rWing->addComponent(spaceMover);
     rWing->setDynamic(true);
-
-    scene.shadowCasters.push_back(rWing);
-    broadPhaseCollider.addGameObject(rWing);
+    scene.addShadowCaster(rWing);
 
     Mesh *dstarM = ResourceManager::loadAndFetchMesh("../scenes/dstar.obj");
     dstar = SpaceBubbaObject(dstarM, SpaceEntity);
@@ -390,8 +388,7 @@ void createMeshes() {
     dstar.setDynamic(true);
 
     dstar.addComponent(dstarMover);
-    scene.shadowCasters.push_back(&dstar);
-    broadPhaseCollider.addGameObject(&dstar);
+    scene.addShadowCaster(&dstar);
 
     Mesh *planetM = ResourceManager::loadAndFetchMesh("../scenes/planet.obj");
     planet = SpaceBubbaObject(planetM, SpaceEntity);
@@ -405,8 +402,7 @@ void createMeshes() {
                                                              0.0005f));
     planet.addComponent(planetMover);
 
-    scene.shadowCasters.push_back(&planet);
-    broadPhaseCollider.addGameObject(&planet);
+    scene.addShadowCaster(&planet);
 
     Mesh *sunM = ResourceManager::loadAndFetchMesh("../scenes/sun.obj");
     sun = SpaceBubbaObject(sunM, SpaceEntity);
@@ -419,9 +415,7 @@ void createMeshes() {
                                                          standardShader);
     sun.addRenderComponent(sunRenderer);
 
-    scene.shadowCasters.push_back(&sun);
-    broadPhaseCollider.addGameObject(&sun);
-
+    scene.addShadowCaster(&sun);
 
     for (int i = 0; i < 50; i++) {
         int rock = static_cast<int> (ceil(getRand(0.01f, 3.0f)));
@@ -457,12 +451,11 @@ void createMeshes() {
         asteroid->addComponent(dca);
 
         SpawnAsteroidOnDeath *childrenSpawner = new SpawnAsteroidOnDeath(
-                asteroid, &scene, &broadPhaseCollider,
+                asteroid, &scene,
                 make_vector(1.0f, 1.0f, 1.0f), playerCamera, &points);
         asteroid->addComponent(childrenSpawner);
 
-        scene.shadowCasters.push_back(asteroid);
-        broadPhaseCollider.addGameObject(asteroid);
+        scene.addShadowCaster(asteroid);
     }
 
     Logger::logInfo("Finished loading meshes.");

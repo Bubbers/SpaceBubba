@@ -12,14 +12,12 @@
 #include <DeathOnCollision.h>
 #include <SpaceBubbaObject.h>
 #include "Scene.h"
-#include "BFBroadPhase.h"
 #include "Camera.h"
 
-SpawnAsteroidOnDeath::SpawnAsteroidOnDeath(GameObject* gameObject, Scene *scene, BFBroadPhase *collisionHandler, float3 scale, Camera* camera, int* points){
+SpawnAsteroidOnDeath::SpawnAsteroidOnDeath(GameObject* gameObject, Scene *scene, float3 scale, Camera* camera, int* points){
 
     this->gameObject = gameObject;
     this->scene = scene;
-    this->collisionHandler = collisionHandler;
     this->scale = scale;
     this->camera = camera;
     this->points = points;
@@ -60,12 +58,10 @@ void SpawnAsteroidOnDeath::onDeath(){
         DeathOnCollision* dc = new DeathOnCollision(asteroid, Laser, 1, points);
         asteroid->addComponent(dc);
 
-        SpawnAsteroidOnDeath* spawner = new SpawnAsteroidOnDeath(asteroid,scene,collisionHandler,scale*0.5f,camera,points);
+        SpawnAsteroidOnDeath* spawner = new SpawnAsteroidOnDeath(asteroid,scene,scale*0.5f,camera,points);
         asteroid->addComponent(spawner);
 
-        scene->shadowCasters.push_back(asteroid);
-        collisionHandler->addGameObject(asteroid);
-
+        scene->addShadowCaster(asteroid);
     }
 
     Texture *particleTexture = ResourceManager::loadAndFetchTexture("../scenes/smoke_part.png");
@@ -76,6 +72,5 @@ void SpawnAsteroidOnDeath::onDeath(){
     ParticleGenerator *gen = new ParticleGenerator(particleTexture, 200, camera, make_translation(location + cameraLocationUnit * 5), smokeConf);
     GameObject *particleGenerator = new GameObject();
     particleGenerator->addRenderComponent(gen);
-    scene->transparentObjects.push_back(particleGenerator);
-
+    scene->addTransparentObject(particleGenerator);
 }

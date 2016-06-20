@@ -8,7 +8,6 @@
 #include <TimedLife.h>
 #include <SpaceShipComponent.h>
 #include <Scene.h>
-#include <BFBroadPhase.h>
 #include <DeathOnCollision.h>
 #include <chrono>
 #include "ShootComponent.h"
@@ -23,11 +22,10 @@
 #endif
 
 
-ShootComponent::ShootComponent(GameObject* object, SpaceShipComponent *objectMover, Scene *scene, BFBroadPhase *collisionHandler, float timeToLive) {
+ShootComponent::ShootComponent(GameObject* object, SpaceShipComponent *objectMover, Scene *scene, float timeToLive) {
     this->object = object;
     this->objectMover = objectMover;
     this->scene = scene;
-    this->collisionHandler = collisionHandler;
     this->timeToLive = timeToLive;
 	timer.start();
 
@@ -97,8 +95,5 @@ void ShootComponent::spawnBullet() {
     DeathOnCollision* dc = new DeathOnCollision(shot, Asteroid);
     shot->addComponent(dc);
 
-    scene->shadowCasters.push_back(shot);
-    collisionHandler->addGameObject(shot);
-
-
+    scene->addShadowCaster(shot);
 }
